@@ -1,0 +1,24 @@
+<idea-plugin>
+    <id>org.awesome.JsonBeanGenerator</id>
+    <name>JsonBeanGenerator</name>
+    <vendor email="939301889@qq.com" url="https://github.com/heinigger/JsonBeanGenerator">Awesome</vendor>
+
+    <description><![CDATA[
+    这个插件为解决大前端情况下生成java,kotlin,dart等多个语言的bean对象<br>
+    ]]></description>
+
+    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <!-- Add your extensions here -->
+    </extensions>
+
+    <actions>
+        <action id="JsonBeanGenerator" class="com.awesome.json2dartex.JsonBeanGeneratorAction" text="jsonBeanGenerator"
+                description="生成bean对象">
+            <add-to-group group-id="NewGroup" anchor="first"/>
+        </action>
+    </actions>
+</idea-plugin>
