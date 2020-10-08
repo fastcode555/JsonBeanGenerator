@@ -1,4 +1,4 @@
-package com.awesome.json2dartex
+package com.awesome
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent

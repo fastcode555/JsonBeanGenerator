@@ -1,4 +1,4 @@
-import com.awesome.json2dartex.generator.DartJsonGenerator
+import com.awesome.generators.DartJsonGenerator
 import java.io.File
 
 

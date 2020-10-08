@@ -1,4 +1,4 @@
-package com.awesome.json2dartex.generator
+package com.awesome.generators
 
 abstract class BaseGenerator(content: String, fileName: String) {
     abstract fun toJson(): String

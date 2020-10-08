@@ -1,4 +1,4 @@
-package com.awesome.json2dartex.generator
+package com.awesome.generators
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject

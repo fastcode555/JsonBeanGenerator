@@ -16,7 +16,7 @@
     </extensions>
 
     <actions>
-        <action id="JsonBeanGenerator" class="com.awesome.json2dartex.JsonBeanGeneratorAction" text="jsonBeanGenerator"
+        <action id="JsonBeanGenerator" class="com.awesome.JsonBeanGeneratorAction" text="jsonBeanGenerator"
                 description="生成bean对象">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>

@@ -1,6 +1,6 @@
-package com.awesome.json2dartex
+package com.awesome
 
-import com.awesome.json2dartex.generator.DartJsonGenerator
+import com.awesome.generators.DartJsonGenerator
 import com.intellij.psi.PsiDirectory
 import formatJson
 import java.awt.event.ActionEvent
