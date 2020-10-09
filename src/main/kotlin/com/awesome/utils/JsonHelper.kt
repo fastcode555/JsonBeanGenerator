@@ -30,6 +30,7 @@ fun String?.clearSymbol(): String? {
 }
 
 fun String?.formatJson(): String? {
+    if (this == null || this.isEmpty()) return this;
     val json = if (this!!.startsWith("{")) JSONObject.parseObject(this) else JSONArray.parse(this)
     return JSON.toJSONString(json, true)
 }
