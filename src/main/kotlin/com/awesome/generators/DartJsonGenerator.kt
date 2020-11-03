@@ -44,7 +44,7 @@ class DartJsonGenerator(
             if (element is JSONObject) {
                 builder.append("${key.toUpperCamel()} ${key.toCamel()};\n")
                 toJsonMethod.append("if (this.${key.toCamel()} != null) map['$key'] = this.${key.toCamel()}.toJson();\n")
-                fromJsonMethod.append("this.${key.toCamel()}=json['$key']!=null?${key.toUpperCamel()}.fromJson(json['$key']):null;\n")
+                fromJsonMethod.append("this.${key.toCamel()}=json.asBean('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
                 classes.add(parseJson(element, key.toUpperCamel(), classes, false))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
@@ -90,8 +90,10 @@ class DartJsonGenerator(
     private fun getParseType(element: Any): String {
         if (element is String) {
             return "asString"
-        } else if (element is Int || element is Double || element is Float) {
-            return "asNum"
+        } else if (element is Int) {
+            return "asInt"
+        } else if (element is Double || element is Float) {
+            return "asDouble"
         } else if (element is Boolean) {
             return "asBool"
         } else {
@@ -102,8 +104,10 @@ class DartJsonGenerator(
     private fun getType(element: Any): String {
         if (element is String) {
             return "String"
-        } else if (element is Int || element is Double || element is Float) {
-            return "num"
+        } else if (element is Int) {
+            return "int"
+        } else if (element is Double || element is Float) {
+            return "double"
         } else if (element is Boolean) {
             return "bool"
         } else {

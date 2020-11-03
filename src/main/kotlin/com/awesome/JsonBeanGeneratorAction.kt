@@ -11,10 +11,8 @@ class JsonBeanGeneratorAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val mDirectory = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)
         if (mDirectory != null && mDirectory is PsiDirectory) {
-            WriteCommandAction.runWriteCommandAction(mDirectory.project){
-                val mDialog = JsonBeanDialog(mDirectory)
-                mDialog.showDialog()
-            }
+            val mDialog = JsonBeanDialog(mDirectory)
+            mDialog.showDialog()
         }
     }
 
