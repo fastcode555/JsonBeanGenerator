@@ -43,13 +43,13 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                             tvImplements!!.text
                         ).toJson()
                     )
+                    Runtime.getRuntime().exec("flutter format ${file.path}")
                 }
             } catch (e: Exception) {
                 NotifyUtils.showError(mDirectory.project, e.toString())
             }
         }
         dispose()
-
     }
 
     private fun onPreView() {
