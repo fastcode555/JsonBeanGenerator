@@ -16,9 +16,16 @@
     </extensions>
 
     <actions>
-        <action id="JsonBeanGenerator" class="com.awesome.JsonBeanGeneratorAction" text="jsonBeanGenerator"
-                description="生成bean对象">
+        <!--   <action id="JsonBeanGenerator" class="com.awesome.JsonBeanGeneratorAction" text="jsonBeanGenerator"
+                   description="生成bean对象">
+               <add-to-group group-id="NewGroup" anchor="first"/>
+           </action>-->
+        <!--<action id="TestAction" class="com.awesome.action.testaction.TestAction" text="TestAction"
+                description="TestAction">
             <add-to-group group-id="NewGroup" anchor="first"/>
+        </action>-->
+        <action id="SqlGenerator" class="com.awesome.SqlAction" text="sqlGenerator" description="生成相关的sql语句">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
         </action>
     </actions>
 </idea-plugin>
