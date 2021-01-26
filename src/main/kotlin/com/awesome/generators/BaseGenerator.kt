@@ -1,14 +1,13 @@
 package com.awesome.generators
 
 import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.JSONArray
-import com.alibaba.fastjson.JSONObject
+import toJSON
 
 abstract class BaseGenerator(content: String, fileName: String, extendsClass: String, implementClass: String) {
     protected var json: JSON? = null
 
     init {
-        json = (if (content.startsWith("{")) JSONObject.parseObject(content) else JSONArray.parse(content)) as JSON?
+        json = content.toJSON()
     }
 
     abstract fun toJson(): String

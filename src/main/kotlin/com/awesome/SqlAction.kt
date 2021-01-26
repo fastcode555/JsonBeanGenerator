@@ -12,7 +12,7 @@ class SqlAction : AnAction() {
         val project: Project? = e.getData<Project>(PlatformDataKeys.PROJECT)
         val editor: Editor = e.getRequiredData<Editor>(CommonDataKeys.EDITOR)
         if (project != null && editor != null) {
-            val mDialog = SqlDialog()
+            val mDialog = SqlDialog(project,editor)
             mDialog.showDialog()
         }
     }

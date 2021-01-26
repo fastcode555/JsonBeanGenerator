@@ -34,3 +34,7 @@ fun String?.formatJson(): String? {
     val json = if (this!!.startsWith("{")) JSONObject.parseObject(this) else JSONArray.parse(this)
     return JSON.toJSONString(json, true)
 }
+
+fun String.toJSON(): JSON? {
+    return (if (startsWith("{")) JSONObject.parseObject(this) else JSONArray.parse(this)) as JSON?
+}

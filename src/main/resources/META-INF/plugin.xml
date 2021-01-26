@@ -24,7 +24,7 @@
                 description="TestAction">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>-->
-        <action id="SqlGenerator" class="com.awesome.SqlAction" text="sqlGenerator" description="生成相关的sql语句">
+        <action id="SqlGenerator" class="com.awesome.SqlAction" text="SqlGenerator" description="生成相关的sql语句">
             <add-to-group group-id="GenerateGroup" anchor="first"/>
         </action>
     </actions>
