@@ -54,7 +54,7 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
         buttonOK!!.addActionListener { e: ActionEvent? -> onGenerate(true) }
         buttonCancel!!.addActionListener { e: ActionEvent? -> dispose() }
         btnGenerate!!.addActionListener { e: ActionEvent? -> onGenerate(false) }
-        pythonRadioButton!!.isSelected=true
+        pythonRadioButton!!.isSelected = true
         // call onCancel() when cross is clicked
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
         addWindowListener(object : WindowAdapter() {
@@ -95,11 +95,12 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
             StringBuilder("CREATE TABLE IF NOT EXISTS %s(id INTEGER PRIMARY KEY NOT NULL,")
         val selectBuilder = StringBuilder("SELECT * FROM %s WHERE id = ?")
         val deleteBuilder = StringBuilder("DELETE FROM %s WHERE id = ?")
-        val insertBuilder = StringBuilder("INSERT INTO %s (")
+        val insertBuilder = StringBuilder("INSERT INTO %s (id,")
         val updateBuilder = StringBuilder("UPDATE %s SET ")
 
         val codeGenerator = PythonSqlGenerator(tableName, directory)
         val listKeys: MutableList<String> = mutableListOf()
+        val listValues: MutableList<Any> = mutableListOf()
 
         tvErrorTip!!.text = ""
         for ((key, element) in json!!.innerMap) {
@@ -108,17 +109,25 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
                 return
             }
             tvErrorTip!!.text = ""
+            if (key.equals("id")) {
+                continue
+            }
             listKeys.add(key)
             if (element is String) {
                 tableBuilder.append("$key TEXT,")
-            } else if (element is Int) {
-                tableBuilder.append("$key INTEGER,")
-            } else if (element is Boolean) {
-                tableBuilder.append("$key INTEGER,")
+                listValues.add("'${element.toString()}'")
             } else if (element is Double || element is Float) {
                 tableBuilder.append("$key REAL,")
+                listValues.add(element)
+            } else if (element is Int) {
+                tableBuilder.append("$key INTEGER,")
+                listValues.add(element)
+            } else if (element is Boolean) {
+                tableBuilder.append("$key INTEGER,")
+                listValues.add(if (element) 1 else 0)
             } else {
                 tableBuilder.append("$key TEXT,")
+                listValues.add("'${element.toString()}'")
             }
         }
         //减去后面逗号
@@ -129,7 +138,7 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
             insertBuilder.append("$key ${if (i != listKeys.size - 1) "," else ""}")
             updateBuilder.append("$key = ? ${if (i != listKeys.size - 1) "," else ""}")
         }
-        insertBuilder.append(") VALUES (")
+        insertBuilder.append(") VALUES (?,")
         for (i in listKeys.indices) {
             insertBuilder.append("? ${if (i != listKeys.size - 1) "," else ""}")
         }
@@ -141,7 +150,8 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
         tvInsert!!.text = insertBuilder.toString().format(tableName)
         tvUpdate!!.text = updateBuilder.toString().format(tableName)
         if (generate) {
-            codeGenerator.initMethod(tableBuilder.toString()).insertMethod(insertBuilder.toString()).generateFile(this)
+            codeGenerator.initMethod(tableBuilder.toString()).insertMethod(insertBuilder.toString())
+                .generateFile(this, listValues)
         }
     }
 

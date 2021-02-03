@@ -1,6 +1,5 @@
 package com.awesome.generators
 
-import com.awesome.SqlDialog
 import com.awesome.utils.NotifyUtils
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
@@ -11,11 +10,12 @@ import java.io.File
 
 class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
     var className: String? = null
-    var pythonBuilder: java.lang.StringBuilder? = null
+    val pythonBuilder by lazy {
+        java.lang.StringBuilder("import sqlite3\nTABLE_NAME='$className'\nclass ${className}Dao:\n")
+    }
 
     init {
         className = tableName.toUpperCamel()
-        pythonBuilder = java.lang.StringBuilder("import sqlite3\nTABLE_NAME='$className'\nclass ${className}Dao:\n")
     }
 
     //创建初始化代码
@@ -76,8 +76,17 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
         return this
     }
 
-    fun generateFile(dialog: Dialog) {
+    fun generateFile(dialog: Dialog, listValues: MutableList<Any>) {
         deleteMethod().selectAllMethod().selectMethod().closeMethod()
+        pythonBuilder.append('\n')
+        pythonBuilder.append("dao =${className}Dao()\n")
+        pythonBuilder.append("dao.insert(1,")
+        for (value in listValues) {
+            pythonBuilder.append(value)?.append(',')
+        }
+        pythonBuilder.deleteAt(pythonBuilder?.length - 1)
+        pythonBuilder.append(");\n").append("dao.close()\n")
+
         val content = pythonBuilder.toString()
         val file = File(directory.virtualFile.path, "${className}Dao.py")
         if (!file.exists()) {
