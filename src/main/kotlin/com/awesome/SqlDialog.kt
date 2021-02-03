@@ -89,16 +89,20 @@ class SqlDialog(val project: Project, val editor: Editor) : JDialog() {
         } else if (result is JSONArray) {
             json = result.getJSONObject(0)
         }
-        val tableBuilder =
-            StringBuilder("CREATE TABLE IF NOT EXISTS ${tvTable!!.text}(id INTEGER PRIMARY KEY NOT NULL,")
-        val selectBuilder = StringBuilder("SELECT * FROM ${tvTable!!.text} WHERE id = ?")
-        val deleteBuilder = StringBuilder("DELETE FROM ${tvTable!!.text} WHERE id = ?")
-        val insertBuilder = StringBuilder("INSERT INTO ${tvTable!!.text} (")
-        val listKeys: MutableList<String> = mutableListOf()
-        if (TextUtils.isEmpty(tvTable!!.text)) {
+        val tableName = tvTable!!.text
+
+        if (TextUtils.isEmpty(tableName)) {
             tvErrorTip!!.text = "请输入表格TableName字段"
             return
         }
+        val tableBuilder =
+            StringBuilder("CREATE TABLE IF NOT EXISTS %s(id INTEGER PRIMARY KEY NOT NULL,")
+        val selectBuilder = StringBuilder("SELECT * FROM %s WHERE id = ?")
+        val deleteBuilder = StringBuilder("DELETE FROM %s WHERE id = ?")
+        val insertBuilder = StringBuilder("INSERT INTO %s (")
+        val updateBuilder = StringBuilder("UPDATE %s SET ")
+        val listKeys: MutableList<String> = mutableListOf()
+
         tvErrorTip!!.text = ""
         for ((key, element) in json!!.innerMap) {
             if (DataBaseUtils.SENSORKEYS.contains(key)) {
@@ -125,17 +129,20 @@ class SqlDialog(val project: Project, val editor: Editor) : JDialog() {
         for (i in listKeys.indices) {
             val key: String = listKeys[i]
             insertBuilder.append("$key ${if (i != listKeys.size - 1) "," else ""}")
+            updateBuilder.append("$key = ? ${if (i != listKeys.size - 1) "," else ""}")
         }
         insertBuilder.append(") VALUES (")
         for (i in listKeys.indices) {
             insertBuilder.append("? ${if (i != listKeys.size - 1) "," else ""}")
         }
         insertBuilder.append(")")
+        updateBuilder.append("WHERE id = ?;")
 
-        tvCreateTable!!.text = tableBuilder.toString()
-        tvSelect!!.text = selectBuilder.toString()
-        tvDelete!!.text = deleteBuilder.toString()
-        tvInsert!!.text = insertBuilder.toString()
+        tvCreateTable!!.text = tableBuilder.toString().format(tableName)
+        tvSelect!!.text = selectBuilder.toString().format(tableName)
+        tvDelete!!.text = deleteBuilder.toString().format(tableName)
+        tvInsert!!.text = insertBuilder.toString().format(tableName)
+        tvUpdate!!.text = updateBuilder.toString().format(tableName)
     }
 
     private fun onSelectedType() {
