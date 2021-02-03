@@ -3,10 +3,10 @@ package com.awesome
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
+import com.awesome.generators.PythonSqlGenerator
 import com.awesome.utils.DataBaseUtils
-import com.awesome.utils.NotifyUtils
-import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
+import com.intellij.psi.PsiDirectory
 import org.apache.http.util.TextUtils
 import toJSON
 import java.awt.event.ActionEvent
@@ -16,7 +16,7 @@ import java.awt.event.WindowEvent
 import java.lang.StringBuilder
 import javax.swing.*
 
-class SqlDialog(val project: Project, val editor: Editor) : JDialog() {
+class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() {
     val TYPE_SQLITE: Int = 0
     val TYPE_MYSQL: Int = 1
 
@@ -34,15 +34,11 @@ class SqlDialog(val project: Project, val editor: Editor) : JDialog() {
     var btnGenerate: JButton? = null
     var tvTable: JTextField? = null
     var pythonRadioButton: JRadioButton? = null
-
     var sqliteRadioButton: JRadioButton? = null
     var mysqlRadioButton: JRadioButton? = null
 
 
     var sqlType: Int = TYPE_SQLITE
-    private fun onOK() {
-        dispose()
-    }
 
     fun showDialog(): SqlDialog {
         pack()
@@ -55,10 +51,10 @@ class SqlDialog(val project: Project, val editor: Editor) : JDialog() {
         setContentPane(contentPane)
         isModal = true
         getRootPane().defaultButton = buttonOK
-        buttonOK!!.addActionListener { e: ActionEvent? -> onOK() }
+        buttonOK!!.addActionListener { e: ActionEvent? -> onGenerate(true) }
         buttonCancel!!.addActionListener { e: ActionEvent? -> dispose() }
-        btnGenerate!!.addActionListener { e: ActionEvent? -> onGenerate() }
-
+        btnGenerate!!.addActionListener { e: ActionEvent? -> onGenerate(false) }
+        pythonRadioButton!!.isSelected=true
         // call onCancel() when cross is clicked
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
         addWindowListener(object : WindowAdapter() {
@@ -79,7 +75,7 @@ class SqlDialog(val project: Project, val editor: Editor) : JDialog() {
     }
 
     //根据填写信息以及json数据数据生成对应数据库所需要的东西
-    private fun onGenerate() {
+    private fun onGenerate(generate: Boolean) {
         onSelectedType()//确定哪一种类型
         val content = tvArea?.text
         val result: JSON? = content?.toJSON()
@@ -101,6 +97,8 @@ class SqlDialog(val project: Project, val editor: Editor) : JDialog() {
         val deleteBuilder = StringBuilder("DELETE FROM %s WHERE id = ?")
         val insertBuilder = StringBuilder("INSERT INTO %s (")
         val updateBuilder = StringBuilder("UPDATE %s SET ")
+
+        val codeGenerator = PythonSqlGenerator(tableName, directory)
         val listKeys: MutableList<String> = mutableListOf()
 
         tvErrorTip!!.text = ""
@@ -137,12 +135,14 @@ class SqlDialog(val project: Project, val editor: Editor) : JDialog() {
         }
         insertBuilder.append(")")
         updateBuilder.append("WHERE id = ?;")
-
         tvCreateTable!!.text = tableBuilder.toString().format(tableName)
         tvSelect!!.text = selectBuilder.toString().format(tableName)
         tvDelete!!.text = deleteBuilder.toString().format(tableName)
         tvInsert!!.text = insertBuilder.toString().format(tableName)
         tvUpdate!!.text = updateBuilder.toString().format(tableName)
+        if (generate) {
+            codeGenerator.initMethod(tableBuilder.toString()).insertMethod(insertBuilder.toString()).generateFile(this)
+        }
     }
 
     private fun onSelectedType() {
