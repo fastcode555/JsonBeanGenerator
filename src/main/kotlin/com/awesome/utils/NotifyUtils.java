@@ -36,7 +36,7 @@ public class NotifyUtils {
     /**
      * @param message 设置消息弹窗的内容
      * @param title   设置消息弹窗的标题
-     *                设置消息弹窗
+     *                设置消息弹窗w
      **/
     public static void showMessageDialog(String title, String message) {
         JOptionPane.showMessageDialog(new Frame(), message, title, JOptionPane.INFORMATION_MESSAGE);

@@ -1,12 +1,12 @@
 <idea-plugin>
     <id>org.awesome.JsonBeanGenerator</id>
     <name>JsonBeanGenerator</name>
+    <version>1.0.3</version>
     <vendor email="939301889@qq.com" url="https://github.com/heinigger/JsonBeanGenerator">Awesome</vendor>
-
     <description><![CDATA[
     这个插件为解决大前端情况下生成java,kotlin,dart等多个语言的bean对象<br>
     ]]></description>
-
+    <idea-version since-build="171.0"/>
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
@@ -16,16 +16,16 @@
     </extensions>
 
     <actions>
-           <action id="JsonBeanGenerator" class="com.awesome.JsonBeanGeneratorAction" text="jsonBeanGenerator"
-                   description="生成bean对象">
-               <add-to-group group-id="NewGroup" anchor="first"/>
-           </action>
+        <action id="JsonBeanGenerator" class="com.awesome.JsonBeanGeneratorAction" text="jsonBeanGenerator"
+                description="生成bean对象">
+            <add-to-group group-id="NewGroup" anchor="first"/>
+        </action>
         <!--<action id="TestAction" class="com.awesome.action.testaction.TestAction" text="TestAction"
                 description="TestAction">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>-->
-        <action id="SqlGenerator" class="com.awesome.SqlAction" text="SqlGenerator" description="生成相关的sql语句">
+    <!--    <action id="SqlGenerator" class="com.awesome.SqlAction" text="SqlGenerator" description="生成相关的sql语句">
             <add-to-group group-id="NewGroup" anchor="first"/>
-        </action>
+        </action>-->
     </actions>
 </idea-plugin>
