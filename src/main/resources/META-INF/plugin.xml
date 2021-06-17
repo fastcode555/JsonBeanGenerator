@@ -6,7 +6,7 @@
     <description><![CDATA[
     这个插件为解决大前端情况下生成java,kotlin,dart等多个语言的bean对象<br>
     ]]></description>
-    <idea-version since-build="171.0"/>
+    <idea-version since-build="171.0" until-build="300.0"/>
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
     <depends>com.intellij.modules.platform</depends>
