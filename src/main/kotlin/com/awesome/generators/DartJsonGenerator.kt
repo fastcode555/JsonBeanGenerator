@@ -20,7 +20,7 @@ class DartJsonGenerator(
         val classes = ArrayList<java.lang.StringBuilder>()
         val classBuilder = parseJson(json, fileName.toUpperCamel(), classes)
         classes.forEach { classBuilder.append("\n").append(it) }
-        classBuilder.insert(0, "import 'package:awesome_core/utils/json_parse_utils.dart';\n")
+        classBuilder.insert(0, "import 'package:json2dart/json2dart.dart';\n")
         return classBuilder.toString()
     }
 

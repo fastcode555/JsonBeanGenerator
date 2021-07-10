@@ -1,5 +1,6 @@
 package com.awesome
 
+import clearSymbol
 import com.awesome.utils.NotifyUtils
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -28,7 +29,7 @@ class AssetGenerateAction : AnAction() {
                 )
                 builder.append("}")
                 mDirectory.parent?.virtualFile?.path?.let {
-                    val genDartFilePath = "${it}/lib/gen/r.dart"
+                    val genDartFilePath = "${it}${File.separator}lib${File.separator}gen${File.separator}r.dart"
                     val file = File(genDartFilePath)
                     //生成相关的dart.文件
                     if (!file.exists()) {
@@ -55,8 +56,8 @@ class AssetGenerateAction : AnAction() {
             if (it.isDirectory) {
                 generateAssetDartFile(it, builder, rootPath)
             } else {
-                val assetName = it.absolutePath.replace("${rootPath!!}/", "")
-                builder.append("\tstatic const String ${it.nameWithoutExtension} = '$assetName';\n")
+                val assetName = it.absolutePath.replace("${rootPath!!}${File.separator}", "")
+                builder.append("\tstatic const String ${it.nameWithoutExtension.clearSymbol()} = '$assetName';\n")
             }
         }
     }
