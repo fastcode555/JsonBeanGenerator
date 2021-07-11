@@ -23,7 +23,7 @@ class AssetGenerateAction : AnAction() {
                 val builder = StringBuilder()
                 builder.append("class R {\n")
                 generateAssetDartFile(
-                    File(mDirectory.virtualFile.path),
+                    mDirectory,
                     builder,
                     mDirectory?.parentDirectory?.virtualFile?.path
                 )
@@ -47,28 +47,22 @@ class AssetGenerateAction : AnAction() {
     }
 
     ///生成所在工程的资源文件索引
-    private fun generateAssetDartFile(mDirectory: File, builder: StringBuilder, rootPath: @NotNull String?) {
+    private fun generateAssetDartFile(mDirectory: PsiDirectory, builder: StringBuilder, rootPath: @NotNull String?) {
         if (isContainFile(mDirectory)) {
             builder.append("\t///------------------------ ${mDirectory.name} ------------------------\n")
         }
 
-        mDirectory.listFiles().map {
-            if (it.isDirectory) {
-                generateAssetDartFile(it, builder, rootPath)
-            } else {
-                val assetName = it.absolutePath.replace("${rootPath!!}${File.separator}", "")
-                builder.append("\tstatic const String ${it.nameWithoutExtension.clearSymbol()} = '$assetName';\n")
-            }
+        mDirectory.files.map {
+            val assetName = it.virtualFile.path.replace("${rootPath!!}/", "")
+            builder.append("\tstatic const String ${it.virtualFile.nameWithoutExtension.clearSymbol()} = '$assetName';\n")
+        }
+        mDirectory.subdirectories.map {
+            generateAssetDartFile(it, builder, rootPath)
         }
     }
 
     //判断文件夹下是否有文件
-    private fun isContainFile(mDirectory: File): Boolean {
-        for (file in mDirectory.listFiles()) {
-            if (file.isFile) {
-                return true
-            }
-        }
-        return false
+    private fun isContainFile(mDirectory: PsiDirectory): Boolean {
+        return mDirectory.files.isNotEmpty()
     }
 }
