@@ -31,9 +31,10 @@ class DartJsonGenerator(
         enableToBean: Boolean = true
     ): java.lang.StringBuilder {
         val builder = StringBuilder()
-        val toJsonMethod = StringBuilder("Map<String, dynamic> toJson() {\n Map<String, dynamic> map = Map();\n")
-        val fromJsonMethod = StringBuilder("${className}.fromJson(Map<String, dynamic> json) {\n")
-        val construtorMethod = StringBuilder("${className}(\n")
+        val toJsonMethod =
+            StringBuilder("\n\tMap<String, dynamic> toJson() {\n\t\tMap<String, dynamic> map = Map<String, dynamic>();\n")
+        val fromJsonMethod = StringBuilder("\n\t${className}.fromJson(Map<String, dynamic> json) {\n")
+        val construtorMethod = StringBuilder()
 
         var parseObj: JSONObject? = null
         if (obj is JSONObject) {
@@ -44,44 +45,48 @@ class DartJsonGenerator(
         builder.append(generateClassHeader(className))
         for ((key, element) in parseObj!!.innerMap) {
             if (element is JSONObject) {
-                builder.append("${key.toUpperCamel()} ${key.toCamel()};\n")
+                builder.append("\t${key.toUpperCamel()}? ${key.toCamel()};\n")
                 construtorMethod.append("this.${key.toCamel()},")
-                toJsonMethod.append("if (this.${key.toCamel()} != null) map['$key'] = this.${key.toCamel()}.toJson();\n")
-                fromJsonMethod.append("this.${key.toCamel()}=json.asBean('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
+                toJsonMethod.append("\t\tif (this.${key.toCamel()} != null) map['$key'] = this.${key.toCamel()}!.toJson();\n")
+                fromJsonMethod.append("\t\tthis.${key.toCamel()}=json.asBean('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
                 classes.add(parseJson(element, key.toUpperCamel(), classes, false))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
                     val result = element[0]
                     construtorMethod.append("this.${key.toCamel()},")
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
-                        builder.append("List<${getType(result)}> ${key.toCamel()};\n")
-                        toJsonMethod.append("if (this.${key.toCamel()} != null) map['$key'] = this.${key.toCamel()};\n")
-                        fromJsonMethod.append("this.${key.toCamel()}=json.asList<${getType(result)}>('$key',null);\n")
+                        builder.append("\tList<${getType(result)}>? ${key.toCamel()};\n")
+                        toJsonMethod.append("\tif (this.${key.toCamel()} != null) map['$key'] = this.${key.toCamel()};\n")
+                        fromJsonMethod.append("\tthis.${key.toCamel()}=json.asList<${getType(result)}>('$key',null);\n")
                     } else {//对象类型
-                        builder.append("List<${key.toUpperCamel()}> ${key.toCamel()};\n")
-                        toJsonMethod.append("if (this.${key.toCamel()} != null) map['$key'] = this.${key.toCamel()}.map((v)=>v.toJson()).toList();\n")
-                        fromJsonMethod.append("this.${key.toCamel()}=json.asList<${key.toUpperCamel()}>('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
+                        builder.append("\tList<${key.toUpperCamel()}>? ${key.toCamel()};\n")
+                        toJsonMethod.append("\t\tif (this.${key.toCamel()} != null) map['$key'] = this.${key.toCamel()}!.map((v)=>v.toJson()).toList();\n")
+                        fromJsonMethod.append("\t\tthis.${key.toCamel()}=json.asList<${key.toUpperCamel()}>('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
                         classes.add(parseJson(result, key.toUpperCamel(), classes, false))
                     }
                 } else {//不明类型
                     construtorMethod.append("this.${key.toCamel()},")
-                    builder.append("List<${key.toUpperCamel()}> ${key.toCamel()};\n")
-                    toJsonMethod.append("if (this.${key.toCamel()} != null) map['$key'] = this.${key.toCamel()}.map((v)=>v.toJson()).toList();\n")
-                    fromJsonMethod.append("this.${key.toCamel()}=json.asList<${key.toUpperCamel()}>('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
+                    builder.append("\tList<${key.toUpperCamel()}>? ${key.toCamel()};\n")
+                    toJsonMethod.append("\t\tif (this.${key.toCamel()} != null) map['$key'] = this.${key.toCamel()}!.map((v)=>v.toJson()).toList();\n")
+                    fromJsonMethod.append("\t\tthis.${key.toCamel()}=json.asList<${key.toUpperCamel()}>('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
                     classes.add(parseJson(JSONObject(), key.toUpperCamel(), classes, false))
                 }
             } else {
                 construtorMethod.append("this.${key.toCamel()},")
-                builder.append("${getType(element)} ${key.toCamel()};\n")
-                toJsonMethod.append("if (this.${key.toCamel()} != null) map['$key'] = this.${key.toCamel()};\n")
-                fromJsonMethod.append("this.${key.toCamel()}=json.${getParseType(element)}('$key');\n")
+                builder.append("\t${getType(element)}? ${key.toCamel()};\n")
+                toJsonMethod.append("\t\tif (this.${key.toCamel()} != null) map['$key'] = this.${key.toCamel()};\n")
+                fromJsonMethod.append("\t\tthis.${key.toCamel()}=json.${getParseType(element)}('$key');\n")
             }
         }
-        builder.append(construtorMethod.append(");"))
-        builder.append(toJsonMethod.append("return map;\n}\n"))
-        builder.append(fromJsonMethod.append("}\n"))
+        if (construtorMethod.isNotEmpty()) {
+            construtorMethod.insert(0, "\n\t${className}({")
+            construtorMethod.append("});\n")
+            builder.append(construtorMethod.toString())
+        }
+        builder.append(toJsonMethod.append("\t\treturn map;\n\t}\n"))
+        builder.append(fromJsonMethod.append("\t}\n"))
         if (enableToBean) {
-            builder.append("static $className toBean(Map<String, dynamic> json) => ${className}.fromJson(json);\n")
+            builder.append("\tstatic $className toBean(Map<String, dynamic> json) => ${className}.fromJson(json);\n")
         }
         builder.append("}")
         return builder
@@ -91,7 +96,7 @@ class DartJsonGenerator(
         val extends = if (extendsClass != null && extendsClass.isNotEmpty()) " extends $extendsClass" else ""
         val implements =
             if (implementClass != null && implementClass.isNotEmpty()) " implements $implementClass" else ""
-        return "class $className$extends$implements{"
+        return "\nclass $className$extends$implements{\n"
     }
 
     private fun getParseType(element: Any): String {

@@ -21,6 +21,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     var tvClassField: JTextField? = null
     var tvExtends: JTextField? = null
     var tvImplements: JTextField? = null
+    var tvError: JLabel? = null
 
 
     private fun isEmpty(text: String): Boolean {
@@ -28,6 +29,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     }
 
     private fun onGenerate() {
+        tvError?.text = ""
         if (isEmpty(tvClassField!!.text)) {
             tvClassField!!.text = "auto_generated_name"
         }
@@ -45,6 +47,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                     )
                 }
             } catch (e: Exception) {
+                tvError?.text = "JSON Error!!"
                 NotifyUtils.showError(mDirectory.project, e.toString())
             }
         }
@@ -52,6 +55,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     }
 
     private fun onPreView() {
+        tvError?.text = ""
         if (isEmpty(tvClassField!!.text)) {
             tvClassField!!.text = "auto_generated_name"
         }
@@ -61,10 +65,11 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 tvClassField!!.text,
                 tvExtends!!.text,
                 tvImplements!!.text
-            ).toJson();
+            ).toJson()
             val previewDialog = PreViewDialog(content)
             previewDialog.showDialog()
         } catch (e: Exception) {
+            tvError?.text = "JSON Error!!"
             NotifyUtils.showError(mDirectory.project, e.toString())
         }
     }
@@ -80,10 +85,12 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         setContentPane(contentPane)
         isModal = true
         getRootPane().defaultButton = formatBtn
+        tvError?.text = ""
         formatBtn!!.addActionListener { e: ActionEvent? ->
             try {
                 tvField?.text = tvField?.text?.formatJson()
             } catch (e: Exception) {
+                tvError?.text = "JSON Error!!"
                 NotifyUtils.showError(mDirectory.project, e.toString())
             }
         }
