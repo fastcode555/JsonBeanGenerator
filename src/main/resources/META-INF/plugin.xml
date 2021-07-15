@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.awesome.JsonBeanGenerator</id>
     <name>Json2Dart-Null-Safety</name>
-    <version>1.0.4</version>
+    <version>1.0.5</version>
     <vendor email="939301889@qq.com" url="https://github.com/heinigger/JsonBeanGenerator">Awesome</vendor>
     <description><![CDATA[
     这个插件为解决大前端情况下生成java,kotlin,dart等多个语言的bean对象<br>
@@ -17,14 +17,14 @@
 
     <actions>
         <action id="json2dart_null_safety" class="com.awesome.JsonBeanGeneratorAction" text="Json2Dart-Null-Safety"
-                description="生成bean对象">
+                icon="/flash.png" description="生成bean对象">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>
         <!--   <action id="SqlGenerator" class="com.awesome.SqlAction" text="SqlGenerator" description="生成相关的sql语句">
                <add-to-group group-id="NewGroup" anchor="first"/>
            </action>-->
         <action id="AssetGenerateAction" class="com.awesome.AssetGenerateAction" text="AssetGenerate"
-                description="生成flutter工程的资源索引">
+                icon="/flash.png" description="生成flutter工程的资源索引">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>
 
