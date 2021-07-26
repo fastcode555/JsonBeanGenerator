@@ -37,3 +37,8 @@ repositories {
     mavenCentral()
     maven { url 'http://dl.bintray.com/jetbrains/intellij-plugin-service' }
 }
+
+publishPlugin {
+    channels = 'Stable'
+    token = 'perm:MTgzMTIwMTkxMDZ5dw==.OTItNDM4Mw==.dHbqOQlnozhqsPjQjwgS8pJrIAaeXK'
+}
