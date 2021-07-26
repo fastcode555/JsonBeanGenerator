@@ -13,7 +13,7 @@ plugins {
 }
 
 group 'org.example'
-version '1.0.5_null_safety'
+version '1.0.6_null_safety'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"

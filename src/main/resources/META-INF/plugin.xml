@@ -1,7 +1,7 @@
 <idea-plugin>
     <id>org.awesome.JsonBeanGenerator</id>
     <name>Json2Dart-Null-Safety</name>
-    <version>1.0.5</version>
+    <version>1.0.6</version>
     <vendor email="939301889@qq.com" url="https://github.com/heinigger/JsonBeanGenerator">Awesome</vendor>
     <description><![CDATA[
     这个插件为解决大前端情况下生成java,kotlin,dart等多个语言的bean对象<br>
