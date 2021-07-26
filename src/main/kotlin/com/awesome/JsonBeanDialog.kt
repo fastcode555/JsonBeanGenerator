@@ -24,13 +24,13 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     var tvError: JLabel? = null
 
 
-    private fun isEmpty(text: String): Boolean {
+    private fun isEmpty(text: String?): Boolean {
         return text == null || text.isEmpty()
     }
 
     private fun onGenerate() {
         tvError?.text = ""
-        if (isEmpty(tvClassField!!.text)) {
+        if (isEmpty(tvClassField?.text)) {
             tvClassField!!.text = "auto_generated_name"
         }
         val file = File(mDirectory.virtualFile.path, tvClassField?.text + ".dart")
@@ -86,7 +86,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         isModal = true
         getRootPane().defaultButton = formatBtn
         tvError?.text = ""
-        formatBtn!!.addActionListener { e: ActionEvent? ->
+        formatBtn!!.addActionListener {
             try {
                 tvField?.text = tvField?.text?.formatJson()
             } catch (e: Exception) {
@@ -94,8 +94,8 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 NotifyUtils.showError(mDirectory.project, e.toString())
             }
         }
-        confirmBtn!!.addActionListener { e: ActionEvent? -> onGenerate() }
-        previewBtn!!.addActionListener { e: ActionEvent? -> onPreView() }
+        confirmBtn!!.addActionListener { onGenerate() }
+        previewBtn!!.addActionListener { onPreView() }
 
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
         addWindowListener(object : WindowAdapter() {

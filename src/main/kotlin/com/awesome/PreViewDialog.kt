@@ -25,7 +25,7 @@ class PreViewDialog(content: String?) : JDialog() {
         setContentPane(contentPane)
         isModal = true
         tvPreView!!.text = content
-        buttonCancel!!.addActionListener { e: ActionEvent? -> onCancel() }
+        buttonCancel!!.addActionListener { onCancel() }
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
         addWindowListener(object : WindowAdapter() {
             override fun windowClosing(e: WindowEvent) {
@@ -33,7 +33,7 @@ class PreViewDialog(content: String?) : JDialog() {
             }
         })
         contentPane!!.registerKeyboardAction(
-            { e: ActionEvent? -> onCancel() },
+            { onCancel() },
             KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
             JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
         )

@@ -25,7 +25,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
             .append("\t\tself.conn = sqlite3.connect('./test.db')\n")
             .append("\t\tself.cursor = self.conn.cursor()\n")
             .append("\t\tself.cursor.execute('${sql.format("{0}")}'.format(TABLE_NAME))\n\n")
-        pythonBuilder!!.append(builder.toString())
+        pythonBuilder.append(builder.toString())
         return this
     }
 
@@ -34,7 +34,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
         val builder = StringBuilder()
         builder.append("\tdef delete(self, id):\n")
             .append("\t\tself.cursor.execute('DELETE * FROM {0} WHERE id= ?'.format(TABLE_NAME), id)\n\n")
-        pythonBuilder!!.append(builder.toString())
+        pythonBuilder.append(builder.toString())
         return this
     }
 
@@ -44,7 +44,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
         builder.append("\tdef insert(self, *args):\n")
             .append("\t\tself.cursor.execute('${sql.format("{0}")}'.format(TABLE_NAME), args)\n")
             .append("\t\tself.conn.commit()\n\n")
-        pythonBuilder!!.append(builder.toString())
+        pythonBuilder.append(builder.toString())
         return this
     }
 
@@ -54,7 +54,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
         builder.append("\tdef select(self, id):\n")
             .append("\t\tresults = self.cursor.execute('SELECT * FROM {0} WHERE id= ?'.format(TABLE_NAME),id).fetchall()\n")
             .append("\t\treturn None if (results is None or len(results) <= 0) else results[0]\n\n")
-        pythonBuilder!!.append(builder.toString())
+        pythonBuilder.append(builder.toString())
         return this
     }
 
@@ -62,7 +62,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
         val builder = StringBuilder()
         builder.append("\tdef selectAll(self):\n")
             .append("\t\treturn self.cursor.execute('SELECT * FROM {0}'.format(TABLE_NAME)).fetchall()\n\n")
-        pythonBuilder!!.append(builder.toString())
+        pythonBuilder.append(builder.toString())
         return this
     }
 
@@ -72,7 +72,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
         builder.append("\tdef close(self):\n")
             .append("\t\tself.cursor.close()\n")
             .append("\t\tself.conn.close()\n\n")
-        pythonBuilder!!.append(builder.toString())
+        pythonBuilder.append(builder.toString())
         return this
     }
 
@@ -84,7 +84,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
         for (value in listValues) {
             pythonBuilder.append(value)?.append(',')
         }
-        pythonBuilder.deleteAt(pythonBuilder?.length - 1)
+        pythonBuilder.deleteAt(pythonBuilder.length - 1)
         pythonBuilder.append(");\n").append("dao.close()\n")
 
         val content = pythonBuilder.toString()

@@ -114,9 +114,9 @@ class DartJsonGenerator(
     }
 
     private fun generateClassHeader(className: String): String {
-        val extends = if (extendsClass != null && extendsClass.isNotEmpty()) " extends $extendsClass" else ""
+        val extends = if (extendsClass.isNotEmpty()) " extends $extendsClass" else ""
         val implements =
-            if (implementClass != null && implementClass.isNotEmpty()) " implements $implementClass" else ""
+            if (implementClass.isNotEmpty()) " implements $implementClass" else ""
         return "\nclass $className$extends$implements{\n"
     }
 

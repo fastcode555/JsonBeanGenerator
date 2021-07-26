@@ -51,9 +51,9 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
         setContentPane(contentPane)
         isModal = true
         getRootPane().defaultButton = buttonOK
-        buttonOK!!.addActionListener { e: ActionEvent? -> onGenerate(true) }
-        buttonCancel!!.addActionListener { e: ActionEvent? -> dispose() }
-        btnGenerate!!.addActionListener { e: ActionEvent? -> onGenerate(false) }
+        buttonOK!!.addActionListener { onGenerate(true) }
+        buttonCancel!!.addActionListener { dispose() }
+        btnGenerate!!.addActionListener { onGenerate(false) }
         pythonRadioButton!!.isSelected = true
         // call onCancel() when cross is clicked
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
@@ -65,7 +65,7 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
 
         // call onCancel() on ESCAPE
         contentPane!!.registerKeyboardAction(
-            { e: ActionEvent? -> dispose() },
+            { dispose() },
             KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
             JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
         )
