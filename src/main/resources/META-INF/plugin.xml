@@ -1,32 +1,50 @@
-<idea-plugin>
+<idea-plugin require-restart="true">
     <id>org.awesome.JsonBeanGenerator</id>
     <name>Json2Dart-Null-Safety</name>
-    <version>1.0.6</version>
+    <version>1.0.7</version>
     <vendor email="939301889@qq.com" url="https://github.com/heinigger/JsonBeanGenerator">Barry_18312019106</vendor>
     <description><![CDATA[
-    支持Null_Safety属性,主要解决json转dart,出现空指针或者类型转换异常的问题,用过gson的朋友应该清楚,比如一个double字段,转换异常,会给默认值0.0<br>
+    <br>Support Null_Safety attribute, mainly to solve the problem of json to dart, null pointer or type conversion exception, friends who have used gson should be clear, such as a double field, conversion exception, will give the default value of 0.0 <br/>
+    <br/>支持Null_Safety属性,主要解决json转dart,出现空指针或者类型转换异常的问题,用过gson的朋友应该清楚,比如一个double字段,转换异常,会给默认值0.0<br/>
+     <b><br>Features:</br></b>
+     <br>Generating Dart data class from any legal JSON string
+     <br>Support null-safety-feature
+     <br>Support convert failed with default value
+     <br>Support generate asset resource just like r.dart in gen folder
     ]]></description>
-    <idea-version since-build="171.0" until-build="300.0"/>
+
+    <change-notes><![CDATA[
+       <br>Bugs fix  </br>
+       <br>1. Generate json code optimization, add icons</br>
+       <br>2. Delete useless code</br>
+       <br>New Features </br>
+       <br>1. Support Null safety feature</br>
+    ]]>
+    </change-notes>
+
+    <idea-version since-build="145.0"/>
     <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
          on how to target different products -->
-    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
     </extensions>
 
     <actions>
+
+        <action id="AssetGenerateAction" class="com.awesome.AssetGenerateAction" text="AssetGenerate"
+                icon="/plugin_icon.png" description="Generate resource r.dart.">
+            <add-to-group group-id="NewGroup" anchor="first"/>
+        </action>
         <action id="json2dart_null_safety" class="com.awesome.JsonBeanGeneratorAction" text="Json2Dart-Null-Safety"
-                icon="/flash.png" description="生成bean对象">
+                icon="/plugin_icon.png" description="Generated dart bean class.">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>
         <!--   <action id="SqlGenerator" class="com.awesome.SqlAction" text="SqlGenerator" description="生成相关的sql语句">
                <add-to-group group-id="NewGroup" anchor="first"/>
            </action>-->
-        <action id="AssetGenerateAction" class="com.awesome.AssetGenerateAction" text="AssetGenerate"
-                icon="/flash.png" description="生成flutter工程的资源索引">
-            <add-to-group group-id="NewGroup" anchor="first"/>
-        </action>
+
 
     </actions>
 </idea-plugin>

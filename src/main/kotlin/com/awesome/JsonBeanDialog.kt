@@ -1,11 +1,9 @@
 package com.awesome
 
 import com.awesome.generators.DartJsonGenerator
-import com.awesome.utils.NotifyUtils
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
 import formatJson
-import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -48,7 +46,6 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 }
             } catch (e: Exception) {
                 tvError?.text = "JSON Error!!"
-                NotifyUtils.showError(mDirectory.project, e.toString())
             }
         }
         dispose()
@@ -70,7 +67,6 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             previewDialog.showDialog()
         } catch (e: Exception) {
             tvError?.text = "JSON Error!!"
-            NotifyUtils.showError(mDirectory.project, e.toString())
         }
     }
 
@@ -91,7 +87,6 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 tvField?.text = tvField?.text?.formatJson()
             } catch (e: Exception) {
                 tvError?.text = "JSON Error!!"
-                NotifyUtils.showError(mDirectory.project, e.toString())
             }
         }
         confirmBtn!!.addActionListener { onGenerate() }

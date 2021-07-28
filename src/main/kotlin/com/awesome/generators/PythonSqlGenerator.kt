@@ -1,6 +1,5 @@
 package com.awesome.generators
 
-import com.awesome.utils.NotifyUtils
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
 import toUpperCamel
@@ -96,7 +95,6 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
                     dialog.dispose()
                 }
             } catch (e: Exception) {
-                NotifyUtils.showError(directory.project, e.toString())
             }
         }
     }

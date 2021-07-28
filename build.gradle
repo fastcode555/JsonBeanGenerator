@@ -13,7 +13,7 @@ plugins {
 }
 
 group 'org.example'
-version '1.0.6_null_safety'
+version '1.0.7'
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
@@ -26,11 +26,6 @@ dependencies {
 intellij {
     //version '2019.3'
     version '2020.2'
-}
-patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
 }
 
 repositories {

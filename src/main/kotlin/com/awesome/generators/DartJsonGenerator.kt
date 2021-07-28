@@ -7,13 +7,13 @@ import toUpperCamel
 
 //用于生成Dart对象的生成器
 class DartJsonGenerator(
-    var content: String,
+    content: String,
     val fileName: String,
     val extendsClass: String,
     val implementClass: String
 ) :
     BaseGenerator(
-        content, fileName, extendsClass, implementClass
+        content
     ) {
     val classNames = ArrayList<String>()
 

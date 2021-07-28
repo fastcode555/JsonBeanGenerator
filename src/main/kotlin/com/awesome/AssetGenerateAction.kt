@@ -1,7 +1,6 @@
 package com.awesome
 
 import clearSymbol
-import com.awesome.utils.NotifyUtils
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -42,7 +41,6 @@ class AssetGenerateAction : AnAction() {
                         file.createNewFile()
                     }
                     file.writeText(builder.toString())
-                    NotifyUtils.showInfo(mDirectory.project, "代码执行完成")
                 }
 
             }
