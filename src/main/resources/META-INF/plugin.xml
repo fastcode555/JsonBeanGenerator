@@ -2,7 +2,7 @@
     <id>org.awesome.JsonBeanGenerator</id>
     <name>Json2Dart-Null-Safety</name>
     <version>1.0.7</version>
-    <vendor email="939301889@qq.com" url="https://github.com/heinigger/JsonBeanGenerator">Barry_18312019106</vendor>
+    <vendor email="939301889@qq.com" url="https://github.com/fastcode555/Json2Dart_Null_Safety.git">Barry_18312019106</vendor>
     <description><![CDATA[
     <br>Support Null_Safety attribute, mainly to solve the problem of json to dart, null pointer or type conversion exception, friends who have used gson should be clear, such as a double field, conversion exception, will give the default value of 0.0 <br/>
     <br/>支持Null_Safety属性,主要解决json转dart,出现空指针或者类型转换异常的问题,用过gson的朋友应该清楚,比如一个double字段,转换异常,会给默认值0.0<br/>
