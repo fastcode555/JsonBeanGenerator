@@ -14,7 +14,7 @@
     ]]></description>
 
     <change-notes><![CDATA[
-       <br>Bugs fix  </br>
+       <br>Bugs fix ,to support low version </br>
        <br>1. Generate json code optimization, add icons</br>
        <br>2. Delete useless code</br>
        <br>New Features </br>
