@@ -35,7 +35,7 @@ class DartJsonGenerator(
         val uniqueClassName = generateUniqueClassName(className)
 
         val builder = StringBuilder()
-        val fromJsonMethod = StringBuilder("\n\t${uniqueClassName}.fromJson(Map<String, dynamic> json) {\n")
+        val fromJsonMethod = StringBuilder("\n\t${uniqueClassName}.fromJson(Map json) {\n")
         val construtorMethod = StringBuilder()
         var toJsonMethod = StringBuilder()
 
@@ -107,7 +107,7 @@ class DartJsonGenerator(
 
         builder.append(fromJsonMethod.append("\t}\n"))
         if (enableToBean) {
-            builder.append("\n\tstatic $uniqueClassName toBean(Map<String, dynamic> json) => ${uniqueClassName}.fromJson(json);\n")
+            builder.append("\n\tstatic $uniqueClassName toBean(Map json) => ${uniqueClassName}.fromJson(json);\n")
         }
         builder.append("}")
         return builder
