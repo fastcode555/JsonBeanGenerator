@@ -33,14 +33,20 @@
 
     <actions>
 
+
         <action id="AssetGenerateAction" class="com.awesome.AssetGenerateAction" text="AssetGenerate"
                 icon="/plugin_icon.png" description="Generate resource r.dart.">
+            <add-to-group group-id="NewGroup" anchor="first"/>
+        </action>
+        <action id="com.awesome.language res" class="com.awesome.language.LanguageResAction" text="Languages-Res"
+                icon="/plugin_icon.png" description="Generated multi com.awesome.language resource.">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>
         <action id="json2dart_null_safety" class="com.awesome.JsonBeanGeneratorAction" text="Json2Dart-Null-Safety"
                 icon="/plugin_icon.png" description="Generated dart bean class.">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>
+
         <!--   <action id="SqlGenerator" class="com.awesome.SqlAction" text="SqlGenerator" description="生成相关的sql语句">
                <add-to-group group-id="NewGroup" anchor="first"/>
            </action>-->
