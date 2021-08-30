@@ -1,28 +1,33 @@
 package com.awesome
 
+import clearSymbol
+import com.awesome.utils.HttpApi
 import com.awesome.utils.PropertiesHelper
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
+import toCamel
+import toUpperCamel
 import java.awt.Label
 import java.awt.TextField
 import kotlin.jvm.JvmStatic
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.awt.event.KeyEvent
+import java.lang.StringBuilder
 import javax.swing.*
 
-class LanguageResDialog(/*val mDirectory: PsiDirectory*/) : JDialog() {
+class LanguageResDialog(val mDirectory: PsiDirectory) : JDialog() {
     var contentPane: JPanel? = null
     var buttonOK: JButton? = null
     var buttonCancel: JButton? = null
-    var btnAddLanguage: JButton? = null
     var btnTranslate: JButton? = null
     var tvKey: JTextField? = null
     var tvChinese: JTextField? = null
     var tvLanguages: JTextField? = null
     var tvArea: JTextArea? = null
-    /*   private val properties: PropertiesHelper by lazy {
-           PropertiesHelper(mDirectory)
-       }*/
+    val builder: StringBuilder by lazy { StringBuilder() }
+    val mapValues = HashMap<String, String?>()
+    private var properties: PropertiesHelper? = null
 
     var languages: List<String>? = null
     var rawLanguage = "zh-Hans"
@@ -37,6 +42,23 @@ class LanguageResDialog(/*val mDirectory: PsiDirectory*/) : JDialog() {
         buttonOK!!.addActionListener { onOK() }
         buttonCancel!!.addActionListener { dispose() }
 
+
+        btnTranslate!!.addActionListener {
+            builder.clear()
+            mapValues.clear()
+            WriteCommandAction.runWriteCommandAction(mDirectory.project) {
+                for (languageCode in languages!!) {
+                    val value = HttpApi.translate(tvChinese!!.text, languageCode)
+                    mapValues.put(languageCode, value)
+                    builder.append(languageCode).append("\n").append(value).append("\n\n")
+                    if (languageCode == "en") {
+                        tvKey?.text = value?.replace(" ", "_")?.trim().clearSymbol().toCamel()
+                    }
+                }
+                tvArea?.text = builder.toString()
+            }
+
+        }
         // call onCancel() when cross is clicked
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
         addWindowListener(object : WindowAdapter() {
@@ -66,10 +88,16 @@ class LanguageResDialog(/*val mDirectory: PsiDirectory*/) : JDialog() {
     }
 
     private fun initProperties() {
-        /*val languageString = properties.getProperty("plugin.languages")
-        rawLanguage = properties.getProperty("plugin.rawLanguage")*/
-        languages = "zh-Hans,zh-Hant,ja,km,th,vi".split(',')//languageString.split(',')
-        tvLanguages?.text = "zh-Hans,zh-Hant,ja,km,th,vi"
+        try {
+            properties = PropertiesHelper(mDirectory)
+        } catch (e: Exception) {
+            print(e)
+        }
+        val defaultLanguage = "zh-Hans,zh-Hant,en,ja,km,th,vi"
+        val languageString = properties?.getProperty("plugin.languages") ?: defaultLanguage
+        rawLanguage = properties?.getProperty("plugin.rawLanguage") ?: rawLanguage
+        languages = languageString.split(',')//languageString.split(',')
+        tvLanguages?.text = languageString
     }
 
     fun showDialog(): LanguageResDialog {
