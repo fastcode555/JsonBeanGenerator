@@ -15,8 +15,12 @@ object HttpApi {
         val response = HttpClient3.doGet(uri.toString())
         val json = response?.toJSON()
         if (json != null) {
-            val result = ((json as JSONObject).getJSONArray("sentences")[0] as JSONObject).getString("trans")
-            return result
+            try {
+                val result = ((json as JSONObject).getJSONArray("sentences")[0] as JSONObject).getString("trans")
+                return result
+            } catch (e: Exception) {
+                print(e)
+            }
         }
         return null
     }

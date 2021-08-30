@@ -32,4 +32,8 @@ object PsiFileUtils {
         }
         return null
     }
+
+    fun getModuleName(psiElement: PsiElement): String {
+        return psiElement.project.name
+    }
 }
