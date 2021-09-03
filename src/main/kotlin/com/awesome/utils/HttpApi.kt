@@ -16,8 +16,14 @@ object HttpApi {
         val json = response?.toJSON()
         if (json != null) {
             try {
-                val result = ((json as JSONObject).getJSONArray("sentences")[0] as JSONObject).getString("trans")
-                return result
+                val sentences = (json as JSONObject).getJSONArray("sentences")
+                val builder = StringBuilder()
+                for (sen in sentences) {
+                    val jsonObject = sen as JSONObject
+                    val sentence = jsonObject.getString("trans")
+                    builder.append(sentence)
+                }
+                return builder.toString()
             } catch (e: Exception) {
                 print(e)
             }
