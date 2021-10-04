@@ -57,7 +57,7 @@ class LanguageDartWriter(val mapValue: HashMap<String, String?>, val idKey: Stri
         val content = "${moduleName}/lib";
         val index = filePath.indexOf(content) + content.length
         val importResult = filePath.substring(index, filePath.length)
-        return "package:$moduleName/$importResult"
+        return "package:$moduleName/$importResult/".replace("//", "/")
     }
 
     //生成translation_service 的服务文件

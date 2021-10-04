@@ -57,19 +57,26 @@ class LanguageResDialog(val mDirectory: PsiDirectory) : JDialog() {
     //输入需要翻译语言的初始化语种
     var rawLanguage = "zh-Hans"
 
-    val needTranslate = true
+    var needTranslate = true
 
     //点击翻译了，就会将翻译的写入文件中
     private fun onTranslate() {
         builder.clear()
         mapValues.clear()
         WriteCommandAction.runWriteCommandAction(mDirectory.project) {
-            for (languageCode in languages!!) {
-                val value = HttpApi.translate(tvChinese!!.text, languageCode)
-                mapValues.put(languageCode, value)
-                builder.append(languageCode).append("\n").append(value).append("\n\n")
-                if (languageCode == "en") {
-                    tvKey?.text = value?.replace(" ", "_")?.trim().clearSymbol().toCamel()
+
+            if (rawLanguage.equals("en")&&!needTranslate) {
+                mapValues.put("en", tvChinese!!.text)
+                tvKey?.text = tvChinese!!.text?.replace(" ", "_")?.trim().clearSymbol().toCamel()
+                builder.append("en").append("\n").append(tvChinese!!.text).append("\n\n")
+            } else {
+                for (languageCode in languages!!) {
+                    val value = HttpApi.translate(tvChinese!!.text, languageCode)
+                    mapValues.put(languageCode, value)
+                    builder.append(languageCode).append("\n").append(value).append("\n\n")
+                    if (languageCode == "en") {
+                        tvKey?.text = value?.replace(" ", "_")?.trim().clearSymbol().toCamel()
+                    }
                 }
             }
             tvArea?.text = builder.toString()
@@ -140,6 +147,7 @@ class LanguageResDialog(val mDirectory: PsiDirectory) : JDialog() {
         val defaultLanguage = "zh-Hans,zh-Hant,en,ja,km,th,vi"
         val languageString = properties?.getProperty("plugin.languages") ?: defaultLanguage
         rawLanguage = properties?.getProperty("plugin.rawLanguage") ?: rawLanguage
+        needTranslate="true".equals(properties?.getProperty("plugin.needTranslate"))
         languages = languageString.split(',')//languageString.split(',')
         tvLanguages?.text = languageString
     }
