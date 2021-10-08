@@ -64,28 +64,34 @@ class LanguageResDialog(val mDirectory: PsiDirectory) : JDialog() {
         builder.clear()
         mapValues.clear()
         WriteCommandAction.runWriteCommandAction(mDirectory.project) {
+            runTranslate()
+        }
+    }
 
-            if (rawLanguage.equals("en")&&!needTranslate) {
-                mapValues.put("en", tvChinese!!.text)
-                tvKey?.text = tvChinese!!.text?.replace(" ", "_")?.trim().clearSymbol().toCamel()
-                builder.append("en").append("\n").append(tvChinese!!.text).append("\n\n")
-            } else {
-                for (languageCode in languages!!) {
-                    val value = HttpApi.translate(tvChinese!!.text, languageCode)
-                    mapValues.put(languageCode, value)
-                    builder.append(languageCode).append("\n").append(value).append("\n\n")
-                    if (languageCode == "en") {
-                        tvKey?.text = value?.replace(" ", "_")?.trim().clearSymbol().toCamel()
-                    }
+    private fun runTranslate() {
+        if (rawLanguage.equals("en") && !needTranslate) {
+            mapValues.put("en", tvChinese!!.text!!.trim())
+            tvKey?.text = tvChinese!!.text?.replace(" ", "_")?.trim().clearSymbol().toCamel()
+            builder.append("en").append("\n").append(tvChinese!!.text).append("\n\n")
+        } else {
+            for (languageCode in languages!!) {
+                val value = HttpApi.translate(tvChinese!!.text, languageCode)
+                mapValues.put(languageCode, value)
+                builder.append(languageCode).append("\n").append(value).append("\n\n")
+                if (languageCode == "en") {
+                    tvKey?.text = value?.replace(" ", "_")?.trim().clearSymbol().toCamel()
                 }
             }
-            tvArea?.text = builder.toString()
         }
+        tvArea?.text = builder.toString()
     }
 
     //直接点击生成就不会进行翻译
     private fun onOK() {
         WriteCommandAction.runWriteCommandAction(mDirectory.project) {
+            if (mapValues.isEmpty()) {
+                runTranslate()
+            }
             if (mapValues.isEmpty() || TextUtils.isEmpty(tvKey?.text)) {
                 for (languageCode in languages!!) {
                     mapValues.put(languageCode, tvChinese!!.text)
@@ -147,7 +153,7 @@ class LanguageResDialog(val mDirectory: PsiDirectory) : JDialog() {
         val defaultLanguage = "zh-Hans,zh-Hant,en,ja,km,th,vi"
         val languageString = properties?.getProperty("plugin.languages") ?: defaultLanguage
         rawLanguage = properties?.getProperty("plugin.rawLanguage") ?: rawLanguage
-        needTranslate="true".equals(properties?.getProperty("plugin.needTranslate"))
+        needTranslate = "true".equals(properties?.getProperty("plugin.needTranslate"))
         languages = languageString.split(',')//languageString.split(',')
         tvLanguages?.text = languageString
     }
