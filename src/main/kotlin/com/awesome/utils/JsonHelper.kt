@@ -9,12 +9,12 @@ var UPPER_KEYS: Array<String> = arrayOf("List", "Map")
 var SPECIAL_SYMBOL: Array<String> = arrayOf("-", ",", ".", "=","'","?","!","！","？","，","。")
 
 fun String?.toCamel(): String {
-    val result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this?.clearSymbol());
+    val result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, this.clearSymbol());
     return if (KEYS.contains(result)) "${result}x" else result
 }
 
 fun String?.toUpperCamel(): String {
-    val result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, this?.clearSymbol())
+    val result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, this.clearSymbol())
     return if (UPPER_KEYS.contains(result)) "${result}x" else result
 }
 

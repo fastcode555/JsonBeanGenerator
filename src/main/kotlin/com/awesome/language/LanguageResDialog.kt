@@ -4,8 +4,11 @@ import clearSymbol
 import com.awesome.language.LanguageDartWriter
 import com.awesome.utils.HttpApi
 import com.awesome.utils.PropertiesHelper
+import com.awesome.utils.PsiFileUtils
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.project.guessProjectDir
 import com.intellij.psi.PsiDirectory
+import com.intellij.psi.PsiElement
 import org.apache.http.util.TextUtils
 import toCamel
 import java.awt.Label
@@ -15,7 +18,7 @@ import java.awt.event.KeyEvent
 import java.lang.StringBuilder
 import javax.swing.*
 
-class LanguageResDialog(val mDirectory: PsiDirectory) : JDialog() {
+class LanguageResDialog(val psiElement: PsiElement, val textValue: String) : JDialog() {
     var contentPane: JPanel? = null
 
     //确认生成按钮
@@ -59,13 +62,13 @@ class LanguageResDialog(val mDirectory: PsiDirectory) : JDialog() {
 
     var needTranslate = true
 
+    var dirPath = ""
+
     //点击翻译了，就会将翻译的写入文件中
     private fun onTranslate() {
         builder.clear()
         mapValues.clear()
-        WriteCommandAction.runWriteCommandAction(mDirectory.project) {
-            runTranslate()
-        }
+        WriteCommandAction.runWriteCommandAction(psiElement.project) { runTranslate() }
     }
 
     private fun runTranslate() {
@@ -88,7 +91,7 @@ class LanguageResDialog(val mDirectory: PsiDirectory) : JDialog() {
 
     //直接点击生成就不会进行翻译
     private fun onOK() {
-        WriteCommandAction.runWriteCommandAction(mDirectory.project) {
+        WriteCommandAction.runWriteCommandAction(psiElement.project) {
             if (mapValues.isEmpty()) {
                 runTranslate()
             }
@@ -102,13 +105,25 @@ class LanguageResDialog(val mDirectory: PsiDirectory) : JDialog() {
                     }
                 }
             }
-            val writer = LanguageDartWriter(mapValues, tvKey!!.text, mDirectory)
+            val writer = LanguageDartWriter(mapValues, tvKey!!.text, dirPath, psiElement,textValue)
             writer.startWrite()
             dispose()
         }
     }
 
     init {
+
+        try {
+            properties = PropertiesHelper(psiElement)
+        } catch (e: Exception) {
+            print(e)
+        }
+        if (psiElement is PsiDirectory) {
+            dirPath = psiElement.virtualFile.path
+        } else {
+            val dir = properties!!.getProperty("plugin.languageDir")
+            dirPath = "${psiElement.project.basePath}$dir"
+        }
         setContentPane(contentPane)
         isModal = true
         getRootPane().defaultButton = buttonOK
@@ -132,6 +147,7 @@ class LanguageResDialog(val mDirectory: PsiDirectory) : JDialog() {
 
         initProperties()
         initList()
+        tvChinese?.text = textValue
     }
 
 
@@ -145,11 +161,6 @@ class LanguageResDialog(val mDirectory: PsiDirectory) : JDialog() {
     }
 
     private fun initProperties() {
-        try {
-            properties = PropertiesHelper(mDirectory)
-        } catch (e: Exception) {
-            print(e)
-        }
         val defaultLanguage = "zh-Hans,zh-Hant,en,ja,km,th,vi"
         val languageString = properties?.getProperty("plugin.languages") ?: defaultLanguage
         rawLanguage = properties?.getProperty("plugin.rawLanguage") ?: rawLanguage

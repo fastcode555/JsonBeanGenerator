@@ -70,9 +70,9 @@ class PropertiesHelper(element: PsiElement) {
     init {
         val mFile = PsiFileUtils.getFileByName(element, "plugins.properties")
         if (mFile != null && mFile.virtualFile.exists()) {
-            propertiestFilePath = mFile!!.virtualFile.path
+            propertiestFilePath = mFile.virtualFile.path
             properties = Properties()
-            var bufferedReader: BufferedReader? = null
+            var bufferedReader: BufferedReader?
             // 使用InPutStream流读取properties文件
             try {
                 bufferedReader = BufferedReader(FileReader(propertiestFilePath))

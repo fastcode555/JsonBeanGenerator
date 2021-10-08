@@ -39,7 +39,7 @@ object HttpClient3 {
                 br = BufferedReader(InputStreamReader(`is`, "UTF-8"))
                 val sbf = StringBuffer()
                 // 读取封装的输入流
-                var temp: String? = null
+                var temp: String?
                 while (br.readLine().also { temp = it } != null) {
                     sbf.append(temp).append("\r\n")
                 }
@@ -123,7 +123,7 @@ object HttpClient3 {
             // 封装输入流
             br = BufferedReader(InputStreamReader(`is`, "UTF-8"))
             val sbf = StringBuffer()
-            var temp: String? = null
+            var temp: String?
             while (br.readLine().also { temp = it } != null) {
                 sbf.append(temp).append("\r\n")
             }

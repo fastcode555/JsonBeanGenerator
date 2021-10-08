@@ -42,6 +42,10 @@
                 icon="/plugin_icon.png" description="Generated multi com.awesome.language resource.">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>
+        <action id="com.awesome.language.GenerateGroup" class="com.awesome.language.LanguageResAction" text="Languages-Res"
+                icon="/plugin_icon.png" description="Generated multi com.awesome.language resource.">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
+        </action>
         <action id="json2dart_null_safety" class="com.awesome.JsonBeanGeneratorAction" text="Json2Dart-Null-Safety"
                 icon="/plugin_icon.png" description="Generated dart bean class.">
             <add-to-group group-id="NewGroup" anchor="first"/>
