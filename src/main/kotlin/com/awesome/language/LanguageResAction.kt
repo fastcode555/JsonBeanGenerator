@@ -26,11 +26,7 @@ class LanguageResAction : AnAction() {
         } else {
             val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
             val psiFile: PsiFile? = e.getData(CommonDataKeys.PSI_FILE)
-            val psiElement: PsiElement? = PsiFileUtils.getPsiElementByEditor(editor, psiFile)
             val selectionModel = editor?.selectionModel
-            val start = selectionModel?.selectionStart
-            val end = selectionModel?.selectionEnd
-
             var value = selectionModel?.selectedText
             if (TextUtils.isEmpty(selectionModel?.selectedText)) {
                 return
