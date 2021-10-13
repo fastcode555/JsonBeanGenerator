@@ -2,9 +2,12 @@ package com.awesome
 
 import com.awesome.generators.DartJsonGenerator
 import com.awesome.generators.PythonJsonGenerator
+import com.awesome.utils.PropertiesHelper
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
+import com.intellij.ui.layout.selected
 import formatJson
+import org.apache.http.util.TextUtils
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -21,6 +24,10 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     var tvExtends: JTextField? = null
     var tvImplements: JTextField? = null
     var tvError: JLabel? = null
+    var rbPy: JRadioButton? = null
+    var rbDart: JRadioButton? = null
+    var fileType = ".dart"
+    private var properties: PropertiesHelper? = null
 
 
     private fun isEmpty(text: String?): Boolean {
@@ -32,9 +39,8 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         if (isEmpty(tvClassField?.text)) {
             tvClassField!!.text = "auto_generated_name"
         }
-        val type = ".py"
-        val file = File(mDirectory.virtualFile.path, tvClassField?.text + type)
-        if (type.equals(".dart")) {
+        val file = File(mDirectory.virtualFile.path, tvClassField?.text + fileType)
+        if (fileType.equals(".dart")) {
             if (!file.exists()) {
                 try {
                     WriteCommandAction.runWriteCommandAction(mDirectory.project) {
@@ -51,7 +57,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                     tvError?.text = "JSON Error!!"
                 }
             }
-        } else if (type.equals(".py")) {
+        } else if (fileType.equals(".py")) {
             if (!file.exists()) {
                 try {
                     WriteCommandAction.runWriteCommandAction(mDirectory.project) {
@@ -77,8 +83,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         if (isEmpty(tvClassField!!.text)) {
             tvClassField!!.text = "auto_generated_name"
         }
-        val type = ".py"
-        if (type.equals(".dart")) {
+        if (fileType.equals(".dart")) {
             try {
                 val content = DartJsonGenerator(
                     tvField!!.text,
@@ -91,7 +96,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             } catch (e: Exception) {
                 tvError?.text = "JSON Error!!"
             }
-        } else if (type.equals(".py")) {
+        } else if (fileType.equals(".py")) {
             try {
                 val content = PythonJsonGenerator(
                     tvField!!.text,
@@ -142,6 +147,36 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
             JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
         )
+        initRadioButtons()
+    }
+
+    private fun initRadioButtons() {
+        try {
+            properties = PropertiesHelper(mDirectory)
+        } catch (e: Exception) {
+            print(e)
+        }
+        fileType = properties?.getProperty("plugin.modelType") ?: ".dart"
+        if (fileType.equals(".py")) {
+            rbPy!!.isSelected = true
+        } else {
+            rbDart!!.isSelected = true
+            fileType = ".dart"
+        }
+        rbDart!!.addActionListener {
+            if (rbDart!!.isSelected) {
+                fileType = ".dart"
+                rbPy!!.isSelected = false
+                properties?.setProperty("plugin.modelType", ".dart")
+            }
+        }
+        rbPy!!.addActionListener {
+            if (rbPy!!.isSelected) {
+                fileType = ".py"
+                rbDart!!.isSelected = false
+                properties?.setProperty("plugin.modelType", ".py")
+            }
+        }
     }
 
 }

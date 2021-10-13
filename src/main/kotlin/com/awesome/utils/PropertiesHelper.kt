@@ -16,7 +16,7 @@ import java.util.*
  */
 class PropertiesHelper(element: PsiElement) {
     private var properties: Properties? = null
-    private var propertiestFilePath = ""
+    private var propertiestFilePath = "plugins.properties"
 
     /**
      * 获取某个属性
@@ -58,7 +58,11 @@ class PropertiesHelper(element: PsiElement) {
             return
         }
         try {
-            val fos: OutputStream = FileOutputStream(File(propertiestFilePath))
+            val file = File(propertiestFilePath)
+            if (!file.exists()) {
+                file.createNewFile()
+            }
+            val fos: OutputStream = FileOutputStream(file)
             properties?.setProperty(key, value)
             // 将此 Properties 表中的属性列表（键和元素对）写入输出流  
             properties?.store(fos, "『comments』Update key：$key")
@@ -81,7 +85,7 @@ class PropertiesHelper(element: PsiElement) {
                 e.printStackTrace()
             }
         } else {
-
+            propertiestFilePath = "${element!!.project.basePath}/plugins.properties"
         }
 
     }

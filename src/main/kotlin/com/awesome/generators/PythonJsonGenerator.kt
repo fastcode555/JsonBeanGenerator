@@ -53,15 +53,13 @@ class PythonJsonGenerator(
                         fromJsonMethod.append("\t\tself.${key.toCamel()} = dict['$key']\n")
                     } else {//对象类型
                         fromJsonMethod.append("\t\tself.${key.toCamel()} = []\n")
-                        fromJsonMethod.append("\t\t_${key.toCamel()} = dict['$key']\n")
-                        fromJsonMethod.append("\t\tfor element in _${key.toCamel()}:\n")
+                        fromJsonMethod.append("\t\tfor element in dict['$key']:\n")
                         fromJsonMethod.append("\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
                         classes.add(parseJson(result, key.toUpperCamel(), classes))
                     }
                 } else {//不明类型
                     fromJsonMethod.append("\t\tself.${key.toCamel()} = []\n")
-                    fromJsonMethod.append("\t\t_${key.toCamel()} = dict['$key']\n")
-                    fromJsonMethod.append("\t\tfor element in _${key.toCamel()}:\n")
+                    fromJsonMethod.append("\t\tfor element in dict['$key']:\n")
                     fromJsonMethod.append("\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
                     classes.add(parseJson(JSONObject(), key.toUpperCamel(), classes))
                 }
