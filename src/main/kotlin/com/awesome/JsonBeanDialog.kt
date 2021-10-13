@@ -1,6 +1,7 @@
 package com.awesome
 
 import com.awesome.generators.DartJsonGenerator
+import com.awesome.generators.PythonJsonGenerator
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
 import formatJson
@@ -31,21 +32,41 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         if (isEmpty(tvClassField?.text)) {
             tvClassField!!.text = "auto_generated_name"
         }
-        val file = File(mDirectory.virtualFile.path, tvClassField?.text + ".dart")
-        if (!file.exists()) {
-            try {
-                WriteCommandAction.runWriteCommandAction(mDirectory.project) {
-                    file.writeText(
-                        DartJsonGenerator(
-                            tvField!!.text,
-                            tvClassField!!.text,
-                            tvExtends!!.text,
-                            tvImplements!!.text
-                        ).toJson()
-                    )
+        val type = ".py"
+        val file = File(mDirectory.virtualFile.path, tvClassField?.text + type)
+        if (type.equals(".dart")) {
+            if (!file.exists()) {
+                try {
+                    WriteCommandAction.runWriteCommandAction(mDirectory.project) {
+                        file.writeText(
+                            DartJsonGenerator(
+                                tvField!!.text,
+                                tvClassField!!.text,
+                                tvExtends!!.text,
+                                tvImplements!!.text
+                            ).toJson()
+                        )
+                    }
+                } catch (e: Exception) {
+                    tvError?.text = "JSON Error!!"
                 }
-            } catch (e: Exception) {
-                tvError?.text = "JSON Error!!"
+            }
+        } else if (type.equals(".py")) {
+            if (!file.exists()) {
+                try {
+                    WriteCommandAction.runWriteCommandAction(mDirectory.project) {
+                        file.writeText(
+                            PythonJsonGenerator(
+                                tvField!!.text,
+                                tvClassField!!.text,
+                                tvExtends!!.text,
+                                tvImplements!!.text
+                            ).toJson()
+                        )
+                    }
+                } catch (e: Exception) {
+                    tvError?.text = "JSON Error!!"
+                }
             }
         }
         dispose()
@@ -56,18 +77,35 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         if (isEmpty(tvClassField!!.text)) {
             tvClassField!!.text = "auto_generated_name"
         }
-        try {
-            val content = DartJsonGenerator(
-                tvField!!.text,
-                tvClassField!!.text,
-                tvExtends!!.text,
-                tvImplements!!.text
-            ).toJson()
-            val previewDialog = PreViewDialog(content)
-            previewDialog.showDialog()
-        } catch (e: Exception) {
-            tvError?.text = "JSON Error!!"
+        val type = ".py"
+        if (type.equals(".dart")) {
+            try {
+                val content = DartJsonGenerator(
+                    tvField!!.text,
+                    tvClassField!!.text,
+                    tvExtends!!.text,
+                    tvImplements!!.text
+                ).toJson()
+                val previewDialog = PreViewDialog(content)
+                previewDialog.showDialog()
+            } catch (e: Exception) {
+                tvError?.text = "JSON Error!!"
+            }
+        } else if (type.equals(".py")) {
+            try {
+                val content = PythonJsonGenerator(
+                    tvField!!.text,
+                    tvClassField!!.text,
+                    tvExtends!!.text,
+                    tvImplements!!.text
+                ).toJson()
+                val previewDialog = PreViewDialog(content)
+                previewDialog.showDialog()
+            } catch (e: Exception) {
+                tvError?.text = "JSON Error!!"
+            }
         }
+
     }
 
     fun showDialog(): JsonBeanDialog {
