@@ -2,6 +2,7 @@ package com.awesome.generators
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
+import org.apache.http.util.TextUtils
 import toCamel
 import toUpperCamel
 
@@ -33,7 +34,7 @@ class PythonJsonGenerator(
         val uniqueClassName = generateUniqueClassName(className)
 
         val builder = StringBuilder()
-        val fromJsonMethod = StringBuilder("\tdef __init__(self, dict):\n")
+        val fromJsonMethod = StringBuilder()
 
         var parseObj: JSONObject? = null
         if (obj is JSONObject) {
@@ -44,32 +45,37 @@ class PythonJsonGenerator(
         builder.append(generateClassHeader(uniqueClassName))
         for ((key, element) in parseObj!!.innerMap) {
             if (element is JSONObject) {
-                fromJsonMethod.append("\t\tself.${key.toCamel()} = ${key.toUpperCamel()}(dict['$key'])\n")
+                fromJsonMethod.append("\t\tself.${key.toCamel()} = ${key.toUpperCamel()}(_dict['$key'])\n")
                 classes.add(parseJson(element, key.toUpperCamel(), classes))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
                     val result = element[0]
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
-                        fromJsonMethod.append("\t\tself.${key.toCamel()} = dict['$key']\n")
+                        fromJsonMethod.append("\t\tself.${key.toCamel()} = _dict['$key']\n")
                     } else {//对象类型
                         fromJsonMethod.append("\t\tself.${key.toCamel()} = []\n")
-                        fromJsonMethod.append("\t\tfor element in dict['$key']:\n")
+                        fromJsonMethod.append("\t\tfor element in _dict['$key']:\n")
                         fromJsonMethod.append("\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
                         classes.add(parseJson(result, key.toUpperCamel(), classes))
                     }
                 } else {//不明类型
                     fromJsonMethod.append("\t\tself.${key.toCamel()} = []\n")
-                    fromJsonMethod.append("\t\tfor element in dict['$key']:\n")
+                    fromJsonMethod.append("\t\tfor element in _dict['$key']:\n")
                     fromJsonMethod.append("\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
                     classes.add(parseJson(JSONObject(), key.toUpperCamel(), classes))
                 }
             } else {
-                fromJsonMethod.append("\t\tself.${key.toCamel()} = dict['$key']\n")
+                fromJsonMethod.append("\t\tself.${key.toCamel()} = _dict['$key']\n")
             }
         }
+        fromJsonMethod.insert(
+            0,
+            "\tdef __init__(self, *args):\n\t\tif len(args) == 0:\n\t\t\treturn\n\t\t_dict = args[0]\n"
+        )
         builder.append(fromJsonMethod)
         return builder
     }
+
 
     private fun generateClassHeader(className: String): String {
         val implements =
