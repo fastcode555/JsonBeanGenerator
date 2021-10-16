@@ -45,29 +45,32 @@ class PythonJsonGenerator(
         builder.append(generateClassHeader(uniqueClassName))
         for ((key, element) in parseObj!!.innerMap) {
             if (element is JSONObject) {
-                fromJsonMethod.append("\t\tself.${key.toCamel()} = ${key.toUpperCamel()}(_dict['$key'])\n")
+                fromJsonMethod.append("\t\tself.${key.toCamel()} = ${key.toUpperCamel()}(_dict['$key']) if _dict.__contains__('$key') else None\n")
                 classes.add(parseJson(element, key.toUpperCamel(), classes))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
                     val result = element[0]
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         fromJsonMethod.append("\t\tself.${key.toCamel()} = []\n")
-                        fromJsonMethod.append("\t\tfor element in _dict['$key']:\n")
-                        fromJsonMethod.append("\t\t\tself.${key.toCamel()}.append(element)\n")
+                        fromJsonMethod.append("\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
+                        fromJsonMethod.append("\t\t\tfor element in _dict['$key']:\n")
+                        fromJsonMethod.append("\t\t\t\tself.${key.toCamel()}.append(element)\n")
                     } else {//对象类型
                         fromJsonMethod.append("\t\tself.${key.toCamel()} = []\n")
-                        fromJsonMethod.append("\t\tfor element in _dict['$key']:\n")
-                        fromJsonMethod.append("\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
+                        fromJsonMethod.append("\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
+                        fromJsonMethod.append("\t\t\tfor element in _dict['$key']:\n")
+                        fromJsonMethod.append("\t\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
                         classes.add(parseJson(result, key.toUpperCamel(), classes))
                     }
                 } else {//不明类型
                     fromJsonMethod.append("\t\tself.${key.toCamel()} = []\n")
-                    fromJsonMethod.append("\t\tfor element in _dict['$key']:\n")
-                    fromJsonMethod.append("\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
+                    fromJsonMethod.append("\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
+                    fromJsonMethod.append("\t\t\tfor element in _dict['$key']:\n")
+                    fromJsonMethod.append("\t\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
                     classes.add(parseJson(JSONObject(), key.toUpperCamel(), classes))
                 }
             } else {
-                fromJsonMethod.append("\t\tself.${key.toCamel()} = _dict['$key']\n")
+                fromJsonMethod.append("\t\tself.${key.toCamel()} = _dict['$key'] if _dict.__contains__('$key') else None\n")
             }
         }
         fromJsonMethod.insert(
