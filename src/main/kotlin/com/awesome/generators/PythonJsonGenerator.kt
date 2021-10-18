@@ -22,6 +22,7 @@ class PythonJsonGenerator(
         val classes = ArrayList<java.lang.StringBuilder>()
         val classBuilder = parseJson(json, fileName.toUpperCamel(), classes)
         classes.forEach { classBuilder.append("\n\n").append(it) }
+        classBuilder.insert(0, "import json\n\n\n")
         return classBuilder.toString().trim()
     }
 
@@ -75,7 +76,7 @@ class PythonJsonGenerator(
         }
         fromJsonMethod.insert(
             0,
-            "\tdef __init__(self, *args):\n\t\tif len(args) == 0:\n\t\t\treturn\n\t\t_dict = args[0]\n"
+            "\tdef __init__(self, *args):\n\t\tif len(args) == 0:\n\t\t\treturn\n\t\t_dict = json.loads(args[0]) if isinstance(args[0], str) else args[0]\n"
         )
         builder.append(fromJsonMethod)
         return builder
