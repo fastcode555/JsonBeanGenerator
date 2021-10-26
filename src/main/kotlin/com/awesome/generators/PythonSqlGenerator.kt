@@ -10,7 +10,7 @@ import java.io.File
 class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
     var className: String? = null
     val pythonBuilder by lazy {
-        java.lang.StringBuilder("import sqlite3\nTABLE_NAME='$className'\nclass ${className}Dao:\n")
+        java.lang.StringBuilder("import sqlite3\n\nTABLE_NAME='$className'\n\n\nclass ${className}Dao:\n")
     }
 
     init {
@@ -23,7 +23,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
         builder.append("\tdef __init__(self):\n")
             .append("\t\tself.conn = sqlite3.connect('./test.db')\n")
             .append("\t\tself.cursor = self.conn.cursor()\n")
-            .append("\t\tself.cursor.execute('${sql.format("{0}")}'.format(TABLE_NAME))\n\n")
+            .append("\t\tself.cursor.execute(f'${sql.format("{TABLE_NAME}")}')\n\n")
         pythonBuilder.append(builder.toString())
         return this
     }
@@ -32,16 +32,20 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
     private fun deleteMethod(): PythonSqlGenerator {
         val builder = StringBuilder()
         builder.append("\tdef delete(self, id):\n")
-            .append("\t\tself.cursor.execute('DELETE * FROM {0} WHERE id= ?'.format(TABLE_NAME), id)\n\n")
+            .append("\t\tself.cursor.execute(f'DELETE FROM {TABLE_NAME} WHERE id= ?', [id])\n\n")
         pythonBuilder.append(builder.toString())
         return this
     }
 
     //插入数据
-    fun insertMethod(sql: String): PythonSqlGenerator {
+    fun insertMethod(sql: String, args: String): PythonSqlGenerator {
         val builder = StringBuilder()
         builder.append("\tdef insert(self, *args):\n")
-            .append("\t\tself.cursor.execute('${sql.format("{0}")}'.format(TABLE_NAME), args)\n")
+            .append("\t\tif len(args) == 1:\n")
+            .append("\t\t\tbean = args[0]\n")
+            .append("\t\t\tself.cursor.execute(f'${sql.format("{TABLE_NAME}")}', [${args}])\n")
+            .append("\t\telse:\n")
+            .append("\t\t\tself.cursor.execute(f'${sql.format("{TABLE_NAME}")}', args)\n")
             .append("\t\tself.conn.commit()\n\n")
         pythonBuilder.append(builder.toString())
         return this
@@ -51,8 +55,8 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
     private fun selectMethod(): PythonSqlGenerator {
         val builder = StringBuilder()
         builder.append("\tdef select(self, id):\n")
-            .append("\t\tresults = self.cursor.execute('SELECT * FROM {0} WHERE id= ?'.format(TABLE_NAME),id).fetchall()\n")
-            .append("\t\treturn None if (results is None or len(results) <= 0) else results[0]\n\n")
+            .append("\t\tresults = self.cursor.execute(f'SELECT * FROM {TABLE_NAME} WHERE id= ?',[id]).fetchall()\n")
+            .append("\t\treturn None if results is None or len(results) <= 0 else results[0]\n\n")
         pythonBuilder.append(builder.toString())
         return this
     }
@@ -60,7 +64,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
     private fun selectAllMethod(): PythonSqlGenerator {
         val builder = StringBuilder()
         builder.append("\tdef selectAll(self):\n")
-            .append("\t\treturn self.cursor.execute('SELECT * FROM {0}'.format(TABLE_NAME)).fetchall()\n\n")
+            .append("\t\treturn self.cursor.execute(f'SELECT * FROM {TABLE_NAME}').fetchall()\n\n")
         pythonBuilder.append(builder.toString())
         return this
     }
@@ -84,10 +88,10 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
             pythonBuilder.append(value)?.append(',')
         }
         pythonBuilder.deleteAt(pythonBuilder.length - 1)
-        pythonBuilder.append(");\n").append("dao.close()\n")
+        pythonBuilder.append(")\n").append("dao.close()\n")
 
         val content = pythonBuilder.toString()
-        val file = File(directory.virtualFile.path, "${className}Dao.py")
+        val file = File(directory.virtualFile.path, "${tableName}_dao.py")
         if (!file.exists()) {
             try {
                 WriteCommandAction.runWriteCommandAction(directory.project) {

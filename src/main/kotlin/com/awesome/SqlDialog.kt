@@ -8,8 +8,8 @@ import com.awesome.utils.DataBaseUtils
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import org.apache.http.util.TextUtils
+import toCamel
 import toJSON
-import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -96,6 +96,7 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
         val selectBuilder = StringBuilder("SELECT * FROM %s WHERE id = ?")
         val deleteBuilder = StringBuilder("DELETE FROM %s WHERE id = ?")
         val insertBuilder = StringBuilder("INSERT INTO %s (id,")
+        val insertArgsBuilder = StringBuilder()
         val updateBuilder = StringBuilder("UPDATE %s SET ")
 
         val codeGenerator = PythonSqlGenerator(tableName, directory)
@@ -135,12 +136,13 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
         tableBuilder.append(");")
         for (i in listKeys.indices) {
             val key: String = listKeys[i]
-            insertBuilder.append("$key ${if (i != listKeys.size - 1) "," else ""}")
+            insertBuilder.append("$key${if (i != listKeys.size - 1) "," else ""}")
+            insertArgsBuilder.append("bean.${key.toCamel()}${if (i != listKeys.size - 1) "," else ""}")
             updateBuilder.append("$key = ? ${if (i != listKeys.size - 1) "," else ""}")
         }
         insertBuilder.append(") VALUES (?,")
         for (i in listKeys.indices) {
-            insertBuilder.append("? ${if (i != listKeys.size - 1) "," else ""}")
+            insertBuilder.append("?${if (i != listKeys.size - 1) "," else ""}")
         }
         insertBuilder.append(")")
         updateBuilder.append("WHERE id = ?;")
@@ -150,7 +152,8 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
         tvInsert!!.text = insertBuilder.toString().format(tableName)
         tvUpdate!!.text = updateBuilder.toString().format(tableName)
         if (generate) {
-            codeGenerator.initMethod(tableBuilder.toString()).insertMethod(insertBuilder.toString())
+            codeGenerator.initMethod(tableBuilder.toString())
+                .insertMethod(insertBuilder.toString(), insertArgsBuilder.toString())
                 .generateFile(this, listValues)
         }
     }
