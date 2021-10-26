@@ -43,7 +43,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
         builder.append("\tdef insert(self, *args):\n")
             .append("\t\tif len(args) == 1:\n")
             .append("\t\t\tbean = args[0]\n")
-            .append("\t\t\tself.cursor.execute(f'${sql.format("{TABLE_NAME}")}', [${args}])\n")
+            .append("\t\t\tself.cursor.execute(f'${sql.format("{TABLE_NAME}")}', [bean.id,${args}])\n")
             .append("\t\telse:\n")
             .append("\t\t\tself.cursor.execute(f'${sql.format("{TABLE_NAME}")}', args)\n")
             .append("\t\tself.conn.commit()\n\n")

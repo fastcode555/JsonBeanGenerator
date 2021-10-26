@@ -116,7 +116,7 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
             listKeys.add(key)
             if (element is String) {
                 tableBuilder.append("$key TEXT,")
-                listValues.add("'${element.toString()}'")
+                listValues.add("'${element}'")
             } else if (element is Double || element is Float) {
                 tableBuilder.append("$key REAL,")
                 listValues.add(element)
@@ -128,7 +128,7 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
                 listValues.add(if (element) 1 else 0)
             } else {
                 tableBuilder.append("$key TEXT,")
-                listValues.add("'${element.toString()}'")
+                listValues.add("'${element}'")
             }
         }
         //减去后面逗号
