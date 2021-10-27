@@ -10,7 +10,7 @@ import java.io.File
 class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
     var className: String? = null
     val pythonBuilder by lazy {
-        java.lang.StringBuilder("import sqlite3\nimport json\n\nTABLE_NAME='$className'\n\n\nclass ${className}Dao:\n")
+        java.lang.StringBuilder("import sqlite3\nimport json\n\nfrom ${tableName} import ${className}\n\nTABLE_NAME='$className'\n\n\nclass ${className}Dao:\n")
     }
     var projectDbName = ""
 
@@ -64,10 +64,32 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
         return this
     }
 
+
+    private fun selectBeanMethod(): PythonSqlGenerator {
+        val builder = StringBuilder()
+        builder.append("\tdef select(self, id):\n")
+            .append("\t\t_dict = self.select(id)\n")
+            .append("\t\treturn ${className}(_dict) if _dict is not None and len(_dict) > 0 else None\n\n")
+        pythonBuilder.append(builder.toString())
+        return this
+    }
+
     private fun selectAllMethod(): PythonSqlGenerator {
         val builder = StringBuilder()
         builder.append("\tdef selectAll(self):\n")
             .append("\t\treturn self.cursor.execute(f'SELECT * FROM {TABLE_NAME}').fetchall()\n\n")
+        pythonBuilder.append(builder.toString())
+        return this
+    }
+
+    private fun selectAllBeanMethod(): PythonSqlGenerator {
+        val builder = StringBuilder()
+        builder.append("\tdef selectAllBean(self):\n")
+            .append("\t\tarrays = self.selectAll()\n")
+            .append("\t\tmodels = []\n")
+            .append("\t\tfor element in arrays:\n")
+            .append("\t\t\tmodels.append(${className}(element))\n")
+            .append("\t\treturn models\n\n")
         pythonBuilder.append(builder.toString())
         return this
     }
@@ -83,7 +105,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
     }
 
     fun generateFile(dialog: Dialog, listValues: MutableList<Any>) {
-        deleteMethod().selectAllMethod().selectMethod().closeMethod()
+        deleteMethod().selectAllMethod().selectMethod().selectAllBeanMethod().selectBeanMethod().closeMethod()
         pythonBuilder.append('\n')
         pythonBuilder.append("dao =${className}Dao()\n")
         pythonBuilder.append("dao.insert(1,")
