@@ -2,7 +2,6 @@ package com.awesome.generators
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import org.apache.http.util.TextUtils
 import toCamel
 import toUpperCamel
 
@@ -36,6 +35,7 @@ class PythonJsonGenerator(
 
         val builder = StringBuilder()
         val fromJsonMethod = StringBuilder()
+        val fromJsonTurpleMethod = StringBuilder()
 
         var parseObj: JSONObject? = null
         if (obj is JSONObject) {
@@ -44,42 +44,62 @@ class PythonJsonGenerator(
             parseObj = obj[0] as JSONObject
         }
         builder.append(generateClassHeader(uniqueClassName))
+        var count = 1
         for ((key, element) in parseObj!!.innerMap) {
             if (element is JSONObject) {
-                fromJsonMethod.append("\t\tself.${key.toCamel()} = ${key.toUpperCamel()}(_dict['$key']) if _dict.__contains__('$key') else None\n")
+                fromJsonMethod.append("\t\t\tself.${key.toCamel()} = ${key.toUpperCamel()}(_dict['$key']) if _dict.__contains__('$key') else None\n")
+                fromJsonTurpleMethod.append("\t\t\tself.${key.toCamel()} = ${key.toUpperCamel()}(json.loads(_dict[$count])) if len(_dict) > $count and isinstance(_dict[$count], str) and len(_dict[$count]) > 0 else None\n")
                 classes.add(parseJson(element, key.toUpperCamel(), classes))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
                     val result = element[0]
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
-                        fromJsonMethod.append("\t\tself.${key.toCamel()} = []\n")
-                        fromJsonMethod.append("\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
-                        fromJsonMethod.append("\t\t\tfor element in _dict['$key']:\n")
-                        fromJsonMethod.append("\t\t\t\tself.${key.toCamel()}.append(element)\n")
+                        fromJsonMethod.append("\t\t\tself.${key.toCamel()} = []\n")
+                        fromJsonMethod.append("\t\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
+                        fromJsonMethod.append("\t\t\t\tfor element in _dict['$key']:\n")
+                        fromJsonMethod.append("\t\t\t\t\tself.${key.toCamel()}.append(element)\n")
+                        fromJsonTurpleMethod.append("\t\t\tself.${key.toCamel()} = json.loads(_dict[$count]) if len(_dict) > ${count} else None\n")
                     } else {//对象类型
-                        fromJsonMethod.append("\t\tself.${key.toCamel()} = []\n")
-                        fromJsonMethod.append("\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
-                        fromJsonMethod.append("\t\t\tfor element in _dict['$key']:\n")
-                        fromJsonMethod.append("\t\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
-                        classes.add(parseJson(result, key.toUpperCamel(), classes))
+                        fromJson(fromJsonMethod, fromJsonTurpleMethod, key, classes, result, count)
                     }
                 } else {//不明类型
-                    fromJsonMethod.append("\t\tself.${key.toCamel()} = []\n")
-                    fromJsonMethod.append("\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
-                    fromJsonMethod.append("\t\t\tfor element in _dict['$key']:\n")
-                    fromJsonMethod.append("\t\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
-                    classes.add(parseJson(JSONObject(), key.toUpperCamel(), classes))
+                    fromJson(fromJsonMethod, fromJsonTurpleMethod, key, classes, JSONObject(), count)
                 }
             } else {
-                fromJsonMethod.append("\t\tself.${key.toCamel()} = _dict['$key'] if _dict.__contains__('$key') else None\n")
+                fromJsonMethod.append("\t\t\tself.${key.toCamel()} = _dict['$key'] if _dict.__contains__('$key') else None\n")
+                fromJsonTurpleMethod.append("\t\t\tself.${key.toCamel()} = _dict[$count] if len(_dict) > ${count} else None\n")
             }
+            count += 1
         }
-        fromJsonMethod.insert(
+        fromJsonTurpleMethod.insert(
             0,
-            "\tdef __init__(self, *args):\n\t\tif len(args) == 0:\n\t\t\treturn\n\t\t_dict = json.loads(args[0]) if isinstance(args[0], str) else args[0]\n"
+            "\tdef __init__(self, *args):\n\t\tif len(args) == 0:\n\t\t\treturn\n\t\t_dict = json.loads(args[0]) if isinstance(args[0], str) else args[0]\n\t\tif isinstance(_dict, tuple):\n\t\t\tself.id = _dict[0] if len(_dict) > 0 else None\n"
         )
+        builder.append(fromJsonTurpleMethod)
+        builder.append("\t\telse:\n")
         builder.append(fromJsonMethod)
         return builder
+    }
+
+
+    private fun fromJson(
+        fromJsonMethod: StringBuilder,
+        fromJsonTurpleMethod: StringBuilder,
+        key: String?,
+        classes: ArrayList<java.lang.StringBuilder>,
+        result: Any?,
+        count: Int
+    ) {
+        fromJsonMethod.append("\t\t\tself.${key.toCamel()} = []\n")
+        fromJsonMethod.append("\t\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
+        fromJsonMethod.append("\t\t\t\tfor element in _dict['$key']:\n")
+        fromJsonMethod.append("\t\t\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
+
+        fromJsonTurpleMethod.append("\t\t\tself.${key.toCamel()} = []\n")
+        fromJsonTurpleMethod.append("\t\t\tif len(_dict) > ${count} and _dict[$count] is not None and isinstance(_dict[$count], str):\n")
+        fromJsonTurpleMethod.append("\t\t\t\tfor element in json.loads(_dict[$count]):\n")
+        fromJsonTurpleMethod.append("\t\t\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
+        classes.add(parseJson(result, key.toUpperCamel(), classes))
     }
 
 
