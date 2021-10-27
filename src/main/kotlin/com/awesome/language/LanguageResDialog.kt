@@ -4,9 +4,7 @@ import clearSymbol
 import com.awesome.language.LanguageDartWriter
 import com.awesome.utils.HttpApi
 import com.awesome.utils.PropertiesHelper
-import com.awesome.utils.PsiFileUtils
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.project.guessProjectDir
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import org.apache.http.util.TextUtils

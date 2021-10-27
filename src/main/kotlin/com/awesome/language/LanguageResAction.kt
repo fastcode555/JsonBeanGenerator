@@ -1,19 +1,14 @@
 package com.awesome.language
 
 import com.awesome.LanguageResDialog
-import com.awesome.utils.NotifyUtil
-import com.awesome.utils.PsiFileUtils
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import org.apache.http.util.TextUtils
-import java.awt.Frame
-import javax.swing.JOptionPane
 
 
 //https://www.w3schools.com/tags/ref_language_codes.asp

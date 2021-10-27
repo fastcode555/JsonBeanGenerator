@@ -1,9 +1,10 @@
 package com.awesome.language
 
 import com.awesome.utils.PsiFileUtils
-import com.intellij.psi.PsiDirectory
+import com.awesome.utils.regexOne
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import org.jf.util.TextUtils
 import toCamel
 import java.io.File
 
@@ -14,6 +15,7 @@ class LanguageDartWriter(
     val psiElement: PsiElement,
     val rawText: String
 ) {
+    var moduleName = ""
 
     fun startWrite() {
         writeKey2Index()
@@ -60,7 +62,10 @@ class LanguageDartWriter(
 
     //获取当前导包的名字前缀
     private fun getCurrentPackageName(): String {
-        val moduleName = PsiFileUtils.getModuleName(psiElement)
+        if (moduleName.isEmpty()) {
+            val pubspecFile = File("${psiElement.project.basePath}/pubspec.yaml").readText()
+            moduleName = pubspecFile.regexOne("(?<=name\\:).*?(?=\\n)")?.trim() ?: ""
+        }
         val filePath = dirPath
         val content = "${moduleName}/lib";
         val index = filePath.indexOf(content) + content.length
