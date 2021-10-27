@@ -12,16 +12,18 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
     val pythonBuilder by lazy {
         java.lang.StringBuilder("import sqlite3\nimport json\n\nTABLE_NAME='$className'\n\n\nclass ${className}Dao:\n")
     }
+    var projectDbName = ""
 
     init {
         className = tableName.toUpperCamel()
+        projectDbName = directory.project.baseDir.name
     }
 
     //创建初始化代码
     fun initMethod(sql: String): PythonSqlGenerator {
         val builder = StringBuilder()
         builder.append("\tdef __init__(self):\n")
-            .append("\t\tself.conn = sqlite3.connect('./test.db')\n")
+            .append("\t\tself.conn = sqlite3.connect('./${projectDbName}.db')\n")
             .append("\t\tself.cursor = self.conn.cursor()\n")
             .append("\t\tself.cursor.execute(f'${sql.format("{TABLE_NAME}")}')\n\n")
         pythonBuilder.append(builder.toString())
