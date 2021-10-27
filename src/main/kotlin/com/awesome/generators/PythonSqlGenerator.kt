@@ -10,7 +10,7 @@ import java.io.File
 class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
     var className: String? = null
     val pythonBuilder by lazy {
-        java.lang.StringBuilder("import sqlite3\n\nTABLE_NAME='$className'\n\n\nclass ${className}Dao:\n")
+        java.lang.StringBuilder("import sqlite3\nimport json\n\nTABLE_NAME='$className'\n\n\nclass ${className}Dao:\n")
     }
 
     init {
@@ -38,11 +38,12 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
     }
 
     //插入数据
-    fun insertMethod(sql: String, args: String): PythonSqlGenerator {
+    fun insertMethod(sql: String, args: String, insertArgHeader: String): PythonSqlGenerator {
         val builder = StringBuilder()
         builder.append("\tdef insert(self, *args):\n")
             .append("\t\tif len(args) == 1:\n")
             .append("\t\t\tbean = args[0]\n")
+            .append(insertArgHeader)
             .append("\t\t\tself.cursor.execute(f'${sql.format("{TABLE_NAME}")}', [bean.id,${args}])\n")
             .append("\t\telse:\n")
             .append("\t\t\tself.cursor.execute(f'${sql.format("{TABLE_NAME}")}', args)\n")

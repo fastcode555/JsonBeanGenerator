@@ -97,6 +97,7 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
         val deleteBuilder = StringBuilder("DELETE FROM %s WHERE id = ?")
         val insertBuilder = StringBuilder("INSERT INTO %s (id,")
         val insertArgsBuilder = StringBuilder()
+        val insertArgsHeaderBuilder = StringBuilder()
         val updateBuilder = StringBuilder("UPDATE %s SET ")
 
         val codeGenerator = PythonSqlGenerator(tableName, directory)
@@ -134,10 +135,21 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
         //减去后面逗号
         tableBuilder.deleteAt(tableBuilder.length - 1)
         tableBuilder.append(");")
+
         for (i in listKeys.indices) {
             val key: String = listKeys[i]
+            val element = json.get(key)
             insertBuilder.append("$key${if (i != listKeys.size - 1) "," else ""}")
-            insertArgsBuilder.append("bean.${key.toCamel()}${if (i != listKeys.size - 1) "," else ""}")
+            if (element is JSONObject) {
+                insertArgsBuilder.append("json.dumps(bean.${key.toCamel()}.toJson()) if bean.${key.toCamel()} is not None else None${if (i != listKeys.size - 1) "," else ""}")
+            } else if (element is JSONArray) {
+                insertArgsHeaderBuilder.append("\t\t\t_${key.toCamel()} = []\n")
+                insertArgsHeaderBuilder.append("\t\t\tfor element in bean.${key.toCamel()}:\n")
+                insertArgsHeaderBuilder.append("\t\t\t\t_${key.toCamel()}.append(element.toJson())\n")
+                insertArgsBuilder.append("json.dumps(_${key.toCamel()})${if (i != listKeys.size - 1) "," else ""}")
+            } else {
+                insertArgsBuilder.append("bean.${key.toCamel()}${if (i != listKeys.size - 1) "," else ""}")
+            }
             updateBuilder.append("$key = ? ${if (i != listKeys.size - 1) "," else ""}")
         }
         insertBuilder.append(") VALUES (?,")
@@ -153,7 +165,11 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
         tvUpdate!!.text = updateBuilder.toString().format(tableName)
         if (generate) {
             codeGenerator.initMethod(tableBuilder.toString())
-                .insertMethod(insertBuilder.toString(), insertArgsBuilder.toString())
+                .insertMethod(
+                    insertBuilder.toString(),
+                    insertArgsBuilder.toString(),
+                    insertArgsHeaderBuilder.toString()
+                )
                 .generateFile(this, listValues)
         }
     }
