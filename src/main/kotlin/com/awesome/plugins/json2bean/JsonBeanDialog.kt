@@ -1,13 +1,11 @@
 package com.awesome
 
-import com.awesome.generators.DartJsonGenerator
-import com.awesome.generators.PythonJsonGenerator
+import com.awesome.plugins.json2bean.generators.DartJsonGenerator
+import com.awesome.plugins.json2bean.generators.PythonJsonGenerator
 import com.awesome.utils.PropertiesHelper
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
-import com.intellij.ui.layout.selected
 import formatJson
-import org.apache.http.util.TextUtils
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent

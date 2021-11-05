@@ -3,7 +3,7 @@ package com.awesome
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.awesome.generators.PythonSqlGenerator
+import com.awesome.plugins.json2bean.generators.PythonSqlGenerator
 import com.awesome.utils.DataBaseUtils
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory

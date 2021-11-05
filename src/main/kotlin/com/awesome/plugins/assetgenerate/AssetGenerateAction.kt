@@ -1,4 +1,4 @@
-package com.awesome
+package com.awesome.plugins.assetgenerate
 
 import clearSymbol
 import com.intellij.openapi.actionSystem.AnAction

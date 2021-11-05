@@ -1,7 +1,7 @@
 package com.awesome
 
 import clearSymbol
-import com.awesome.language.LanguageDartWriter
+import com.awesome.plugins.language.LanguageDartWriter
 import com.awesome.utils.HttpApi
 import com.awesome.utils.PropertiesHelper
 import com.intellij.openapi.command.WriteCommandAction

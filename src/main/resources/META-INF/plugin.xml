@@ -33,25 +33,32 @@
 
     <actions>
 
-        <action id="json2dart_null_safety" class="com.awesome.JsonBeanGeneratorAction" text="Json2Dart-Null-Safety"
+        <action id="json2dart_null_safety" class="com.awesome.plugins.json2bean.JsonBeanGeneratorAction"
+                text="Json2Dart-Null-Safety"
                 icon="/plugin_icon.png" description="Generated dart bean class.">
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
-        <action id="AssetGenerateAction" class="com.awesome.AssetGenerateAction" text="AssetGenerate"
+
+        <action id="AssetGenerateAction" class="com.awesome.plugins.assetgenerate.AssetGenerateAction"
+                text="AssetGenerate"
                 icon="/plugin_icon.png" description="Generate resource r.dart.">
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
-        <action id="com.awesome.language res" class="com.awesome.language.LanguageResAction" text="Languages-Res"
-                icon="/plugin_icon.png" description="Generated multi com.awesome.language resource.">
+
+        <action id="com.awesome.plugins.language res" class="com.awesome.plugins.language.LanguageResAction"
+                text="Languages-Res"
+                icon="/plugin_icon.png" description="Generated multi com.awesome.plugins.language resource.">
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
 
-        <action id="com.awesome.language.GenerateGroup" class="com.awesome.language.LanguageResAction"
+        <action id="com.awesome.plugins.language.GenerateGroup" class="com.awesome.plugins.language.LanguageResAction"
                 text="Languages-Res"
-                icon="/plugin_icon.png" description="Generated multi com.awesome.language resource.">
+                icon="/plugin_icon.png" description="Generated multi com.awesome.plugins.language resource.">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
-        <action icon="/plugin_icon.png" id="SqlGenerator" class="com.awesome.SqlAction" text="SqlGenerator"
+
+        <action icon="/plugin_icon.png" id="SqlGenerator" class="com.awesome.plugins.sqlgenerate.SqlAction"
+                text="SqlGenerator"
                 description="生成相关的sql语句">
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>

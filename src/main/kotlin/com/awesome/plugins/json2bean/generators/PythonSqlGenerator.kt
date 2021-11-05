@@ -1,4 +1,4 @@
-package com.awesome.generators
+package com.awesome.plugins.json2bean.generators
 
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory

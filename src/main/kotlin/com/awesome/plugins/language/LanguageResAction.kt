@@ -1,4 +1,4 @@
-package com.awesome.language
+package com.awesome.plugins.language
 
 import com.awesome.LanguageResDialog
 import com.intellij.openapi.actionSystem.AnAction

@@ -1,10 +1,8 @@
-package com.awesome.language
+package com.awesome.plugins.language
 
-import com.awesome.utils.PsiFileUtils
 import com.awesome.utils.regexOne
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import org.jf.util.TextUtils
 import toCamel
 import java.io.File
 
