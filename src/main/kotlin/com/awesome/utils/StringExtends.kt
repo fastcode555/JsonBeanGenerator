@@ -25,6 +25,9 @@ fun String.regexOne(regex: String): String? {
     return null
 }
 
+fun String.md5(): String {
+    return Md5Util.encode(this)
+}
 
 fun String.forceTrim(): String {
     return this.replace(" ", "").replace("\n", "").trim()

@@ -6,7 +6,7 @@ import com.google.common.base.CaseFormat
 //dart中的关键词需要转换成普通词
 var KEYS: Array<String> = arrayOf("num", "int", "String", "double", "bool")
 var UPPER_KEYS: Array<String> = arrayOf("List", "Map")
-var SPECIAL_SYMBOL: Array<String> = arrayOf("-", ",", ".", "=", "'", "?", "!", "！", "？", "，", "。")
+var SPECIAL_SYMBOL: Array<String> = arrayOf("-", ",", ".", "=", "'", "?", "!","！", "？","，","。", " ", "\\", "/", "…", "+")
 
 fun String?.toCamel(): String {
     var result = this.clearSymbol()
