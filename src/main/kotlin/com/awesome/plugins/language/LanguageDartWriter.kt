@@ -90,12 +90,13 @@ class LanguageDartWriter(
 
     //将翻译的值生成到各个文件中
     fun writeValue2Dart(fileName: String, code: String, value: String?) {
+        val importStringDart = "import '${getCurrentPackageName()}strings.dart';\n"
         var builder: java.lang.StringBuilder?
         val stringsFile = File("${dirPath}/$fileName")
         if (!stringsFile.exists()) {
             stringsFile.createNewFile()
             builder = java.lang.StringBuilder()
-            builder.append("import '${getCurrentPackageName()}strings.dart';\n")
+            builder.append(importStringDart)
             builder.append("\nconst Map<String, String> ${generateVariableName(code)} = {\n")
             builder.append("};")
         } else {
@@ -112,6 +113,11 @@ class LanguageDartWriter(
                     selectionModel.selectionEnd,
                     "Ids.${idKey}.tr"
                 )
+                //判断当前文件夹是否导包，如果没有，需要进行导包
+                val text = selectionModel.editor.document.text
+                if (!text.contains(importStringDart)) {
+                    selectionModel.editor.document.insertString(0, importStringDart)
+                }
             } else {
                 var text = psiElement.text
                 if (text.contains("'$rawText'")) {
