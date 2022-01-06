@@ -5,6 +5,7 @@ import com.awesome.plugins.language.LanguageDartWriter
 import com.awesome.utils.HttpApi
 import com.awesome.utils.PropertiesHelper
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import org.apache.http.util.TextUtils
@@ -16,7 +17,12 @@ import java.awt.event.KeyEvent
 import java.lang.StringBuilder
 import javax.swing.*
 
-class LanguageResDialog(val psiElement: PsiElement, val textValue: String) : JDialog() {
+class LanguageResDialog(
+    private val psiElement: PsiElement,
+    private val textValue: String,
+    private val selectionModel: SelectionModel?
+) :
+    JDialog() {
     var contentPane: JPanel? = null
 
     //确认生成按钮
@@ -103,7 +109,7 @@ class LanguageResDialog(val psiElement: PsiElement, val textValue: String) : JDi
                     }
                 }
             }
-            val writer = LanguageDartWriter(mapValues, tvKey!!.text, dirPath, psiElement,textValue)
+            val writer = LanguageDartWriter(mapValues, tvKey!!.text, dirPath, psiElement, textValue, selectionModel)
             writer.startWrite()
             dispose()
         }

@@ -16,7 +16,7 @@ class LanguageResAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val mDirectory = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)
         if (mDirectory != null && mDirectory is PsiDirectory) {
-            val mDialog = LanguageResDialog(mDirectory, "")
+            val mDialog = LanguageResDialog(mDirectory, "", null)
             mDialog.showDialog()
         } else {
             val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
@@ -32,7 +32,7 @@ class LanguageResAction : AnAction() {
             if (value.endsWith("'") || value.endsWith("\"")) {
                 value = value.substring(0, value.length - 1)
             }
-            val mDialog = LanguageResDialog(psiFile!!, value)
+            val mDialog = LanguageResDialog(psiFile!!, value,selectionModel)
             mDialog.showDialog()
         }
     }

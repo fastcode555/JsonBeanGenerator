@@ -1,6 +1,7 @@
 package com.awesome.plugins.language
 
 import com.awesome.utils.regexOne
+import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import toCamel
@@ -11,7 +12,8 @@ class LanguageDartWriter(
     val idKey: String,
     val dirPath: String,
     val psiElement: PsiElement,
-    val rawText: String
+    val rawText: String,
+    val selectionModel: SelectionModel?
 ) {
     var moduleName = ""
 
@@ -104,14 +106,22 @@ class LanguageDartWriter(
         builder.insert(index, idValue)
         stringsFile.writeText(builder.toString())
         if (psiElement is PsiFile) {
-            var text = psiElement.text
-            if (text.contains("'$rawText'")) {
-                text = text.replace("'$rawText'", "Ids.${idKey}.tr")
+            if (selectionModel != null) {
+                selectionModel.editor.document.replaceString(
+                    selectionModel.selectionStart,
+                    selectionModel.selectionEnd,
+                    "Ids.${idKey}.tr"
+                )
+            } else {
+                var text = psiElement.text
+                if (text.contains("'$rawText'")) {
+                    text = text.replace("'$rawText'", "Ids.${idKey}.tr")
+                }
+                if (text.contains("\"$rawText\"")) {
+                    text = text.replace("\"$rawText\"", "Ids.${idKey}.tr")
+                }
+                File(psiElement.virtualFile.path).writeText(text)
             }
-            if (text.contains("\"$rawText\"")) {
-                text = text.replace("\"$rawText\"", "Ids.${idKey}.tr")
-            }
-            File(psiElement.virtualFile.path).writeText(text)
         }
     }
 
