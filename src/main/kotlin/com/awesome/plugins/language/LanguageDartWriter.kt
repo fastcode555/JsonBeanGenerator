@@ -39,8 +39,11 @@ class LanguageDartWriter(
             }
         }
         val index = dartBuilder.lastIndexOf("}")
-        dartBuilder.insert(index, "\tstatic const String $idKey = '$idKey';\n")
-        stringsFile.writeText(dartBuilder.toString())
+        if (!dartBuilder.contains("static const String $idKey =")) {
+            dartBuilder.insert(index, "\tstatic const String $idKey = '$idKey';\n")
+            stringsFile.writeText(dartBuilder.toString())
+        }
+
     }
 
     //写入导包和导头部语言部分
@@ -102,10 +105,14 @@ class LanguageDartWriter(
         } else {
             builder = java.lang.StringBuilder(stringsFile.readText())
         }
+        //写入每个翻译的文件中，如果该Key已经存在，就不使用
         val index = builder.lastIndexOf("};")
         val idValue = "\tIds.${idKey}:'$value',\n"
-        builder.insert(index, idValue)
-        stringsFile.writeText(builder.toString())
+        if (!builder.contains("Ids.${idKey}:")) {
+            builder.insert(index, idValue)
+            stringsFile.writeText(builder.toString())
+        }
+
         if (psiElement is PsiFile) {
             if (selectionModel != null) {
                 selectionModel.editor.document.replaceString(
