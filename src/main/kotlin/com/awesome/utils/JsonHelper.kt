@@ -10,9 +10,7 @@ var SPECIAL_SYMBOL: Array<String> = arrayOf("-", ",", ".", "=", "'", "?", "!","ï
 
 fun String?.toCamel(): String {
     var result = this.clearSymbol()
-    if (result!!.contains("_")) {
-        result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, result)
-    }
+    result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, result)
     return if (KEYS.contains(result)) "${result}x" else result!!
 
 }
