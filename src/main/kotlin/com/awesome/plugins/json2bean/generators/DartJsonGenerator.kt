@@ -49,14 +49,14 @@ class DartJsonGenerator(
         for ((key, element) in parseObj!!.innerMap) {
             if (element is JSONObject) {
                 builder.append("\t${key.toUpperCamel()}? ${key.toCamel()};\n")
-                construtorMethod.append("${key.toCamel()},")
+                construtorMethod.append("this.${key.toCamel()},")
                 toJsonMethod.append("\t\t\t..put('$key',${key.toCamel()}?.toJson())\n")
                 fromJsonMethod.append("\t\tthis.${key.toCamel()}=json.asBean('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
                 classes.add(parseJson(element, key.toUpperCamel(), classes, false))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
                     val result = element[0]
-                    construtorMethod.append("${key.toCamel()},")
+                    construtorMethod.append("this.${key.toCamel()},")
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         builder.append("\tList<${getType(result)}>? ${key.toCamel()};\n")
                         toJsonMethod.append("\t\t\t..put('$key',${key.toCamel()})\n")
@@ -68,14 +68,14 @@ class DartJsonGenerator(
                         classes.add(parseJson(result, key.toUpperCamel(), classes, false))
                     }
                 } else {//不明类型
-                    construtorMethod.append("${key.toCamel()},")
+                    construtorMethod.append("this.${key.toCamel()},")
                     builder.append("\tList<${key.toUpperCamel()}>? ${key.toCamel()};\n")
                     toJsonMethod.append("\t\t\t..put('$key',${key.toCamel()}?.map((v)=>v.toJson()).toList())\n")
                     fromJsonMethod.append("\t\t${key.toCamel()}=json.asList<${key.toUpperCamel()}>('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
                     classes.add(parseJson(JSONObject(), key.toUpperCamel(), classes, false))
                 }
             } else {
-                construtorMethod.append("${key.toCamel()},")
+                construtorMethod.append("this.${key.toCamel()},")
                 builder.append("\t${getType(element)}? ${key.toCamel()};\n")
                 toJsonMethod.append("\t\t\t..put('$key',${key.toCamel()})\n")
                 fromJsonMethod.append("\t\t${key.toCamel()}=json.${getParseType(element)}('$key');\n")
