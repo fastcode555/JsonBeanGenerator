@@ -9,6 +9,7 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import org.jetbrains.annotations.NotNull
+import toCamel
 import java.io.File
 import java.lang.StringBuilder
 
@@ -56,9 +57,17 @@ class AssetGenerateAction : AnAction() {
         mDirectory.files.map {
             val assetName = it.virtualFile.path.replace("${rootPath!!}/", "")
             if (isFont(it)) {
-                builder.append("\tstatic const String ${it.virtualFile.nameWithoutExtension.clearSymbol()} = '${it.virtualFile.nameWithoutExtension}';\n")
+                builder.append(
+                    "\tstatic const String ${
+                        it.virtualFile.nameWithoutExtension.clearSymbol().toCamel()
+                    } = '${it.virtualFile.nameWithoutExtension}';\n"
+                )
             } else {
-                builder.append("\tstatic const String ${it.virtualFile.nameWithoutExtension.clearSymbol()} = '$assetName';\n")
+                builder.append(
+                    "\tstatic const String ${
+                        it.virtualFile.nameWithoutExtension.clearSymbol().toCamel()
+                    } = '$assetName';\n"
+                )
             }
         }
         mDirectory.subdirectories.map {
