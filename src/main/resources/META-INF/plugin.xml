@@ -57,11 +57,11 @@
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
 
-        <action icon="/plugin_icon.png" id="SqlGenerator" class="com.awesome.plugins.sqlgenerate.SqlAction"
-                text="SqlGenerator"
-                description="生成相关的sql语句">
-            <add-to-group group-id="NewGroup" anchor="last"/>
-        </action>
+<!--        <action icon="/plugin_icon.png" id="SqlGenerator" class="com.awesome.plugins.sqlgenerate.SqlAction"-->
+<!--                text="SqlGenerator"-->
+<!--                description="生成相关的sql语句">-->
+<!--            <add-to-group group-id="NewGroup" anchor="last"/>-->
+<!--        </action>-->
     </actions>
 
 </idea-plugin>

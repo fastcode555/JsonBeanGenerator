@@ -38,42 +38,40 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             tvClassField!!.text = "auto_generated_name"
         }
         val file = File(mDirectory.virtualFile.path, tvClassField?.text + fileType)
-        if (fileType.equals(".dart")) {
-            if (!file.exists()) {
-                try {
-                    WriteCommandAction.runWriteCommandAction(mDirectory.project) {
-                        file.writeText(
-                            DartJsonGenerator(
-                                tvField!!.text,
-                                tvClassField!!.text,
-                                tvExtends!!.text,
-                                tvImplements!!.text
-                            ).toJson()
-                        )
-                    }
-                } catch (e: Exception) {
-                    tvError?.text = "JSON Error!!"
+        if (!file.exists()) {
+            try {
+                WriteCommandAction.runWriteCommandAction(mDirectory.project) {
+                    file.writeText(getParseTargetResult(fileType))
                 }
-            }
-        } else if (fileType.equals(".py")) {
-            if (!file.exists()) {
-                try {
-                    WriteCommandAction.runWriteCommandAction(mDirectory.project) {
-                        file.writeText(
-                            PythonJsonGenerator(
-                                tvField!!.text,
-                                tvClassField!!.text,
-                                tvExtends!!.text,
-                                tvImplements!!.text
-                            ).toJson()
-                        )
-                    }
-                } catch (e: Exception) {
-                    tvError?.text = "JSON Error!!"
-                }
+            } catch (e: Exception) {
+                tvError?.text = "JSON Error!!"
             }
         }
         dispose()
+    }
+
+    private fun getParseTargetResult(fileType: String): String {
+        if (fileType.equals(".dart")) {
+            return DartJsonGenerator(
+                tvField!!.text,
+                tvClassField!!.text,
+                tvExtends!!.text,
+                tvImplements!!.text
+            ).toJson()
+        } else if (fileType.equals(".py")) {
+            return PythonJsonGenerator(
+                tvField!!.text,
+                tvClassField!!.text,
+                tvExtends!!.text,
+                tvImplements!!.text
+            ).toJson()
+        }
+        return DartJsonGenerator(
+            tvField!!.text,
+            tvClassField!!.text,
+            tvExtends!!.text,
+            tvImplements!!.text
+        ).toJson()
     }
 
     private fun onPreView() {
