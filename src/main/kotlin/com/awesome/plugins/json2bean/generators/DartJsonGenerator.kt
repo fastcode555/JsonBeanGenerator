@@ -19,7 +19,7 @@ class DartJsonGenerator(
     ) {
     val classNames = ArrayList<String>()
 
-    override fun toJson(): String {
+    override fun toString(): String {
         val classes = ArrayList<java.lang.StringBuilder>()
         val classBuilder = parseJson(json, fileName.toUpperCamel(), classes)
         classes.forEach { classBuilder.append("\n").append(it) }

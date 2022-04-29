@@ -29,7 +29,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     var tvPrimaryKey: JTextField? = null
     var fileType = ".dart"
     private var properties: PropertiesHelper? = null
-    private lateinit var tvPrimaryKeyListener: JTextFieldHintListener
+    private var tvPrimaryKeyListener: JTextFieldHintListener
 
 
     private fun isEmpty(text: String?): Boolean {
@@ -65,14 +65,14 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 tvImplements!!.text,
                 cbSqlite!!.isSelected,
                 tvPrimaryKeyListener.getText(),
-            ).toJson()
+            ).toString()
         } else if (fileType.equals(".py")) {
             return PythonJsonGenerator(
                 tvField!!.text,
                 tvClassField!!.text,
                 tvExtends!!.text,
                 tvImplements!!.text
-            ).toJson()
+            ).toString()
         }
         return DartJsonGenerator(
             tvField!!.text,
@@ -81,7 +81,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             tvImplements!!.text,
             cbSqlite!!.isSelected,
             tvPrimaryKeyListener.getText(),
-        ).toJson()
+        ).toString()
     }
 
     private fun onPreView() {
@@ -98,7 +98,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                     tvImplements!!.text,
                     cbSqlite!!.isSelected,
                     tvPrimaryKeyListener.getText(),
-                ).toJson()
+                ).toString()
                 val previewDialog = PreViewDialog(content)
                 previewDialog.showDialog()
             } catch (e: Exception) {
@@ -111,7 +111,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                     tvClassField!!.text,
                     tvExtends!!.text,
                     tvImplements!!.text
-                ).toJson()
+                ).toString()
                 val previewDialog = PreViewDialog(content)
                 previewDialog.showDialog()
             } catch (e: Exception) {

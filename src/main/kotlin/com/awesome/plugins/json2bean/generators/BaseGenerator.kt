@@ -10,5 +10,5 @@ abstract class BaseGenerator(content: String) {
         json = content.toJSON()
     }
 
-    abstract fun toJson(): String
+    abstract override fun toString(): String
 }
