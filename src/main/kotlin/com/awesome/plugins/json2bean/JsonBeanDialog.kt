@@ -1,5 +1,6 @@
 package com.awesome
 
+import com.awesome.plugins.json2bean.database.DartDataBaseGenerator
 import com.awesome.plugins.json2bean.generators.DartJsonGenerator
 import com.awesome.plugins.json2bean.generators.PythonJsonGenerator
 import com.awesome.utils.JTextFieldHintListener
@@ -46,7 +47,10 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             try {
                 WriteCommandAction.runWriteCommandAction(mDirectory.project) {
                     file.writeText(getParseTargetResult(fileType))
-
+                    //生成数据库基类跟dao类
+                    if (cbSqlite!!.isSelected && fileType == ".dart") {
+                        DartDataBaseGenerator(tvField!!.text, tvClassField!!.text, mDirectory).startWrite()
+                    }
 
                 }
             } catch (e: Exception) {

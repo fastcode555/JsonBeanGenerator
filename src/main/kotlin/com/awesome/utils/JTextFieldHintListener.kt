@@ -1,5 +1,6 @@
 package com.awesome.utils
 
+import com.intellij.ui.Colors
 import java.awt.Color
 import javax.swing.JTextField
 import java.awt.event.FocusListener
@@ -11,7 +12,7 @@ class JTextFieldHintListener(private val textField: JTextField, private val hint
         val temp = textField.text
         if (temp == hintText) {
             textField.text = ""
-            textField.foreground = Color.BLACK
+            textField.foreground = Colors.DARK_RED
         }
     }
 
