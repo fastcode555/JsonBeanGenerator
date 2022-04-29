@@ -15,7 +15,11 @@ class DartDataBaseGenerator(
     val dir: PsiDirectory,
 ) : BaseGenerator(content) {
 
-    private lateinit var daoName: String
+    private var daoName: String
+
+    init {
+        daoName = "${fileName.toUpperCamel()}Dao"
+    }
 
     override fun toString(): String {
         val projectName = dir.project.name
@@ -23,7 +27,6 @@ class DartDataBaseGenerator(
         val packagePath = modelFile.path.replace("${dir.project.basePath}/lib", "")
 
         val tableName = fileName.toUpperCamel()
-        daoName = "${tableName}Dao"
         val classBuilder = StringBuilder()
 
         classBuilder.insert(0, "import 'package:$projectName$packagePath';\n")
@@ -93,23 +96,28 @@ class DartDataBaseGenerator(
      * 开始写入文件到工程中
      **/
     fun startWrite() {
+        println("start to write DartDataBaseGenerator")
         val dbDir = File("${dir.project.basePath}/lib/database")
         if (!dbDir.exists()) {
             dbDir.mkdirs()
         }
 
-        writeIntoTheDbManagerFile(dbDir)
         writeIntoTheDaoFile(dbDir)
+        writeIntoTheDbManagerFile(dbDir)
     }
 
     /***
      * 根据json生成的dao 类，写入到代码中
      * */
     private fun writeIntoTheDaoFile(dbDir: File) {
+        println("开始写入到${fileName} File 中：writeIntoTheDaoFile")
         //写入dao类
         val daoFile = File(dbDir.path, "${fileName}_dao.dart")
         if (!daoFile.exists()) {
-            daoFile.writeText(toString())
+            daoFile.createNewFile()
+            val result = toString()
+            println("开始写入到${fileName} 的内容:$result")
+            daoFile.writeText(result)
         }
     }
 
@@ -117,12 +125,14 @@ class DartDataBaseGenerator(
      * 将生成的类型写入到DBManager中
      * */
     private fun writeIntoTheDbManagerFile(dbDir: File) {
+        print("开始写入到DbMangaer File 中：writeIntoTheDbManagerFile")
         //写入DBManager的类
         val dbManagerFile = File(dbDir.path, "db_manager.dart")
         val dbManagerBuilder = StringBuilder()
         if (dbManagerFile.exists()) {
             dbManagerBuilder.append(dbManagerFile.readText())
         } else {
+            dbManagerFile.createNewFile()
             dbManagerBuilder.append("import 'dart:async';\n\nimport 'package:json2dart_safe/json2dart.dart';\nimport 'package:sqflite/sqflite.dart';\n\nclass DbManager extends BaseDbManager {\n  static DbManager? _instance;\n\n  factory DbManager() => _getInstance();\n\n  static DbManager get instance => _getInstance();\n\n  static DbManager _getInstance() {\n    _instance ??= DbManager._internal();\n    return _instance!;\n  }\n\n  DbManager._internal();\n\n  @override\n  FutureOr<void> onCreate(Database db, int version) async {\n  }\n}\n\n")
         }
         dbManagerBuilder.insert(0, "import '${fileName}_dao.dart';\n")
@@ -138,6 +148,8 @@ class DartDataBaseGenerator(
             dbManagerBuilder.insert(markIndex, "\n    await db.execute($daoName.tableSql());")
         }
 
+        print("开始写入到DbMangaer File 中：writeIntoTheDbManagerFile:$dbManagerBuilder")
         dbManagerFile.writeText(dbManagerBuilder.toString())
+        println("开始写入到DbManager 的内容:${dbManagerBuilder.toString()}")
     }
 }

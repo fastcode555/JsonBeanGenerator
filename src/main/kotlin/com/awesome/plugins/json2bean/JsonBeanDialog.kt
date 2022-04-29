@@ -48,16 +48,20 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 WriteCommandAction.runWriteCommandAction(mDirectory.project) {
                     file.writeText(getParseTargetResult(fileType))
                     //生成数据库基类跟dao类
+                    println("isSelected:${cbSqlite!!.isSelected}  $fileType")
                     if (cbSqlite!!.isSelected && fileType == ".dart") {
+                        println("进入DartDataBaseGenerator")
                         DartDataBaseGenerator(tvField!!.text, tvClassField!!.text, mDirectory).startWrite()
                     }
-
+                    dispose()
                 }
             } catch (e: Exception) {
                 tvError?.text = "JSON Error!!"
+                println(e)
             }
+        } else {
+            dispose()
         }
-        dispose()
     }
 
     private fun getParseTargetResult(fileType: String): String {
@@ -107,6 +111,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 previewDialog.showDialog()
             } catch (e: Exception) {
                 tvError?.text = "JSON Error!!"
+                println(e)
             }
         } else if (fileType.equals(".py")) {
             try {
@@ -120,6 +125,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 previewDialog.showDialog()
             } catch (e: Exception) {
                 tvError?.text = "JSON Error!!"
+                println(e)
             }
         }
 
@@ -142,6 +148,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 tvField?.text = tvField?.text?.formatJson()
             } catch (e: Exception) {
                 tvError?.text = "JSON Error!!"
+                println(e)
             }
         }
         confirmBtn!!.addActionListener { onGenerate() }
