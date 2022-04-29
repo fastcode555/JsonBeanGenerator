@@ -24,6 +24,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     var tvError: JLabel? = null
     var rbPy: JRadioButton? = null
     var rbDart: JRadioButton? = null
+    var cbSqlite: JCheckBox? = null
     var fileType = ".dart"
     private var properties: PropertiesHelper? = null
 
@@ -56,7 +57,8 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 tvField!!.text,
                 tvClassField!!.text,
                 tvExtends!!.text,
-                tvImplements!!.text
+                tvImplements!!.text,
+                cbSqlite!!.isSelected,
             ).toJson()
         } else if (fileType.equals(".py")) {
             return PythonJsonGenerator(
@@ -70,7 +72,8 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             tvField!!.text,
             tvClassField!!.text,
             tvExtends!!.text,
-            tvImplements!!.text
+            tvImplements!!.text,
+            cbSqlite!!.isSelected,
         ).toJson()
     }
 
@@ -85,7 +88,8 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                     tvField!!.text,
                     tvClassField!!.text,
                     tvExtends!!.text,
-                    tvImplements!!.text
+                    tvImplements!!.text,
+                    cbSqlite!!.isSelected,
                 ).toJson()
                 val previewDialog = PreViewDialog(content)
                 previewDialog.showDialog()
@@ -155,15 +159,20 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         fileType = properties?.getProperty("plugin.modelType") ?: ".dart"
         if (fileType.equals(".py")) {
             rbPy!!.isSelected = true
+            //暂不支持sqlite的数据库
+            cbSqlite!!.isEnabled = false
         } else {
             rbDart!!.isSelected = true
             fileType = ".dart"
+            cbSqlite!!.isEnabled = true
         }
+
         rbDart!!.addActionListener {
             if (rbDart!!.isSelected) {
                 fileType = ".dart"
                 rbPy!!.isSelected = false
                 properties?.setProperty("plugin.modelType", ".dart")
+                cbSqlite!!.isEnabled = true
             }
         }
         rbPy!!.addActionListener {
@@ -171,6 +180,8 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 fileType = ".py"
                 rbDart!!.isSelected = false
                 properties?.setProperty("plugin.modelType", ".py")
+                cbSqlite!!.isSelected = false
+                cbSqlite!!.isEnabled = false
             }
         }
     }

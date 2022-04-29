@@ -10,7 +10,8 @@ class DartJsonGenerator(
     content: String,
     val fileName: String,
     val extendsClass: String,
-    val implementClass: String
+    val implementClass: String,
+    val sqliteSupport: Boolean,
 ) :
     BaseGenerator(
         content
@@ -92,7 +93,14 @@ class DartJsonGenerator(
             val index = toJsonMethod.lastIndexOf("\n")
             toJsonMethod.delete(index, index + 1)
             toJsonMethod.append(";\n")
-            toJsonMethod.insert(0, "\n\tMap<String, dynamic> toJson() {\n\t\treturn <String, dynamic>{}\n")
+            if (sqliteSupport) {
+                toJsonMethod.insert(
+                    0,
+                    "  @override\n\tMap<String, dynamic> toJson() {\n\t\treturn <String, dynamic>{}\n"
+                )
+            } else {
+                toJsonMethod.insert(0, "\n\tMap<String, dynamic> toJson() {\n\t\treturn <String, dynamic>{}\n")
+            }
 
         } else {
             toJsonMethod.insert(0, "\n\tMap<String, dynamic> toJson() {\n\t\treturn <String, dynamic>{};\n")
@@ -109,7 +117,11 @@ class DartJsonGenerator(
     }
 
     private fun generateClassHeader(className: String): String {
-        val extends = if (extendsClass.isNotEmpty()) " extends $extendsClass" else ""
+        var finalExtendClass = extendsClass
+        if (sqliteSupport) {
+            finalExtendClass = "BaseDbModel"
+        }
+        val extends = if (finalExtendClass.isNotEmpty()) " extends $finalExtendClass" else ""
         val implements =
             if (implementClass.isNotEmpty()) " implements $implementClass" else ""
         return "\nclass $className$extends$implements{\n"
