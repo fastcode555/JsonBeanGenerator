@@ -60,7 +60,7 @@ class DartJsonGenerator(
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         builder.append("\tList<${getType(result)}>? ${key.toCamel()};\n")
                         toJsonMethod.append("\t\t\t..put('$key',${key.toCamel()})\n")
-                        fromJsonMethod.append("\t${key.toCamel()} = json.asList<${getType(result)}>('$key',null);\n")
+                        fromJsonMethod.append("\t\t${key.toCamel()} = json.asList<${getType(result)}>('$key');\n")
                     } else {//对象类型
                         builder.append("\tList<${key.toUpperCamel()}>? ${key.toCamel()};\n")
                         toJsonMethod.append("\t\t\t..put('$key', ${key.toCamel()}?.map((v)=>v.toJson()).toList())\n")
