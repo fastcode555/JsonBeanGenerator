@@ -12,6 +12,7 @@ class DartJsonGenerator(
     val extendsClass: String,
     val implementClass: String,
     val sqliteSupport: Boolean,
+    val primaryKey: String,
 ) :
     BaseGenerator(
         content
@@ -96,7 +97,7 @@ class DartJsonGenerator(
             if (sqliteSupport) {
                 toJsonMethod.insert(
                     0,
-                    "  @override\n\tMap<String, dynamic> toJson() {\n\t\treturn <String, dynamic>{}\n"
+                    "\n\t@override\n\tMap<String, dynamic> toJson() {\n\t\treturn <String, dynamic>{}\n"
                 )
             } else {
                 toJsonMethod.insert(0, "\n\tMap<String, dynamic> toJson() {\n\t\treturn <String, dynamic>{}\n")
@@ -110,6 +111,9 @@ class DartJsonGenerator(
         builder.append(fromJsonMethod.append("\t}\n"))
         if (enableToBean) {
             builder.append("\n\tstatic $uniqueClassName toBean(Map json) => ${uniqueClassName}.fromJson(json);\n")
+            if (sqliteSupport) {
+                builder.append("\n\t@override\n\tMap<String, dynamic> primaryKeyAndValue() => {\"${primaryKey}\":${primaryKey.toCamel()}};\n")
+            }
         }
         builder.append("\n  @override\n  String toString() => jsonEncode(toJson());\n")
         builder.append("}")

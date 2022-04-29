@@ -2,6 +2,7 @@ package com.awesome
 
 import com.awesome.plugins.json2bean.generators.DartJsonGenerator
 import com.awesome.plugins.json2bean.generators.PythonJsonGenerator
+import com.awesome.utils.JTextFieldHintListener
 import com.awesome.utils.PropertiesHelper
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
@@ -25,8 +26,10 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     var rbPy: JRadioButton? = null
     var rbDart: JRadioButton? = null
     var cbSqlite: JCheckBox? = null
+    var tvPrimaryKey: JTextField? = null
     var fileType = ".dart"
     private var properties: PropertiesHelper? = null
+    private lateinit var tvPrimaryKeyListener: JTextFieldHintListener
 
 
     private fun isEmpty(text: String?): Boolean {
@@ -43,6 +46,8 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             try {
                 WriteCommandAction.runWriteCommandAction(mDirectory.project) {
                     file.writeText(getParseTargetResult(fileType))
+
+
                 }
             } catch (e: Exception) {
                 tvError?.text = "JSON Error!!"
@@ -59,6 +64,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 tvExtends!!.text,
                 tvImplements!!.text,
                 cbSqlite!!.isSelected,
+                tvPrimaryKeyListener.getText(),
             ).toJson()
         } else if (fileType.equals(".py")) {
             return PythonJsonGenerator(
@@ -74,6 +80,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             tvExtends!!.text,
             tvImplements!!.text,
             cbSqlite!!.isSelected,
+            tvPrimaryKeyListener.getText(),
         ).toJson()
     }
 
@@ -90,6 +97,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                     tvExtends!!.text,
                     tvImplements!!.text,
                     cbSqlite!!.isSelected,
+                    tvPrimaryKeyListener.getText(),
                 ).toJson()
                 val previewDialog = PreViewDialog(content)
                 previewDialog.showDialog()
@@ -148,6 +156,11 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
         )
         initRadioButtons()
+        tvPrimaryKeyListener = JTextFieldHintListener(tvPrimaryKey!!, "please input the database primary key")
+        tvPrimaryKey!!.isEnabled = false
+        cbSqlite!!.addActionListener {
+            tvPrimaryKey!!.isEnabled = cbSqlite!!.isSelected
+        }
     }
 
     private fun initRadioButtons() {
