@@ -13,6 +13,7 @@ class DartDataBaseGenerator(
     content: String,
     val fileName: String,
     val dir: PsiDirectory,
+    val primaryKey: String,
 ) : BaseGenerator(content) {
 
     private var daoName: String
@@ -59,7 +60,7 @@ class DartDataBaseGenerator(
             if (element is JSONObject || element is JSONArray) {
                 builder.append("      ..write(\"`$key` TEXT,\")\n")
             } else {
-                builder.append("      ..write(\"`$key` ${getType(element)},\")\n")
+                builder.append("      ..write(\"`$key` ${getType(element)}${addPrimaryKey(key)},\")\n")
             }
         }
 
@@ -73,6 +74,13 @@ class DartDataBaseGenerator(
         builder.append(result)
         builder.append("    return _buffer.toString();\n").append("  }\n\n")
         return builder
+    }
+
+    private fun addPrimaryKey(key: String): String {
+        if (key == primaryKey) {
+            return " \$primaryKey"
+        }
+        return ""
     }
 
 

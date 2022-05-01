@@ -51,7 +51,12 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                     println("isSelected:${cbSqlite!!.isSelected}  $fileType")
                     if (cbSqlite!!.isSelected && fileType == ".dart") {
                         println("进入DartDataBaseGenerator")
-                        DartDataBaseGenerator(tvField!!.text, tvClassField!!.text, mDirectory).startWrite()
+                        DartDataBaseGenerator(
+                            tvField!!.text,
+                            tvClassField!!.text,
+                            mDirectory,
+                            tvPrimaryKeyListener.getText(),
+                        ).startWrite()
                     }
                     dispose()
                 }
