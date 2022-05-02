@@ -11,16 +11,12 @@ import java.io.File
 
 class DartDataBaseGenerator(
     content: String,
-    val fileName: String,
-    val dir: PsiDirectory,
-    val primaryKey: String,
+    private val fileName: String,
+    private val dir: PsiDirectory,
+    private val primaryKey: String,
 ) : BaseGenerator(content) {
 
-    private var daoName: String
-
-    init {
-        daoName = "${fileName.toUpperCamel()}Dao"
-    }
+    private var daoName: String = "${fileName.toUpperCamel()}Dao"
 
     override fun toString(): String {
         val projectName = dir.project.name
@@ -63,12 +59,19 @@ class DartDataBaseGenerator(
                 builder.append("      ..write(\"`$key` ${getType(element)}${addPrimaryKey(key)},\")\n")
             }
         }
+        if (!builder.contains("`$primaryKey`")) {
+            builder.append("      ..write(\"`$primaryKey` INTEGER PRIMARY KEY AUTOINCREMENT,\")\n")
+        }
 
         var result = builder.toString()
         var index = result.lastIndexOf(",")
-        result = result.replaceRange(index, index + 1, ")")
+        if (index > 0) {
+            result = result.replaceRange(index, index + 1, ")")
+        }
         index = result.lastIndexOf(")")
-        result = result.replaceRange(index, index + 1, ");")
+        if (index > 0) {
+            result = result.replaceRange(index, index + 1, ");")
+        }
 
         builder.clear()
         builder.append(result)
@@ -78,7 +81,7 @@ class DartDataBaseGenerator(
 
     private fun addPrimaryKey(key: String): String {
         if (key == primaryKey) {
-            return " \$primaryKey"
+            return " PRIMARY KEY"
         }
         return ""
     }

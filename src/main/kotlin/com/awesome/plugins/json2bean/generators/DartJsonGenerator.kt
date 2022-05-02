@@ -2,6 +2,7 @@ package com.awesome.plugins.json2bean.generators
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
+import org.apache.http.util.TextUtils
 import toCamel
 import toUpperCamel
 
@@ -83,6 +84,11 @@ class DartJsonGenerator(
                 fromJsonMethod.append("\t\t${key.toCamel()} = json.${getParseType(element)}('$key');\n")
             }
         }
+        //如果这个key不存在，则需要主动添加这个key
+        if (enableToBean) {
+            addThePrimaryKey(builder, fromJsonMethod, toJsonMethod, construtorMethod)
+        }
+
         if (construtorMethod.isNotEmpty()) {
             construtorMethod.insert(0, "\n\t${uniqueClassName}({")
             construtorMethod.append("});\n")
@@ -118,6 +124,20 @@ class DartJsonGenerator(
         builder.append("\n  @override\n  String toString() => jsonEncode(toJson());\n")
         builder.append("}")
         return builder
+    }
+
+    private fun addThePrimaryKey(
+        builder: StringBuilder,
+        fromJsonMethod: StringBuilder,
+        toJsonMethod: StringBuilder,
+        construtorMethod: StringBuilder
+    ) {
+        if (!TextUtils.isEmpty(primaryKey) && !builder.contains(" ${primaryKey.toCamel()};")) {
+            builder.append("\tint? ${primaryKey.toCamel()};\n")
+            construtorMethod.append("this.${primaryKey.toCamel()},")
+            fromJsonMethod.append("\t\t${primaryKey.toCamel()} = json.asInt('$primaryKey');\n")
+            toJsonMethod.append("\t\t\t..put('$primaryKey',${primaryKey.toCamel()})\n")
+        }
     }
 
     private fun generateClassHeader(className: String): String {
