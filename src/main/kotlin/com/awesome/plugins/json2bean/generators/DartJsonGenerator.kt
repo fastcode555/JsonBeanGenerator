@@ -48,7 +48,7 @@ class DartJsonGenerator(
         } else if (obj is JSONArray) {
             parseObj = obj[0] as JSONObject
         }
-        builder.append(generateClassHeader(uniqueClassName))
+        builder.append(generateClassHeader(uniqueClassName, enableToBean))
         for ((key, element) in parseObj!!.innerMap) {
             if (element is JSONObject) {
                 builder.append("\t${key.toUpperCamel()}? ${key.toCamel()};\n")
@@ -140,9 +140,9 @@ class DartJsonGenerator(
         }
     }
 
-    private fun generateClassHeader(className: String): String {
+    private fun generateClassHeader(className: String, enableToBean: Boolean): String {
         var finalExtendClass = extendsClass
-        if (sqliteSupport) {
+        if (sqliteSupport && enableToBean) {
             finalExtendClass = "BaseDbModel"
         }
         val extends = if (finalExtendClass.isNotEmpty()) " extends $finalExtendClass" else ""
