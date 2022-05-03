@@ -9,11 +9,11 @@ import toUpperCamel
 //用于生成Dart对象的生成器
 class DartJsonGenerator(
     content: String,
-    val fileName: String,
-    val extendsClass: String,
-    val implementClass: String,
-    val sqliteSupport: Boolean,
-    val primaryKey: String,
+    private val fileName: String,
+    private val extendsClass: String,
+    private val implementClass: String,
+    private val sqliteSupport: Boolean,
+    private val primaryKey: String,
 ) :
     BaseGenerator(
         content
