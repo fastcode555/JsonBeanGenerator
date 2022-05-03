@@ -3,7 +3,6 @@ package com.awesome.plugins.json2bean.database
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.awesome.plugins.json2bean.generators.BaseGenerator
-import com.awesome.utils.regex
 import com.intellij.psi.PsiDirectory
 import toCamel
 import toUpperCamel
@@ -17,6 +16,7 @@ class DartDataBaseGenerator(
 ) : BaseGenerator(content) {
 
     private var daoName: String = "${fileName.toUpperCamel()}Dao"
+    private var isAutoIncrease = false
 
     override fun toString(): String {
         val projectName = dir.project.name
@@ -32,8 +32,18 @@ class DartDataBaseGenerator(
         classBuilder.append("\nclass $daoName extends BaseDao<$tableName> {\n")
         classBuilder.append("$tableSqlBuilder")
         classBuilder.append("  @override\n  $tableName fromJson(Map json) => $tableName.fromJson(json);\n")
+        classBuilder.append(queryOneMethod(tableName))
         classBuilder.append("}")
         return classBuilder.toString()
+    }
+
+    /***
+     * 为每个dao生成一个根据primary key 进行数据查询的方法
+     * */
+    private fun queryOneMethod(tableName: String): String {
+        val type = if (isAutoIncrease) "int" else "String"
+        val name = primaryKey.toCamel()
+        return "\n  Future<$tableName?> queryOne($type $name) async {\n    return (await query(where: \"$primaryKey = ?\", whereArgs: [$name]))?.first;\n  }"
     }
 
     /***
@@ -60,6 +70,7 @@ class DartDataBaseGenerator(
             }
         }
         if (!builder.contains("`$primaryKey`")) {
+            isAutoIncrease = true
             builder.append("      ..write(\"`$primaryKey` INTEGER PRIMARY KEY AUTOINCREMENT,\")\n")
         }
 

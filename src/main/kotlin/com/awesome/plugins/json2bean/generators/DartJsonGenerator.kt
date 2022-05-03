@@ -121,7 +121,7 @@ class DartJsonGenerator(
                 val dataPrimaryKey = primaryKey.toCamel()
                 builder.append("\n\t@override\n\tMap<String, dynamic> primaryKeyAndValue() => {\"${primaryKey}\": $dataPrimaryKey};\n\n")
                 builder.append("  @override\n  int get hashCode => $dataPrimaryKey?.hashCode ?? super.hashCode;\n\n")
-                builder.append("  @override\n  bool operator ==(Object other) {\n    if (other is $uniqueClassName) {\n      return other.$dataPrimaryKey == $dataPrimaryKey;\n    }\n    return super == other;\n  }\n")
+                builder.append("  @override\n  bool operator ==(Object other) {\n    if (other is $uniqueClassName && $dataPrimaryKey != null) {\n      return other.$dataPrimaryKey == $dataPrimaryKey;\n    }\n    return super == other;\n  }\n")
             }
         }
         builder.append("\n  @override\n  String toString() => jsonEncode(toJson());\n")
