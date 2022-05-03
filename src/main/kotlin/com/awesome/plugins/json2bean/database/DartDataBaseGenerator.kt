@@ -32,7 +32,7 @@ class DartDataBaseGenerator(
         classBuilder.append("\nclass $daoName extends BaseDao<$tableName> {\n")
         classBuilder.append("$tableSqlBuilder")
         classBuilder.append("  @override\n  $tableName fromJson(Map json) => $tableName.fromJson(json);\n")
-        classBuilder.append(queryOneMethod(tableName))
+        classBuilder.append(primaryKeyMethod(tableName))
         classBuilder.append("}")
         return classBuilder.toString()
     }
@@ -40,10 +40,8 @@ class DartDataBaseGenerator(
     /***
      * 为每个dao生成一个根据primary key 进行数据查询的方法
      * */
-    private fun queryOneMethod(tableName: String): String {
-        val type = if (isAutoIncrease) "int" else "String"
-        val name = primaryKey.toCamel()
-        return "\n  Future<$tableName?> queryOne($type $name, [String? tableName]) async {\n    return (await query(tableName: tableName, where: \"$primaryKey = ?\", whereArgs: [$name]))?.first;\n  }"
+    private fun primaryKeyMethod(tableName: String): String {
+        return "\n  @override\n  String get primaryKey => '$primaryKey';\n"
     }
 
     /***
