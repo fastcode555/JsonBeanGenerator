@@ -118,7 +118,10 @@ class DartJsonGenerator(
         if (enableToBean) {
             builder.append("\n\tstatic $uniqueClassName toBean(Map json) => ${uniqueClassName}.fromJson(json);\n")
             if (sqliteSupport) {
-                builder.append("\n\t@override\n\tMap<String, dynamic> primaryKeyAndValue() => {\"${primaryKey}\":${primaryKey.toCamel()}};\n")
+                val dataPrimaryKey = primaryKey.toCamel()
+                builder.append("\n\t@override\n\tMap<String, dynamic> primaryKeyAndValue() => {\"${primaryKey}\": $dataPrimaryKey};\n\n")
+                builder.append("  @override\n  int get hashCode => $dataPrimaryKey.hashCode;\n\n")
+                builder.append("  @override\n  bool operator ==(Object other) {\n    if (other is $uniqueClassName) {\n      return other.$dataPrimaryKey == $dataPrimaryKey;\n    }\n    return super == other;\n  }\n")
             }
         }
         builder.append("\n  @override\n  String toString() => jsonEncode(toJson());\n")
