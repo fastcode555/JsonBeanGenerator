@@ -52,10 +52,9 @@ class DartDataBaseGenerator(
     private fun tableSqlMethod(
         obj: Any?,
         tableName: String
-    ): java.lang.StringBuilder {
-        val builder = StringBuilder("  static String tableSql([String? tableName]) {\n")
-        builder.append("    StringBuffer _buffer = StringBuffer(\"CREATE TABLE IF NOT EXISTS `\${tableName ?? '$tableName'}` (\");\n")
-        builder.append("    _buffer\n")
+    ): String {
+        val builder = StringBuilder("  static String tableSql([String? tableName]) => \"\"\n")
+        builder.append("      \"CREATE TABLE IF NOT EXISTS `\${tableName ?? '$tableName'}` (\"\n")
         var parseObj: JSONObject? = null
         if (obj is JSONObject) {
             parseObj = obj
@@ -64,14 +63,14 @@ class DartDataBaseGenerator(
         }
         for ((key, element) in parseObj!!.innerMap) {
             if (element is JSONObject || element is JSONArray) {
-                builder.append("      ..write(\"`$key` TEXT,\")\n")
+                builder.append("      \"`$key` TEXT,\"\n")
             } else {
-                builder.append("      ..write(\"`$key` ${getType(element)}${addPrimaryKey(key)},\")\n")
+                builder.append("      \"`$key` ${getType(element)}${addPrimaryKey(key)},\"\n")
             }
         }
         if (!builder.contains("`$primaryKey`")) {
             isAutoIncrease = true
-            builder.append("      ..write(\"`$primaryKey` INTEGER PRIMARY KEY AUTOINCREMENT,\")\n")
+            builder.append("      \"`$primaryKey` INTEGER PRIMARY KEY AUTOINCREMENT,\"\n")
         }
 
         var result = builder.toString()
@@ -79,15 +78,9 @@ class DartDataBaseGenerator(
         if (index > 0) {
             result = result.replaceRange(index, index + 1, ")")
         }
-        index = result.lastIndexOf(")")
-        if (index > 0) {
-            result = result.replaceRange(index, index + 1, ");")
-        }
-
         builder.clear()
         builder.append(result)
-        builder.append("    return _buffer.toString();\n").append("  }\n\n")
-        return builder
+        return "${builder.trimEnd()};\n\n"
     }
 
     private fun addPrimaryKey(key: String): String {
