@@ -43,7 +43,7 @@ class DartDataBaseGenerator(
     private fun queryOneMethod(tableName: String): String {
         val type = if (isAutoIncrease) "int" else "String"
         val name = primaryKey.toCamel()
-        return "\n  Future<$tableName?> queryOne($type $name) async {\n    return (await query(where: \"$primaryKey = ?\", whereArgs: [$name]))?.first;\n  }"
+        return "\n  Future<$tableName?> queryOne($type $name, [String? tableName]) async {\n    return (await query(tableName: tableName, where: \"$primaryKey = ?\", whereArgs: [$name]))?.first;\n  }"
     }
 
     /***
