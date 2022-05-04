@@ -53,7 +53,7 @@ class DartJsonGenerator(
             if (element is JSONObject) {
                 builder.append("\t${key.toUpperCamel()}? ${key.toCamel()};\n")
                 construtorMethod.append("this.${key.toCamel()},")
-                toJsonMethod.append("\t\t\t..put('$key',${key.toCamel()}?.toJson())\n")
+                toJsonMethod.append("\t\t..put('$key',${key.toCamel()}?.toJson())\n")
                 fromJsonMethod.append("\t\t${key.toCamel()} = json.asBean('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
                 classes.add(parseJson(element, key.toUpperCamel(), classes, false))
             } else if (element is JSONArray) {
@@ -62,25 +62,25 @@ class DartJsonGenerator(
                     construtorMethod.append("this.${key.toCamel()},")
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         builder.append("\tList<${getType(result)}>? ${key.toCamel()};\n")
-                        toJsonMethod.append("\t\t\t..put('$key',${key.toCamel()})\n")
+                        toJsonMethod.append("\t\t..put('$key',${key.toCamel()})\n")
                         fromJsonMethod.append("\t\t${key.toCamel()} = json.asList<${getType(result)}>('$key');\n")
                     } else {//对象类型
                         builder.append("\tList<${key.toUpperCamel()}>? ${key.toCamel()};\n")
-                        toJsonMethod.append("\t\t\t..put('$key', ${key.toCamel()}?.map((v)=>v.toJson()).toList())\n")
+                        toJsonMethod.append("\t\t..put('$key', ${key.toCamel()}?.map((v)=>v.toJson()).toList())\n")
                         fromJsonMethod.append("\t\t${key.toCamel()} = json.asList<${key.toUpperCamel()}>('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
                         classes.add(parseJson(result, key.toUpperCamel(), classes, false))
                     }
                 } else {//不明类型
                     construtorMethod.append("this.${key.toCamel()},")
                     builder.append("\tList<${key.toUpperCamel()}>? ${key.toCamel()};\n")
-                    toJsonMethod.append("\t\t\t..put('$key',${key.toCamel()}?.map((v)=>v.toJson()).toList())\n")
+                    toJsonMethod.append("\t\t..put('$key',${key.toCamel()}?.map((v)=>v.toJson()).toList())\n")
                     fromJsonMethod.append("\t\t${key.toCamel()} = json.asList<${key.toUpperCamel()}>('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
                     classes.add(parseJson(JSONObject(), key.toUpperCamel(), classes, false))
                 }
             } else {
                 construtorMethod.append("this.${key.toCamel()},")
                 builder.append("\t${getType(element)}? ${key.toCamel()};\n")
-                toJsonMethod.append("\t\t\t..put('$key',${key.toCamel()})\n")
+                toJsonMethod.append("\t\t..put('$key',${key.toCamel()})\n")
                 fromJsonMethod.append("\t\t${key.toCamel()} = json.${getParseType(element)}('$key');\n")
             }
         }
@@ -103,16 +103,16 @@ class DartJsonGenerator(
             if (sqliteSupport && enableToBean) {
                 toJsonMethod.insert(
                     0,
-                    "\n\t@override\n\tMap<String, dynamic> toJson() {\n\t\treturn <String, dynamic>{}\n"
+                    "\n\t@override\n\tMap<String, dynamic> toJson() => <String, dynamic>{}\n"
                 )
             } else {
-                toJsonMethod.insert(0, "\n\tMap<String, dynamic> toJson() {\n\t\treturn <String, dynamic>{}\n")
+                toJsonMethod.insert(0, "\n\tMap<String, dynamic> toJson() => <String, dynamic>{}\n")
             }
 
         } else {
-            toJsonMethod.insert(0, "\n\tMap<String, dynamic> toJson() {\n\t\treturn <String, dynamic>{};\n")
+            toJsonMethod.insert(0, "\n\tMap<String, dynamic> toJson() => <String, dynamic>{};\n")
         }
-        builder.append(toJsonMethod.append("\t}\n"))
+        builder.append(toJsonMethod)
 
         builder.append(fromJsonMethod.append("\t}\n"))
         if (enableToBean) {
@@ -139,7 +139,7 @@ class DartJsonGenerator(
             builder.append("\tint? ${primaryKey.toCamel()};\n")
             construtorMethod.append("this.${primaryKey.toCamel()},")
             fromJsonMethod.append("\t\t${primaryKey.toCamel()} = json.asInt('$primaryKey');\n")
-            toJsonMethod.append("\t\t\t..put('$primaryKey',${primaryKey.toCamel()})\n")
+            toJsonMethod.append("\t\t..put('$primaryKey',${primaryKey.toCamel()})\n")
         }
     }
 
