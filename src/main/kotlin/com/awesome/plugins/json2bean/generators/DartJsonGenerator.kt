@@ -144,13 +144,13 @@ class DartJsonGenerator(
     }
 
     private fun generateClassHeader(className: String, enableToBean: Boolean): String {
-        var finalExtendClass = extendsClass
+        var finalImplementClass = implementClass
         if (sqliteSupport && enableToBean) {
-            finalExtendClass = "BaseDbModel"
+            finalImplementClass = "BaseDbModel"
         }
-        val extends = if (finalExtendClass.isNotEmpty()) " extends $finalExtendClass" else ""
+        val extends = if (extendsClass.isNotEmpty()) " extends $extendsClass" else ""
         val implements =
-            if (implementClass.isNotEmpty()) " implements $implementClass" else ""
+            if (finalImplementClass.isNotEmpty()) " with $finalImplementClass" else ""
         return "\nclass $className$extends$implements{\n"
     }
 

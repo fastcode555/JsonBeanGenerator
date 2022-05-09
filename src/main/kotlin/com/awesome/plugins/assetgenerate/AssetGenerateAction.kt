@@ -32,7 +32,7 @@ class AssetGenerateAction : AnAction() {
                 )
                 builder.append("}")
                 mDirectory.parent?.virtualFile?.path?.let {
-                    val genDartFilePath = "${it}${File.separator}lib${File.separator}gen${File.separator}r.dart"
+                    val genDartFilePath = "${it}${File.separator}lib${File.separator}res${File.separator}r.dart"
                     val file = File(genDartFilePath)
                     //生成相关的dart.文件
                     if (!file.exists()) {
