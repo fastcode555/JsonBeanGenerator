@@ -33,7 +33,7 @@ class FromJsonGenerateAction : AnAction() {
                 val fromJsonBuilder = StringBuilder("  $className.fromJson(Map json) {\n")
                 classContent.regex(FILED_REGEX) {
                     val results = it.split(" ")
-                    if (results != null && results.size == 2) {
+                    if (results.size == 2) {
                         val fieldName = results[1]
                         fromJsonBuilder.append("    $fieldName = ${getParseType(results[0], fieldName)};\n")
                     }

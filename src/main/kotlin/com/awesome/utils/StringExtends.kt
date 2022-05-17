@@ -8,7 +8,7 @@ import java.util.regex.Matcher
 import java.util.regex.Pattern
 
 ///统一正则匹配的过程
-fun String.regex(regex: String, method: (String) -> Unit) {
+inline fun String.regex(regex: String, method: (String) -> Unit) {
     val pattern = Pattern.compile(regex)
     val matcher = pattern.matcher(this)
     while (matcher.find()) {
@@ -45,7 +45,7 @@ fun String.matchStartRegex(content: String, method: (String) -> Unit) {
     }
 }
 
-fun String.matchOneRegex(content: String, method: (String) -> Unit) {
+inline fun String.matchOneRegex(content: String, method: (String) -> Unit) {
     val index = this.indexOf(content)
     if (index >= 0) {
         var tail = this.substring(index, this.length)
@@ -119,7 +119,6 @@ private fun String.minIndex(): Int {
     result = if (result < 0) Math.max(resultLeft, resultRight) else result
     return result
 }
-
 
 fun String.isNumber(): Boolean {
     val pattern: Pattern = Pattern.compile("-?[0-9]+\\.?[0-9]*")

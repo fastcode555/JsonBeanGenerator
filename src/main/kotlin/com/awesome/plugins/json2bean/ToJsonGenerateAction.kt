@@ -19,22 +19,19 @@ class ToJsonGenerateAction : AnAction() {
             WriteCommandAction.runWriteCommandAction(e.project) {
                 val content = editor.document.text
                 var targetIndex = 0
-                var className = ""
                 //获取选中的class跟选中的位置
                 content.regex("class .*?\\{") {
                     val index = content.indexOf(it)
                     if (index > 0 && index < selectionModel.selectionStart) {
                         //获取到最接近选中位置的完整的class
                         targetIndex = index
-                        //获取到className
-                        className = it.replace("class ", "").trim().split(" ")[0]
                     }
                 }
                 val classContent = content.substring(targetIndex, selectionModel.selectionStart)
                 val toJsonBuilder = StringBuilder("  Map<String, dynamic> toJson() => <String, dynamic>{}\n")
                 classContent.regex(FILED_REGEX) {
                     val results = it.split(" ")
-                    if (results != null && results.size == 2) {
+                    if (results.size == 2) {
                         val fieldName = results[1]
                         toJsonBuilder.append("    ..put('$fieldName', ${getParseType(results[0], fieldName)})\n")
                     }

@@ -35,7 +35,7 @@ class ToAndFromJsonGenerateAction : AnAction() {
                 val toJsonBuilder = StringBuilder("  Map<String, dynamic> toJson() => <String, dynamic>{}\n")
                 classContent.regex(FILED_REGEX) {
                     val results = it.split(" ")
-                    if (results != null && results.size == 2) {
+                    if (results.size == 2) {
                         val fieldName = results[1]
                         val typeName = results[0].replace("?", "").trim()
                         if (TextUtils.isEmpty(typeName)) return@regex

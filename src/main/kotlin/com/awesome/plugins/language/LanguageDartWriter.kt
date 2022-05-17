@@ -140,7 +140,7 @@ class LanguageDartWriter(
 
     //生成文件的文件名
     private fun generateFileName(code: String): String {
-        return "string_${code.replace("-", "_").toLowerCase()}.dart"
+        return "string_${code.replace("-", "_").lowercase()}.dart"
     }
 
     //生成每个语言的文件的变量名
