@@ -30,18 +30,12 @@ class DartDataBaseGenerator(
         classBuilder.insert(0, "import 'package:json2dart_safe/json2dart.dart';\n")
         val tableSqlBuilder = tableSqlMethod(json, tableName)
         classBuilder.append("\nclass $daoName extends BaseDao<$tableName> {\n")
+        classBuilder.append("  static const String _tableName = '$fileName';\n\n")
+        classBuilder.append("  $daoName() : super(_tableName, '$primaryKey');\n\n")
         classBuilder.append("$tableSqlBuilder")
         classBuilder.append("  @override\n  $tableName fromJson(Map json) => $tableName.fromJson(json);\n")
-        classBuilder.append(primaryKeyMethod(tableName))
         classBuilder.append("}")
         return classBuilder.toString()
-    }
-
-    /***
-     * 为每个dao生成一个根据primary key 进行数据查询的方法
-     * */
-    private fun primaryKeyMethod(tableName: String): String {
-        return "\n  @override\n  String get primaryKey => '$primaryKey';\n"
     }
 
     /***
@@ -52,7 +46,7 @@ class DartDataBaseGenerator(
         tableName: String
     ): String {
         val builder = StringBuilder("  static String tableSql([String? tableName]) => \"\"\n")
-        builder.append("      \"CREATE TABLE IF NOT EXISTS `\${tableName ?? '$tableName'}` (\"\n")
+        builder.append("      \"CREATE TABLE IF NOT EXISTS `\${tableName ?? _tableName}` (\"\n")
         var parseObj: JSONObject? = null
         if (obj is JSONObject) {
             parseObj = obj
