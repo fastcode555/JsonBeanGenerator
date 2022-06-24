@@ -1,10 +1,10 @@
 # 插件介绍
 
-- [Json2Dart-Null-Safety: ](Json2Dart-Null-Safety)用于生成json转dart的模型
-    - [fromJson: ](fromJson toJson)生成fromJson的方法
-    - [toJson: ](fromJson toJson)生成toJson的方法
-- [AssetGenerate:](AssetGenerate)用于生成资源文件的索引
-- [Languages-Res:](Languages-Res)用于生成翻译资源
+- <font color=blue>Json2Dart-Null-Safety:</font>用于生成json转dart的模型
+    - <font color=blue>fromJson: </font> 生成fromJson的方法
+    - <font color=blue>toJson: </font> 生成toJson的方法
+- <font color=blue>AssetGenerate:</font>用于生成资源文件的索引
+- <font color=blue>Languages-Res:</font>用于生成翻译资源
 
 # 插件安装
 
@@ -19,7 +19,7 @@ Prefercens->Plugin->Setting->Install Plugin from Disk
 Macos 使用 <font color=red>Command+N</font>键，就能看到如下弹窗： 选中想要的插件就可以对其进行使用了
 ![Alt](pic/generate_dialog.png)
 
-# Json2Dart-Null-Safety
+##Json2Dart-Null-Safety
 
 基于之前json转dart模型不是特别方便，而且常见的几种也数据类型安全，经过几个版本的迭代，已经成熟的应用于各个项目中，因此特意写下来记录一下，供各位参考。</br>
 </br>
