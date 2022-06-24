@@ -19,7 +19,7 @@ Prefercens->Plugin->Setting->Install Plugin from Disk
 Macos 使用 <font color=red>Command+N</font>键，就能看到如下弹窗： 选中想要的插件就可以对其进行使用了
 ![Alt](pic/generate_dialog.png)
 
-##Json2Dart-Null-Safety
+# Json2Dart-Null-Safety
 
 基于之前json转dart模型不是特别方便，而且常见的几种也数据类型安全，经过几个版本的迭代，已经成熟的应用于各个项目中，因此特意写下来记录一下，供各位参考。</br>
 </br>
