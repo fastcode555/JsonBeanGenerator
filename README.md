@@ -139,3 +139,5 @@ plugin.languageDir=/lib/res
 ![Alt](pic/language_example_4.png)
 其它的一致，也是点击translate，然后generate，就能得到如下翻译结果
 ![Alt](pic/language_example_6.png)
+
+### 这个工程就是一个基本的范例工程 [example](https://github.com/fastcode555/Json2Dart_Null_Safety/tree/develop_database/example)
