@@ -1,0 +1,53 @@
+{
+  "condition": {
+    "id": "Ximalaya20441024",
+    "start": 0,
+    "length": 502
+  },
+  "albumInfo": {
+    "id": 76222,
+    "created_time": "2022-05-18T18:08:15.000000Z",
+    "update_time": "2022-05-19T01:15:24.000000Z",
+    "remarks": null,
+    "resource_source": "Ximalaya",
+    "resource_source_id": "Ximalaya20441024",
+    "author_fk": "Ximalaya87705385",
+    "album_title": "千妖百鬼·缥缈 | 盛唐妖鬼奇谈丨飘渺",
+    "detailRichIntro": "瑰丽的盛唐画卷，奇异的妖鬼故事",
+    "tags": [
+      "漢语"
+    ],
+    "playCount": 63370781,
+    "coverPath": "https://imagev2.xmcdn.com/storages/1bb2-audiofreehighqps/0F/77/GKwRIasFbLUcAAJF3QD420MI.jpeg",
+    "_cover_host": "202.73.14.136",
+    "_cover_path": "/music/audiobook/Ximalaya87705385/Ximalaya20441024/Ximalaya20441024.jpg",
+    "resource_source_poll": 2,
+    "track_count": 502,
+    "isFinished": 0,
+    "is_hide": 0,
+    "updateDate": "2022-05-10",
+    "createDate": "2019-01-05",
+    "language": "zh-yue",
+    "sum_count": 0,
+    "language_text": "ZH-YUE",
+    "author_name": "糖醋奥利奥",
+    "album_image": "https://m36.super-music.cc/audiobook/Ximalaya87705385/Ximalaya20441024/Ximalaya20441024.jpg?v=6f236a8e499aafe4b0b05ac4907c947d"
+  },
+  "trackList": [
+    {
+      "created_time": "2022-05-18T19:07:34.000000Z",
+      "update_time": "2022-05-18T19:08:05.000000Z",
+      "remarks": null,
+      "resource_source": "Ximalaya",
+      "resource_source_id": "Ximalaya63818453",
+      "author_fk": "Ximalaya87705385",
+      "album_fk": "Ximalaya20441024",
+      "track_title": "【卷一·提灯卷】返魂香 01 - 长安（重置版）",
+      "track_original_source": "https://aod.cos.tx.xmcdn.com/group80/M0A/05/21/wKgPEV6rXdDSjCDsAHTjSUQf1eI982.m4a",
+      "playCount": 789958,
+      "index_no": 1,
+      "track_poll": 2,
+      "down_load_url": "https://m36.super-music.cc/audiobook/Ximalaya87705385/Ximalaya20441024/track/63818453.m4a?v=6f236a8e499aafe4b0b05ac4907c947d"
+    }
+  ]
+}
