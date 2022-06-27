@@ -78,7 +78,11 @@ Macos 使用 <font color=red>Command+N</font>键，就能看到如下弹窗： �
 为已有的模型类添加toJson跟fromJson的方法，有时候会编写一个类，不是通过json的，这时再想通过json转又需要去生成一个json数据，直接从已有的类中进行模型的生成。
 
 # AssetGenerate
-之前项目中都是通过字符串对文件资源资源直接进行引用，导致后面跟进这个图片是否使用到比较麻烦，或是否已经存在而不会出现许多一样的资源，故可以通过插件生成一个R.资源文件，此如果是安卓过来的同学，就能知道是什么意思，使用简单，直接贴上示例代码：
+
+之前项目中都是通过字符串对文件资源资源直接进行引用，导致后面跟进这个图片是否使用到比较麻烦，或是否已经存在而不会出现许多一样的资源， 故可以通过插件生成一个R.资源文件，此如果是安卓过来的同学，就能知道是什么意思(
+ios的同学有问过我是什么意思，R英语单词为**resource**， 在安卓中是系统编译时对资源自动生成的文件索引)， 使用简单，直接贴上示例代码,
+<font color=red>**生成资源文件R.dart在lib/res**</font>：
+
 ```dart
 class R {
   ///------------------------ assets ------------------------
@@ -111,30 +115,37 @@ class R {
  }
 
 ```
+
 # Language-Res
-语言的翻译插件，需要在根目录加一个插件配置用于指定需要生成的语言，配置内容如下：
+
+语言的翻译插件，需要在根目录加一个名为**plugins.properties**插件配置用于指定需要生成的语言，配置内容如下：
+
 ```properties
 plugin.languages=zh-Hans,zh-Hant,en
 plugin.needTranslate=true
 plugin.countryCode=CN,HK,US
 plugin.languageDir=/lib/res
 ```
+
 - <font color=red>这里是根据getx 搭建的项目进行生成的</font>
 - <font color=red>调用google免费的api，次数过多可能会被限制，导致无法生成</font>
 
 ## 1.直接选中res目录，生成翻译
+
 - 选中res文件夹，按下COMMAND+N，选中Language-Res
 - 在value中输入需要进行多语言的文字
 - 点击Translate，会show出结果，并生成对应的key值（可手动修改key值）
 - 点击Generate，生成翻译代码
-![Alt](pic/language_example_1.png)
+  ![Alt](pic/language_example_1.png)
 
 可以看到四个文件都有状态变化，
+
 - string.dart 生成字段引用的Ids
 - string_en,string_zh_hans,string_zh_hant则分别生成了对应语言的翻译
-![Alt](pic/language_example_3.png)
+  ![Alt](pic/language_example_3.png)
 
 ## 2.选中文本，进行翻译
+
 在已经编写在代码中的文本进行抽取，选中文字，COMMAND+N选中Language-Res，选中的文字,如下图所示：
 ![Alt](pic/language_example_4.png)
 其它的一致，也是点击translate，然后generate，就能得到如下翻译结果
