@@ -28,18 +28,18 @@ class ToJsonGenerateAction : AnAction() {
                     }
                 }
                 val classContent = content.substring(targetIndex, selectionModel.selectionStart)
-                val toJsonBuilder = StringBuilder("  Map<String, dynamic> toJson() => <String, dynamic>{}\n")
+                val toJsonBuilder = StringBuilder("  Map<String, dynamic> toJson() => {\n")
                 classContent.regex(FILED_REGEX) {
                     val results = it.split(" ")
                     if (results.size == 2) {
                         val fieldName = results[1]
-                        toJsonBuilder.append("    ..put('$fieldName', ${getParseType(results[0], fieldName)})\n")
+                        toJsonBuilder.append("\t\t\t'$fieldName': ${getParseType(results[0], fieldName)},\n")
                     }
                 }
 
                 editor.document.insertString(
                     selectionModel.selectionStart,
-                    "${toJsonBuilder.subSequence(0, toJsonBuilder.length - 1)};\n"
+                    "${toJsonBuilder.append("\t\t}")};\n"
                 )
             }
         }

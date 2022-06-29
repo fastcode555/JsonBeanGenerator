@@ -57,7 +57,7 @@ class DartJsonGenerator(
                 builder.append("\t${key.toUpperCamel()}? ${key.toCamel()};\n")
                 construtorMethod.append("this.${key.toCamel()},")
                 toJsonMethod.append("\t\t\t'$key':${key.toCamel()}?.toJson(),\n")
-                fromJsonMethod.append("\t\t\t${key.toCamel()} = json.asBean('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
+                fromJsonMethod.append("\t\t${key.toCamel()} = json.asBean('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
                 classes.add(parseJson(element, key.toUpperCamel(), classes, false))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
@@ -66,7 +66,7 @@ class DartJsonGenerator(
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         builder.append("\tList<${getType(result)}>? ${key.toCamel()};\n")
                         toJsonMethod.append("\t\t\t'$key':${key.toCamel()},\n")
-                        fromJsonMethod.append("\t\t\t${key.toCamel()} = json.asList<${getType(result)}>('$key');\n")
+                        fromJsonMethod.append("\t\t${key.toCamel()} = json.asList<${getType(result)}>('$key');\n")
                     } else {//对象类型
                         builder.append("\tList<${key.toUpperCamel()}>? ${key.toCamel()};\n")
                         toJsonMethod.append("\t\t\t'$key':${key.toCamel()}?.map((v)=>v.toJson()).toList(),\n")

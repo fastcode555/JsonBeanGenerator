@@ -32,7 +32,7 @@ class ToAndFromJsonGenerateAction : AnAction() {
                 }
                 val classContent = content.substring(targetIndex, selectionModel.selectionStart)
                 val fromJsonBuilder = StringBuilder("  $className.fromJson(Map json) {\n")
-                val toJsonBuilder = StringBuilder("  Map<String, dynamic> toJson() => <String, dynamic>{}\n")
+                val toJsonBuilder = StringBuilder("  Map<String, dynamic> toJson() => {\n")
                 classContent.regex(FILED_REGEX) {
                     val results = it.split(" ")
                     if (results.size == 2) {
@@ -40,14 +40,15 @@ class ToAndFromJsonGenerateAction : AnAction() {
                         val typeName = results[0].replace("?", "").trim()
                         if (TextUtils.isEmpty(typeName)) return@regex
                         fromJsonBuilder.append("    $fieldName = ${getParseType(typeName, fieldName)};\n")
-                        toJsonBuilder.append("    ..put('$fieldName', ${getToParseType(typeName, fieldName)})\n")
+                        toJsonBuilder.append("\t\t\t'$fieldName': ${getToParseType(typeName, fieldName)},\n")
                     }
                 }
+
                 fromJsonBuilder.append("  }\n")
                 editor.document.insertString(selectionModel.selectionStart, fromJsonBuilder.toString())
                 editor.document.insertString(
                     selectionModel.selectionStart,
-                    "${toJsonBuilder.subSequence(0, toJsonBuilder.length - 1)};\n\n"
+                    "${toJsonBuilder.append("\t\t};")}\n\n"
                 )
             }
         }
