@@ -111,6 +111,7 @@ class LanguageResDialog(
             }
             val writer = LanguageDartWriter(mapValues, tvKey!!.text, dirPath, psiElement, textValue, selectionModel)
             writer.startWrite()
+            //psiElement.reload()
             dispose()
         }
     }

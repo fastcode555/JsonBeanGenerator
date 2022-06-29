@@ -2,6 +2,7 @@ package com.awesome.utils
 
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.module.ModuleUtil
+import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
@@ -11,6 +12,19 @@ import com.intellij.psi.search.GlobalSearchScope
  * Created by JarvisLau on 2018/3/14.
  * Description:
  */
+fun PsiElement.reload() {
+    if (this is PsiDirectory) {
+        this.files.forEach {
+            println(it.name)
+            it.manager.reloadFromDisk(it)
+        }
+    } else if (this is PsiFile) {
+        this.manager.reloadFromDisk(this)
+
+    }
+
+}
+
 object PsiFileUtils {
 
     fun getPsiElementByEditor(
@@ -24,7 +38,6 @@ object PsiFileUtils {
         return psiFile.findElementAt(caret.offset)
         //NotifyUtils.showError(psiFile.getProject(), "No Layout Found");
     }
-
 
 
     fun getFileByName(psiElement: PsiElement, fileName: String?): PsiFile? {
