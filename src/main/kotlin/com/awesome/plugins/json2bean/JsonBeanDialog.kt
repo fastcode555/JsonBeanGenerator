@@ -8,6 +8,7 @@ import com.awesome.utils.PropertiesHelper
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
 import formatJson
+import org.apache.http.util.TextUtils
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -49,7 +50,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                     file.writeText(getParseTargetResult(fileType))
                     //生成数据库基类跟dao类
                     println("isSelected:${cbSqlite!!.isSelected}  $fileType")
-                    if (cbSqlite!!.isSelected && fileType == ".dart") {
+                    if (cbSqlite!!.isSelected && fileType == ".dart" && !TextUtils.isEmpty(tvPrimaryKeyListener.getText())) {
                         println("进入DartDataBaseGenerator")
                         DartDataBaseGenerator(
                             tvField!!.text,
@@ -76,7 +77,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 tvClassField!!.text,
                 tvExtends!!.text,
                 tvImplements!!.text,
-                cbSqlite!!.isSelected,
+                isSqliteEnable(),
                 tvPrimaryKeyListener.getText(),
             ).toString()
         } else if (fileType.equals(".py")) {
@@ -92,9 +93,13 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             tvClassField!!.text,
             tvExtends!!.text,
             tvImplements!!.text,
-            cbSqlite!!.isSelected,
+            isSqliteEnable(),
             tvPrimaryKeyListener.getText(),
         ).toString()
+    }
+
+    private fun isSqliteEnable(): Boolean {
+        return cbSqlite!!.isSelected && !TextUtils.isEmpty(tvPrimaryKeyListener.getText());
     }
 
     private fun onPreView() {
@@ -109,7 +114,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                     tvClassField!!.text,
                     tvExtends!!.text,
                     tvImplements!!.text,
-                    cbSqlite!!.isSelected,
+                    isSqliteEnable(),
                     tvPrimaryKeyListener.getText(),
                 ).toString()
                 val previewDialog = PreViewDialog(content)
