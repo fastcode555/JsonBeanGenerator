@@ -27,7 +27,7 @@ class DartDataBaseGenerator(
         val classBuilder = StringBuilder()
 
         classBuilder.insert(0, "import 'package:$projectName$packagePath';\n")
-        classBuilder.insert(0, "import 'package:json2dart_safe/json2dart.dart';\n")
+        classBuilder.insert(0, "import 'package:json2dart_db/json2dart_db.dart';\n")
         val tableSqlBuilder = tableSqlMethod(json, tableName)
         classBuilder.append("\nclass $daoName extends BaseDao<$tableName> {\n")
         classBuilder.append("  static const String _tableName = '$fileName';\n\n")
@@ -140,7 +140,7 @@ class DartDataBaseGenerator(
             dbManagerBuilder.append(dbManagerFile.readText())
         } else {
             dbManagerFile.createNewFile()
-            dbManagerBuilder.append("import 'dart:async';\n\nimport 'package:json2dart_safe/json2dart.dart';\nimport 'package:sqflite/sqflite.dart';\n\nclass DbManager extends BaseDbManager {\n  static DbManager? _instance;\n\n  factory DbManager() => _getInstance();\n\n  static DbManager get instance => _getInstance();\n\n  static DbManager _getInstance() {\n    _instance ??= DbManager._internal();\n    return _instance!;\n  }\n\n  DbManager._internal();\n\n  @override\n  FutureOr<void> onCreate(Database db, int version) async {\n  }\n}\n\n")
+            dbManagerBuilder.append("import 'dart:async';\n\nimport 'package:json2dart_db/json2dart_db.dart';\nimport 'package:sqflite/sqflite.dart';\n\nclass DbManager extends BaseDbManager {\n  static DbManager? _instance;\n\n  factory DbManager() => _getInstance();\n\n  static DbManager get instance => _getInstance();\n\n  static DbManager _getInstance() =>  _instance ??= DbManager._internal();\n\n  DbManager._internal();\n\n  @override\n  FutureOr<void> onCreate(Database db, int version) async {\n  }\n}\n\n")
         }
         dbManagerBuilder.insert(0, "import '${fileName}_dao.dart';\n")
         val index = dbManagerBuilder.lastIndexOf("}")
