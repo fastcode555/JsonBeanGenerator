@@ -24,12 +24,11 @@ class LanguageDartWriter(
     //将key写入到strings.dart文件中
     fun writeKey2Index() {
         val stringsFile = File("${dirPath}/strings.dart")
-        var dartBuilder: java.lang.StringBuilder?
+        var dartBuilder: java.lang.StringBuilder
         if (!stringsFile.exists()) {
-            dartBuilder = java.lang.StringBuilder()
+            dartBuilder = java.lang.StringBuilder().append("\nclass Ids {\n").append("}\n")
             stringsFile.parentFile.mkdirs()
             stringsFile.createNewFile()
-            writeImportAndHeader(dartBuilder)
             writeTranslationService()
         } else {
             dartBuilder = StringBuilder(stringsFile.readText())
@@ -46,22 +45,6 @@ class LanguageDartWriter(
 
     }
 
-    //写入导包和导头部语言部分
-    private fun writeImportAndHeader(dartBuilder: StringBuilder) {
-        val method = StringBuilder()
-        val currentPackageName = getCurrentPackageName()
-        method.append("\nconst Map<String, Map<String, String>> localizedSimpleValues = {\n")
-        for ((k, v) in mapValue) {
-            val fileName = generateFileName(k)
-            dartBuilder.append("import '$currentPackageName$fileName';\n")
-            method.append("\t'$k':${generateVariableName(k)},\n")
-            writeValue2Dart(fileName, k, v)
-        }
-        method.append("};\n")
-        dartBuilder.append(method.toString())
-        dartBuilder.append("\nclass Ids {\n")
-        dartBuilder.append("}\n")
-    }
 
     //获取当前导包的名字前缀
     private fun getCurrentPackageName(): String {
@@ -79,15 +62,24 @@ class LanguageDartWriter(
     //生成translation_service 的服务文件
     private fun writeTranslationService() {
         val translationFile = File("${dirPath}/translation_service.dart")
+        val dartBuilder = StringBuilder()
+
+        val method = StringBuilder()
+        val currentPackageName = getCurrentPackageName()
+        method.append("const {\n")
+        for ((k, v) in mapValue) {
+            val fileName = generateFileName(k)
+            dartBuilder.append("import '$currentPackageName$fileName';\n")
+            method.append("\t'$k':${generateVariableName(k)},\n")
+            writeValue2Dart(fileName, k, v)
+        }
+        method.append("};\n")
+
         translationFile.writeText(
-            "import 'package:flutter/material.dart';\nimport 'package:get/get.dart';\n" +
-                    "import '${getCurrentPackageName()}strings.dart';\n\n" +
+            "${dartBuilder}import 'package:flutter/material.dart';\nimport 'package:get/get.dart';\n\n" +
                     "class TranslationService extends Translations {\n" +
-                    "  static Locale? get locale => Get.deviceLocale;\n" +
-                    "  static final fallbackLocale = Locale('en', 'US');\n\n" +
                     "  @override\n" +
-                    "  Map<String, Map<String, String>> get keys => localizedSimpleValues;\n" +
-                    "}\n"
+                    "  Map<String, Map<String, String>> get keys => $method}\n"
         )
     }
 
