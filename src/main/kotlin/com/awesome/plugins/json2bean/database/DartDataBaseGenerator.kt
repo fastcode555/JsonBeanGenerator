@@ -45,8 +45,8 @@ class DartDataBaseGenerator(
         obj: Any?,
         tableName: String
     ): String {
-        val builder = StringBuilder("  static String tableSql([String? tableName]) => \"\"\n")
-        builder.append("      \"CREATE TABLE IF NOT EXISTS `\${tableName ?? _tableName}` (\"\n")
+        val builder = StringBuilder("  static String tableSql([String? tableName]) => '''\n")
+        builder.append("      CREATE TABLE IF NOT EXISTS `\${tableName ?? _tableName}` (\n")
         var parseObj: JSONObject? = null
         if (obj is JSONObject) {
             parseObj = obj
@@ -55,20 +55,20 @@ class DartDataBaseGenerator(
         }
         for ((key, element) in parseObj!!.innerMap) {
             if (element is JSONObject || element is JSONArray) {
-                builder.append("      \"`$key` TEXT,\"\n")
+                builder.append("      `$key` TEXT,\n")
             } else {
-                builder.append("      \"`$key` ${getType(element)}${addPrimaryKey(key)},\"\n")
+                builder.append("      `$key` ${getType(element)}${addPrimaryKey(key)},\n")
             }
         }
         if (!builder.contains("`$primaryKey`")) {
             isAutoIncrease = true
-            builder.append("      \"`$primaryKey` INTEGER PRIMARY KEY AUTOINCREMENT,\"\n")
+            builder.append("      `$primaryKey` INTEGER PRIMARY KEY AUTOINCREMENT,\n")
         }
 
         var result = builder.toString()
         var index = result.lastIndexOf(",")
         if (index > 0) {
-            result = result.replaceRange(index, index + 1, ")")
+            result = result.replaceRange(index, index + 1, "\n      );'''")
         }
         builder.clear()
         builder.append(result)
