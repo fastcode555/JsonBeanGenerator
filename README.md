@@ -9,9 +9,10 @@
 # 插件安装
 
 请点击[下载](https://github.com/fastcode555/JsonBeanGenerator/tree/master/publish_version) 最新的版本，并从本地进行安装：
-</br></br>
+<br/>
+<br/>
 Prefercens->Plugin->Setting->Install Plugin from Disk
-</br>
+<br/>
 ![Alt](pic/install_from_plugin.png)
 
 # 使用方法
@@ -21,8 +22,8 @@ Macos 使用 <font color=red>Command+N</font>键，就能看到如下弹窗： �
 
 # Json2Dart-Null-Safety
 
-基于之前json转dart模型不是特别方便，而且常见的几种也数据类型安全，经过几个版本的迭代，已经成熟的应用于各个项目中，因此特意写下来记录一下，供各位参考。</br>
-</br>
+基于之前json转dart模型不是特别方便，而且常见的几种也数据类型安全，经过几个版本的迭代，已经成熟的应用于各个项目中，因此特意写下来记录一下，供各位参考。<br/>
+<br/>
 选取一段[json](pic/datas/audio_book.json)数据,选中自己模型将要生成的文件夹，这里进行简单示例，如下：
 
 - ClassName 写上文件名，真正的className会自动生成
@@ -56,14 +57,14 @@ Macos 使用 <font color=red>Command+N</font>键，就能看到如下弹窗： �
     ..put('trackList', trackList?.map((v) => v.toJson()).toList());
 ```
 
-- toBean </br>
+- toBean <br/>
 
 ```dart
   ///第一个父类增加了一个静态方法，方便方法引用
   static AudioBookTest toBean(Map json) => AudioBookTest.fromJson(json);
 ```
 
-- toString </br>
+- toString <br/>
 
 ```dart
   ///复写toString方法，将数据又重新以json形式导出
