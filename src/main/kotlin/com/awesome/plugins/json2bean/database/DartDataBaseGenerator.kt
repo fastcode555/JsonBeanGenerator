@@ -26,10 +26,12 @@ class DartDataBaseGenerator(
         val tableName = fileName.toUpperCamel()
         val classBuilder = StringBuilder()
 
+        classBuilder.insert(0, "import 'package:$projectName/database/db_manager.dart';\n")
         classBuilder.insert(0, "import 'package:$projectName$packagePath';\n")
         classBuilder.insert(0, "import 'package:json2dart_db/json2dart_db.dart';\n")
         val tableSqlBuilder = tableSqlMethod(json, tableName)
         classBuilder.append("\nclass $daoName extends BaseDao<$tableName> {\n")
+        classBuilder.append("  static $daoName get of => DbManager.instance.${fileName.toCamel()}Dao;\n\n")
         classBuilder.append("  static const String _tableName = '$fileName';\n\n")
         classBuilder.append("  $daoName() : super(_tableName, '$primaryKey');\n\n")
         classBuilder.append("$tableSqlBuilder")
