@@ -95,7 +95,7 @@ class DartDataBaseGenerator(
         } else if (element is Float) {
             return "FLOAT"
         } else if (element is Boolean) {
-            return "BOOLEAN"
+            return /*"BOOLEAN"*/"TEXT"
         } else {
             return "TEXT"
         }
