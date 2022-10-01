@@ -1,6 +1,8 @@
 package com.awesome.plugins.assetgenerate
 
 import clearSymbol
+import com.awesome.utils.basePath
+import com.awesome.utils.moduleName
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -8,7 +10,6 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import org.jetbrains.annotations.NotNull
 import toCamel
 import java.io.File
 import java.lang.StringBuilder
@@ -24,11 +25,21 @@ class AssetGenerateAction : AnAction() {
         if (mDirectory != null && mDirectory is PsiDirectory) {
             WriteCommandAction.runWriteCommandAction(mDirectory.project) {
                 val builder = StringBuilder()
+                val basePath = mDirectory.basePath()
+                val isChildProject = basePath != mDirectory.project.basePath
                 builder.append("class R {\n")
+
+                val dirName = mDirectory.virtualFile.name
+                if (isChildProject) {
+                    builder.append("  static const String _root = \"packages/${mDirectory.moduleName()}/$dirName\";\n")
+                } else {
+                    builder.append("  static const String _root = \"$dirName\";\n\n")
+                }
                 generateAssetDartFile(
                     mDirectory,
                     builder,
-                    mDirectory.parentDirectory?.virtualFile?.path
+                    mDirectory.virtualFile.path,
+                    "\$_root/",
                 )
                 builder.append("}")
                 mDirectory.parent?.virtualFile?.path?.let {
@@ -49,29 +60,33 @@ class AssetGenerateAction : AnAction() {
     }
 
     ///生成所在工程的资源文件索引
-    private fun generateAssetDartFile(mDirectory: PsiDirectory, builder: StringBuilder, rootPath: @NotNull String?) {
+    private fun generateAssetDartFile(
+        mDirectory: PsiDirectory,
+        builder: StringBuilder,
+        rootPath: String?,
+        root: String
+    ) {
         if (isContainFile(mDirectory)) {
-            builder.append("\t///------------------------ ${mDirectory.name} ------------------------\n")
+            builder.append("\n\t///------------------------ ${mDirectory.name} ------------------------\n")
         }
-
         mDirectory.files.map {
             val assetName = it.virtualFile.path.replace("${rootPath!!}/", "")
             if (isFont(it)) {
                 builder.append(
                     "\tstatic const String ${
                         it.virtualFile.nameWithoutExtension.clearSymbol().toCamel()
-                    } = '${it.virtualFile.nameWithoutExtension}';\n"
+                    } = '$root${it.virtualFile.nameWithoutExtension}';\n"
                 )
             } else {
                 builder.append(
                     "\tstatic const String ${
                         it.virtualFile.nameWithoutExtension.clearSymbol().toCamel()
-                    } = '$assetName';\n"
+                    } = '$root$assetName';\n"
                 )
             }
         }
         mDirectory.subdirectories.map {
-            generateAssetDartFile(it, builder, rootPath)
+            generateAssetDartFile(it, builder, rootPath, root)
         }
     }
 

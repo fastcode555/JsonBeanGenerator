@@ -1,5 +1,7 @@
 package com.awesome.plugins.language
 
+import com.awesome.utils.basePath
+import com.awesome.utils.moduleName
 import com.awesome.utils.regexOne
 import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiElement
@@ -45,22 +47,11 @@ class LanguageDartWriter(
 
     }
 
-    private fun _getBasePath(psiElement: PsiElement): String {
-        if (psiElement is PsiFile) {
-            var path = psiElement.virtualFile.path.split("/lib/").first()
-            val file = File(path, "pubspec.yaml")
-            if (file.exists()) {
-                return path
-            }
-        }
-        return psiElement.project.basePath!!
-    }
 
     //获取当前导包的名字前缀
     private fun getCurrentPackageName(): String {
         if (moduleName.isEmpty()) {
-            val pubspecFile = File("${_getBasePath(psiElement)}/pubspec.yaml").readText()
-            moduleName = pubspecFile.regexOne("(?<=name\\:).*?(?=\\n)")?.trim() ?: ""
+            moduleName = psiElement.moduleName()
         }
         val filePath = dirPath
         val content = "${moduleName}/lib";

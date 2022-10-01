@@ -86,34 +86,49 @@ ios的同学有问过我是什么意思，R英语单词为**resource**， 在安
 
 ```dart
 class R {
+  static const String _root = "assets";
+
   ///------------------------ assets ------------------------
-  static const String icShift = 'assets/ic_shift.svg';
-  static const String icGoogle = 'assets/ic_google.png';
+  static const String icCry = '$_root/ic_cry.png';
+  static const String icAvatar = '$_root/ic_avatar.png';
+  static const String icHistory = '$_root/ic_history.png';
 
-  ///------------------------ auth ------------------------
-  static const String icGoogleLogin = 'assets/auth/ic_google_login.png';
-  static const String icFacebookLogin = 'assets/auth/ic_facebook_login.png';
+  ///------------------------ tabs ------------------------
+  static const String icPen = '$_root/tabs/ic_pen.png';
+  static const String icTodo = '$_root/tabs/ic_todo.png';
+  static const String icDatas = '$_root/tabs/ic_datas.png';
+  static const String icSetting = '$_root/tabs/ic_setting.png';
+  static const String icFavorite = '$_root/tabs/ic_favorite.png';
 
-  ///------------------------ data ------------------------
-  static const String areacode = 'assets/data/areaCode.json';
-
-  ///------------------------ common ------------------------
-  static const String icLauncher = 'assets/common/ic_launcher.png';
-  static const String icDefaultUser = 'assets/common/ic_default_user.svg';
-  static const String iconSuperMusic = 'assets/common/icon_super_music.png';
-  static const String iconFeatherWifi = 'assets/common/icon_feather_wifi.png';
-
-  ///------------------------ bottombar ------------------------
-  static const String icTabSearchActive = 'assets/bottombar/ic_tab_search_active.svg';
-  static const String icTabSearchNormal = 'assets/bottombar/ic_tab_search_normal.svg';
-  ///------------------------ assets_rate ------------------------
-  static const String icStar = 'assets/assets_rate/ic_star.svg';
-  static const String icStarFill = 'assets/assets_rate/ic_star_fill.svg';
-  static const String icStarHalf = 'assets/assets_rate/ic_star_half.svg';
-
-  ///------------------------ assets_animations ------------------------
-  static const String launchAnmiation1 = 'assets/assets_animations/launch_anmiation_1.png';
+  ///------------------------ files ------------------------
+  static const String icDir = '$_root/files/ic_dir.png';
+  static const String icBook = '$_root/files/ic_book.png';
+  static const String icFile = '$_root/files/ic_file.png';
+  static const String icOpenFolder = '$_root/files/ic_open_folder.png';
+  static const String icRootFolder = '$_root/files/ic_root_folder.png';
  }
+
+```
+而对于该主工程下面的子工程，则会生成，类似如下所示的r.dart文件
+```dart
+class R {
+  static const String _root = "packages/flutter_reader/assets";
+
+  ///------------------------ assets ------------------------
+  static const String icTab = '$_root/ic_tab.png';
+  static const String icFreely = '$_root/ic_freely.svg';
+  static const String icMdEye = '$_root/ic_md_eye.png';
+  static const String icMdSplit = '$_root/ic_md_split.png';
+  static const String icNormally = '$_root/ic_normally.svg';
+  static const String icSqueezed = '$_root/ic_squeezed.svg';
+  static const String icFramework = '$_root/ic_framework.svg';
+  static const String icChangeLine = '$_root/ic_change_line.png';
+  static const String icLargeFrame = '$_root/ic_large_frame.svg';
+  static const String icTextDelete = '$_root/ic_text_delete.png';
+  static const String icTextFormat = '$_root/ic_text_format.png';
+  static const String icSplitSymbol = '$_root/ic_split_symbol.png';
+  static const String icNoIndentation = '$_root/ic_no_indentation.svg';
+}
 
 ```
 

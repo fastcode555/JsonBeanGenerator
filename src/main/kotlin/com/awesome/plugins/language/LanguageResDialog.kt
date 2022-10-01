@@ -4,6 +4,7 @@ import clearSymbol
 import com.awesome.plugins.language.LanguageDartWriter
 import com.awesome.utils.HttpApi
 import com.awesome.utils.PropertiesHelper
+import com.awesome.utils.basePath
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiDirectory
@@ -129,7 +130,7 @@ class LanguageResDialog(
             dirPath = psiElement.virtualFile.path
         } else {
             val dir = properties!!.getProperty("plugin.languageDir")
-            dirPath = "${_getBasePath(psiElement)}$dir"
+            dirPath = "${psiElement.basePath()}$dir"
         }
         setContentPane(contentPane)
         isModal = true
@@ -156,18 +157,6 @@ class LanguageResDialog(
         initList()
         tvChinese?.text = textValue
     }
-
-    private fun _getBasePath(psiElement: PsiElement): String {
-        if (psiElement is PsiFile) {
-            var path = psiElement.virtualFile.path.split("/lib/").first()
-            val file = File(path, "pubspec.yaml")
-            if (file.exists()) {
-                return path
-            }
-        }
-        return psiElement.project.basePath!!
-    }
-
 
     private fun initList() {
         for (i in 0 until languages!!.size) {

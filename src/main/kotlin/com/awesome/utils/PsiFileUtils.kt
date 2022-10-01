@@ -7,6 +7,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
+import java.io.File
 
 /**
  * Created by JarvisLau on 2018/3/14.
@@ -22,7 +23,32 @@ fun PsiElement.reload() {
         this.manager.reloadFromDisk(this)
 
     }
+}
 
+/**
+ * 获取主工程或者子工程的项目文件夹
+ **/
+fun PsiElement.basePath(): String {
+    if (this is PsiFile) {
+        var path = this.virtualFile.path.split("/lib/").first()
+        val file = File(path, "pubspec.yaml")
+        if (file.exists()) {
+            return path
+        }
+    } else if (this is PsiDirectory) {
+        val file = File(this.parent!!.virtualFile.path, "pubspec.yaml")
+        if (file.exists()) {
+            return this.parent!!.virtualFile.path
+        }
+    }
+    return this.project.basePath!!
+}
+
+///读取工程的 ModuleName
+fun PsiElement.moduleName(): String {
+    val pubspecFile = File("${this.basePath()}/pubspec.yaml").readText()
+    val moduleName = pubspecFile.regexOne("(?<=name\\:).*?(?=\\n)")?.trim() ?: ""
+    return moduleName;
 }
 
 object PsiFileUtils {
