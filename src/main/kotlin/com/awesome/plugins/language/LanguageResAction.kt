@@ -14,7 +14,7 @@ import org.apache.http.util.TextUtils
 //https://www.w3schools.com/tags/ref_language_codes.asp
 class LanguageResAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
-        val mDirectory = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)
+        val mDirectory = e.getData(CommonDataKeys.PSI_ELEMENT)
         if (mDirectory != null && mDirectory is PsiDirectory) {
             val mDialog = LanguageResDialog(mDirectory, "", null)
             mDialog.showDialog()
@@ -32,7 +32,7 @@ class LanguageResAction : AnAction() {
             if (value.endsWith("'") || value.endsWith("\"")) {
                 value = value.substring(0, value.length - 1)
             }
-            val mDialog = LanguageResDialog(psiFile!!, value,selectionModel)
+            val mDialog = LanguageResDialog(psiFile!!, value, selectionModel)
             mDialog.showDialog()
         }
     }

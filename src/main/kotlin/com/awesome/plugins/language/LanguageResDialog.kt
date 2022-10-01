@@ -8,12 +8,14 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import org.apache.http.util.TextUtils
 import toCamel
 import java.awt.Label
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.awt.event.KeyEvent
+import java.io.File
 import java.lang.StringBuilder
 import javax.swing.*
 
@@ -127,7 +129,7 @@ class LanguageResDialog(
             dirPath = psiElement.virtualFile.path
         } else {
             val dir = properties!!.getProperty("plugin.languageDir")
-            dirPath = "${psiElement.project.basePath}$dir"
+            dirPath = "${_getBasePath(psiElement)}$dir"
         }
         setContentPane(contentPane)
         isModal = true
@@ -153,6 +155,17 @@ class LanguageResDialog(
         initProperties()
         initList()
         tvChinese?.text = textValue
+    }
+
+    private fun _getBasePath(psiElement: PsiElement): String {
+        if (psiElement is PsiFile) {
+            var path = psiElement.virtualFile.path.split("/lib/").first()
+            val file = File(path, "pubspec.yaml")
+            if (file.exists()) {
+                return path
+            }
+        }
+        return psiElement.project.basePath!!
     }
 
 
