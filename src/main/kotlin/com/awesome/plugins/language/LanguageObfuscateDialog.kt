@@ -23,16 +23,23 @@ class LanguageObfuscateDialog(val editor: Editor?) : JDialog() {
 
     //开始陪陪数据进行混淆
     private fun obfuscateResource() {
-        WriteCommandAction.runWriteCommandAction(editor!!.project) {
-            val content = editor.document.text
-            //匹配所有的双引号或者单引号内的key
-            content.regex("[\\n ]*[\\'\"]{1}.*?[\\'\"]{1}") {
-                val index = editor.document.text.indexOf(it)
-                val hex = count.toHexString().uppercase()
-                val key = if (tvSuffix!!.text!!.isEmpty()) "$hex" else "${tvSuffix!!.text}#$hex"
-                editor.document.replaceString(index, index + it.length, " '$key'")
-                count++
+        try {
+            WriteCommandAction.runWriteCommandAction(editor!!.project) {
+                val content = editor.document.text
+                //匹配所有的双引号或者单引号内的key
+                content.regex("[\\n ]*[\\'\"]{1}.*?[\\'\"]{1}") {
+                    try {
+                        val index = editor.document.text.indexOf(it)
+                        val hex = count.toHexString().uppercase()
+                        val key = if (tvSuffix!!.text!!.isEmpty()) "$hex" else "${tvSuffix!!.text}#$hex"
+                        editor.document.replaceString(index, index + it.length, " '$key'")
+                        count++
+                    } catch (e: Exception) {
+                        count++
+                    }
+                }
             }
+        } catch (e: Exception) {
         }
 
     }
