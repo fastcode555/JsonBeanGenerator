@@ -6,7 +6,6 @@ import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiDirectory
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import org.apache.http.util.TextUtils
 
@@ -24,6 +23,8 @@ class LanguageResAction : AnAction() {
             val selectionModel = editor?.selectionModel
             var value = selectionModel?.selectedText
             if (TextUtils.isEmpty(selectionModel?.selectedText)) {
+                val mDialog = LanguageObfuscateDialog(editor)
+                mDialog.showDialog()
                 return
             }
             if (value!!.startsWith("'") || value.startsWith("\"")) {
