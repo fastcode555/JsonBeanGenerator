@@ -4,6 +4,7 @@ import com.awesome.LanguageResDialog
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
@@ -23,7 +24,7 @@ class LanguageResAction : AnAction() {
             val selectionModel = editor?.selectionModel
             var value = selectionModel?.selectedText
             if (TextUtils.isEmpty(selectionModel?.selectedText)) {
-                val mDialog = LanguageObfuscateDialog(editor)
+                val mDialog = LanguageObfuscateDialog(editor, psiFile)
                 mDialog.showDialog()
                 return
             }
