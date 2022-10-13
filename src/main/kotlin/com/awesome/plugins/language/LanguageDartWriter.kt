@@ -6,6 +6,7 @@ import com.awesome.utils.regexOne
 import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import firstUpperCamel
 import toCamel
 import java.io.File
 

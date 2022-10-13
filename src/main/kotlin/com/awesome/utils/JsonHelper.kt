@@ -12,11 +12,18 @@ var SPECIAL_SYMBOL: Array<String> =
 fun String?.toCamel(): String {
     var result = this.clearSymbol()
     if (this == result && !result!!.contains("_")) {
+        result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, result)
         return if (KEYS.contains(result)) "${result}x" else result!!
     }
     result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, result)
     return if (KEYS.contains(result)) "${result}x" else result!!
+}
 
+///将第一个字符，转换成大写
+fun String.firstUpperCamel(): String {
+    val header = this.substring(0, 1).toUpperCamel()
+    val tail = this.substring(1, this.length)
+    return "$header$tail"
 }
 
 fun String?.toUpperCamel(): String {
@@ -36,7 +43,7 @@ fun String?.clearSymbol(): String? {
 }
 
 fun String?.formatJson(): String? {
-    if (this == null || this.isEmpty()) return this;
+    if (this == null || this.isEmpty()) return this
     val json = if (this.startsWith("{")) JSONObject.parseObject(this) else JSONArray.parse(this)
     return JSON.toJSONString(json, true)
 }
