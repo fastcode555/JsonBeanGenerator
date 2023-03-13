@@ -30,16 +30,16 @@ class AssetGenerateAction : AnAction() {
                 builder.append("class R {\n")
 
                 val dirName = mDirectory.virtualFile.name
+                val rootVariableName = "_${dirName.clearSymbol().toCamel()}"
                 if (isChildProject) {
-                    builder.append("  static const String _root = \"packages/${mDirectory.moduleName()}/$dirName\";\n")
+                    builder.append("  static const String $rootVariableName = \"packages/${mDirectory.moduleName()}/$dirName\";\n")
                 } else {
-                    builder.append("  static const String _root = \"$dirName\";\n\n")
+                    builder.append("  static const String $rootVariableName = \"$dirName\";\n")
                 }
                 generateAssetDartFile(
                     mDirectory,
                     builder,
                     mDirectory.virtualFile.path,
-                    "\$_root/",
                 )
                 builder.append("}")
                 mDirectory.parent?.virtualFile?.path?.let {
@@ -64,29 +64,39 @@ class AssetGenerateAction : AnAction() {
         mDirectory: PsiDirectory,
         builder: StringBuilder,
         rootPath: String?,
-        root: String
     ) {
+
+        val dirVariableName = "_${mDirectory.name.clearSymbol().toCamel()}"
+        val isRoot = mDirectory.virtualFile.path.replace(rootPath!!, "").trim().isEmpty()
+        val parentVariableName = "\$_${mDirectory.parent?.name.clearSymbol().toCamel()}"
+        val currentDirVariableName = "\$_${mDirectory.name.clearSymbol().toCamel()}"
+
         if (isContainFile(mDirectory)) {
             builder.append("\n\t///------------------------ ${mDirectory.name} ------------------------\n")
+            if (!isRoot) {
+                builder.append("\tstatic const String $dirVariableName = '${parentVariableName}${File.separator}${mDirectory.name}';\n")
+            }
+
         }
+
         mDirectory.files.map {
-            val assetName = it.virtualFile.path.replace("${rootPath!!}/", "")
+            val assetName = it.virtualFile.name
             if (isFont(it)) {
                 builder.append(
                     "\tstatic const String ${
                         it.virtualFile.nameWithoutExtension.clearSymbol().toCamel()
-                    } = '$root${it.virtualFile.nameWithoutExtension}';\n"
+                    } = '$currentDirVariableName${File.separator}${it.virtualFile.nameWithoutExtension}';\n"
                 )
             } else {
                 builder.append(
                     "\tstatic const String ${
                         it.virtualFile.nameWithoutExtension.clearSymbol().toCamel()
-                    } = '$root$assetName';\n"
+                    } = '$currentDirVariableName${File.separator}$assetName';\n"
                 )
             }
         }
         mDirectory.subdirectories.map {
-            generateAssetDartFile(it, builder, rootPath, root)
+            generateAssetDartFile(it, builder, rootPath)
         }
     }
 
