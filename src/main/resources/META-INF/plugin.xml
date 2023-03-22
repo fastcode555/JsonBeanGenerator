@@ -76,11 +76,11 @@
                 icon="/plugin_icon.png" description="Generated multi com.awesome.plugins.language resource.">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
-        <action id="TestAction" class="com.awesome.plugins.testaction.TestAction"
+<!--        <action id="TestAction" class="com.awesome.plugins.testaction.TestAction"
                 text="TestAction"
                 icon="/plugin_icon.png" description="Use test action.">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
-        </action>
+        </action>-->
 
         <!--        <action icon="/plugin_icon.png" id="SqlGenerator" class="com.awesome.plugins.sqlgenerate.SqlAction"-->
         <!--                text="SqlGenerator"-->
