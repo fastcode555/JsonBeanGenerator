@@ -12,7 +12,6 @@ var SPECIAL_SYMBOL: Array<String> =
 fun String?.toCamel(): String {
     var result = this.clearSymbol()
     if (this == result && !result!!.contains("_")) {
-        result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, result)
         return if (KEYS.contains(result)) "${result}x" else result!!
     }
     result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, result)
@@ -21,14 +20,19 @@ fun String?.toCamel(): String {
 
 ///将第一个字符，转换成大写
 fun String.firstUpperCamel(): String {
-    val header = this.substring(0, 1).toUpperCamel()
+    val header = this.substring(0, 1).uppercase()
     val tail = this.substring(1, this.length)
     return "$header$tail"
 }
 
 fun String?.toUpperCamel(): String {
-    val result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, this.clearSymbol())
-    return if (UPPER_KEYS.contains(result)) "${result}x" else result
+    if (this == null) return ""
+    if (this!!.contains("_") || this!!.contains(" ")) {
+        val result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, this.clearSymbol())
+        return if (UPPER_KEYS.contains(result)) "${result}x" else result
+    }
+    val result = this!!.clearSymbol()?.firstUpperCamel()
+    return if (UPPER_KEYS.contains(result)) "${result}x" else "$result"
 }
 
 fun String?.clearSymbol(): String? {
