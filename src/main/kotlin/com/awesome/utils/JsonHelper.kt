@@ -12,7 +12,7 @@ var SPECIAL_SYMBOL: Array<String> =
 fun String?.toCamel(): String {
     var result = this.clearSymbol()
     if (this == result && !result!!.contains("_")) {
-        return if (KEYS.contains(result)) "${result}x" else result!!
+        return if (KEYS.contains(result)) "${result}x" else result
     }
     result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.LOWER_CAMEL, result)
     return if (KEYS.contains(result)) "${result}x" else result!!
@@ -26,17 +26,17 @@ fun String.firstUpperCamel(): String {
 }
 
 fun String?.toUpperCamel(): String {
-    if (this == null) return ""
-    if (this!!.contains("_") || this!!.contains(" ")) {
+    if (this.isNullOrEmpty()) return ""
+    if (this.contains("_") || this.contains(" ")) {
         val result = CaseFormat.LOWER_UNDERSCORE.to(CaseFormat.UPPER_CAMEL, this.clearSymbol())
         return if (UPPER_KEYS.contains(result)) "${result}x" else result
     }
-    val result = this!!.clearSymbol()?.firstUpperCamel()
+    val result = this.clearSymbol()?.firstUpperCamel()
     return if (UPPER_KEYS.contains(result)) "${result}x" else "$result"
 }
 
 fun String?.clearSymbol(): String? {
-    if (this == null || this.isEmpty()) return this
+    if (this.isNullOrEmpty()) return this
     var key: String = this
     for (symbol in SPECIAL_SYMBOL) {
         if (key.contains(symbol)) {
@@ -47,7 +47,7 @@ fun String?.clearSymbol(): String? {
 }
 
 fun String?.formatJson(): String? {
-    if (this == null || this.isEmpty()) return this
+    if (this.isNullOrEmpty()) return this
     val json = if (this.startsWith("{")) JSONObject.parseObject(this) else JSONArray.parse(this)
     return JSON.toJSONString(json, true)
 }
