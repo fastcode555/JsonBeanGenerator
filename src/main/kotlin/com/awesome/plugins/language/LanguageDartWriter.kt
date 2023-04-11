@@ -101,7 +101,7 @@ class LanguageDartWriter(
         }
         //写入每个翻译的文件中，如果该Key已经存在，就不使用
         val index = builder.lastIndexOf("};")
-        val idValue = "\tIds.${idKey}:'$value',\n"
+        val idValue = "\tIds.${idKey}: '$value',\n"
         if (!builder.contains("Ids.${idKey}:")) {
             builder.insert(index, idValue)
             stringsFile.writeText(builder.toString())
