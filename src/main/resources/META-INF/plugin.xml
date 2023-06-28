@@ -51,6 +51,13 @@
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
 
+        <action id="json2bean Copy Bean"
+                class="com.awesome.plugins.json2bean.CopyJsonGenerateAction"
+                text="copy"
+                icon="/plugin_icon.png" description="Copy from object">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
+        </action>
+
         <action id="json2bean FromJsonGenerateAction"
                 class="com.awesome.plugins.json2bean.FromJsonGenerateAction"
                 text="fromJson"
@@ -76,11 +83,11 @@
                 icon="/plugin_icon.png" description="Generated multi com.awesome.plugins.language resource.">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
-<!--        <action id="TestAction" class="com.awesome.plugins.testaction.TestAction"
-                text="TestAction"
-                icon="/plugin_icon.png" description="Use test action.">
-            <add-to-group group-id="GenerateGroup" anchor="last"/>
-        </action>-->
+        <!--        <action id="TestAction" class="com.awesome.plugins.testaction.TestAction"
+                        text="TestAction"
+                        icon="/plugin_icon.png" description="Use test action.">
+                    <add-to-group group-id="GenerateGroup" anchor="last"/>
+                </action>-->
 
         <!--        <action icon="/plugin_icon.png" id="SqlGenerator" class="com.awesome.plugins.sqlgenerate.SqlAction"-->
         <!--                text="SqlGenerator"-->
