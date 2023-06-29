@@ -1,12 +1,9 @@
 package com.awesome.plugins.language
 
-import com.awesome.utils.basePath
 import com.awesome.utils.moduleName
-import com.awesome.utils.regexOne
 import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import firstUpperCamel
 import toCamel
 import java.io.File
 
@@ -55,7 +52,7 @@ class LanguageDartWriter(
             moduleName = psiElement.moduleName()
         }
         val filePath = dirPath
-        val content = "${moduleName}/lib";
+        val content = "/lib";
         val index = filePath.indexOf(content) + content.length
         val importResult = filePath.substring(index, filePath.length)
         return "package:$moduleName/$importResult/".replace("//", "/")
