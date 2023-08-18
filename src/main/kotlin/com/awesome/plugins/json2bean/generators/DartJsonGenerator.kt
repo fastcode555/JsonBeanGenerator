@@ -35,7 +35,6 @@ class DartJsonGenerator(
         obj: Any?,
         className: String,
         classes: ArrayList<java.lang.StringBuilder>,
-        enableToBean: Boolean = true
     ): java.lang.StringBuilder {
 
         val uniqueClassName = generateUniqueClassName(className)
@@ -51,14 +50,14 @@ class DartJsonGenerator(
         } else if (obj is JSONArray) {
             parseObj = obj[0] as JSONObject
         }
-        builder.append(generateClassHeader(uniqueClassName, enableToBean))
+        builder.append(generateClassHeader(uniqueClassName))
         for ((key, element) in parseObj!!.innerMap) {
             if (element is JSONObject) {
                 builder.append("\t${key.toUpperCamel()}? ${key.toCamel()};\n")
                 construtorMethod.append("this.${key.toCamel()},")
                 toJsonMethod.append("\t\t\t'$key':${key.toCamel()}?.toJson(),\n")
                 fromJsonMethod.append("\t\t${key.toCamel()} = json.asBean('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
-                classes.add(parseJson(element, key.toUpperCamel(), classes, false))
+                classes.add(parseJson(element, key.toUpperCamel(), classes))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
                     val result = element[0]
@@ -71,14 +70,14 @@ class DartJsonGenerator(
                         builder.append("\tList<${key.toUpperCamel()}>? ${key.toCamel()};\n")
                         toJsonMethod.append("\t\t\t'$key':${key.toCamel()}?.map((v)=>v.toJson()).toList(),\n")
                         fromJsonMethod.append("\t\t${key.toCamel()} = json.asList<${key.toUpperCamel()}>('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
-                        classes.add(parseJson(result, key.toUpperCamel(), classes, false))
+                        classes.add(parseJson(result, key.toUpperCamel(), classes))
                     }
                 } else {//不明类型
                     construtorMethod.append("this.${key.toCamel()},")
                     builder.append("\tList<${key.toUpperCamel()}>? ${key.toCamel()};\n")
                     toJsonMethod.append("\t\t\t'$key':${key.toCamel()}?.map((v)=>v.toJson()).toList(),\n")
                     fromJsonMethod.append("\t\t${key.toCamel()} = json.asList<${key.toUpperCamel()}>('$key',(v)=>${key.toUpperCamel()}.fromJson(v));\n")
-                    classes.add(parseJson(JSONObject(), key.toUpperCamel(), classes, false))
+                    classes.add(parseJson(JSONObject(), key.toUpperCamel(), classes))
                 }
             } else {
                 construtorMethod.append("this.${key.toCamel()},")
@@ -86,10 +85,6 @@ class DartJsonGenerator(
                 toJsonMethod.append("\t\t\t'$key':${key.toCamel()},\n")
                 fromJsonMethod.append("\t\t${key.toCamel()} = json.${getParseType(element)}('$key');\n")
             }
-        }
-        //如果这个key不存在，则需要主动添加这个key
-        if (enableToBean) {
-            addThePrimaryKey(builder, fromJsonMethod, toJsonMethod, construtorMethod)
         }
 
         if (construtorMethod.isNotEmpty()) {
@@ -100,7 +95,7 @@ class DartJsonGenerator(
         val isToJsonNotEmpty = toJsonMethod.isNotEmpty()
 
         if (isToJsonNotEmpty) {
-            if (sqliteSupport && enableToBean) {
+            if (sqliteSupport) {
                 toJsonMethod.insert(
                     0,
                     "\n\t@override\n\tMap<String, dynamic> toJson() => {\n"
@@ -115,14 +110,11 @@ class DartJsonGenerator(
         builder.append(toJsonMethod).append("\t\t};\n")
 
         builder.append(fromJsonMethod.append("\t}\n"))
-        if (enableToBean) {
-            builder.append("\n\tstatic $uniqueClassName toBean(Map json) => ${uniqueClassName}.fromJson(json);\n")
-            if (sqliteSupport) {
-                val dataPrimaryKey = primaryKey.toCamel()
-                builder.append("\n\t@override\n\tMap<String, dynamic> primaryKeyAndValue() => {\"${primaryKey}\": $dataPrimaryKey};\n\n")
-                builder.append("  @override\n  int get hashCode => $dataPrimaryKey?.hashCode ?? super.hashCode;\n\n")
-                builder.append("  @override\n  bool operator ==(Object other) {\n    if (other is $uniqueClassName && $dataPrimaryKey != null) {\n      return other.$dataPrimaryKey == $dataPrimaryKey;\n    }\n    return super == other;\n  }\n")
-            }
+        if (sqliteSupport) {
+            val dataPrimaryKey = primaryKey.toCamel()
+            builder.append("\n\t@override\n\tMap<String, dynamic> primaryKeyAndValue() => {\"${primaryKey}\": $dataPrimaryKey};\n\n")
+            builder.append("  @override\n  int get hashCode => $dataPrimaryKey?.hashCode ?? super.hashCode;\n\n")
+            builder.append("  @override\n  bool operator ==(Object other) {\n    if (other is $uniqueClassName && $dataPrimaryKey != null) {\n      return other.$dataPrimaryKey == $dataPrimaryKey;\n    }\n    return super == other;\n  }\n")
         }
         builder.append("\n  @override\n  String toString() => jsonEncode(toJson());\n")
         builder.append("}")
@@ -143,9 +135,9 @@ class DartJsonGenerator(
         }
     }
 
-    private fun generateClassHeader(className: String, enableToBean: Boolean): String {
+    private fun generateClassHeader(className: String): String {
         var finalImplementClass = implementClass
-        if (sqliteSupport && enableToBean) {
+        if (sqliteSupport) {
             finalImplementClass = "BaseDbModel"
         }
         val extends = if (extendsClass.isNotEmpty()) " extends $extendsClass" else ""
