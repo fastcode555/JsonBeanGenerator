@@ -4,12 +4,10 @@ import com.awesome.LanguageResDialog
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
 import org.apache.http.util.TextUtils
-
 
 //https://www.w3schools.com/tags/ref_language_codes.asp
 class LanguageResAction : AnAction() {

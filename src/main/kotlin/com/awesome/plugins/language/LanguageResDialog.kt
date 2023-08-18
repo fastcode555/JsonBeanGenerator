@@ -174,8 +174,8 @@ class LanguageResDialog(
         val defaultLanguage = "zh-Hans,zh-Hant,en,ja,km,th,vi"
         val languageString = properties?.getProperty("plugin.languages") ?: defaultLanguage
         rawLanguage = properties?.getProperty("plugin.rawLanguage") ?: rawLanguage
-        needTranslate = "true".equals(properties?.getProperty("plugin.needTranslate"))
-        languages = languageString.split(',')//languageString.split(',')
+        needTranslate = "true" == properties?.getProperty("plugin.needTranslate")
+        languages = languageString.split(',')
         tvLanguages?.text = languageString
     }
 

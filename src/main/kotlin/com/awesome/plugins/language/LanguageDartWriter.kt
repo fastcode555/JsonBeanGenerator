@@ -8,21 +8,21 @@ import toCamel
 import java.io.File
 
 class LanguageDartWriter(
-    val mapValue: HashMap<String, String?>,
-    val idKey: String,
-    val dirPath: String,
-    val psiElement: PsiElement,
-    val rawText: String,
-    val selectionModel: SelectionModel?
+    private val mapValue: HashMap<String, String?>,
+    private val idKey: String,
+    private val dirPath: String,
+    private val psiElement: PsiElement,
+    private val rawText: String,
+    private val selectionModel: SelectionModel?
 ) {
-    var moduleName = ""
+    private var moduleName = ""
 
     fun startWrite() {
         writeKey2Index()
     }
 
     //将key写入到strings.dart文件中
-    fun writeKey2Index() {
+    private fun writeKey2Index() {
         val stringsFile = File("${dirPath}/strings.dart")
         var dartBuilder: java.lang.StringBuilder
         if (!stringsFile.exists()) {
@@ -39,7 +39,8 @@ class LanguageDartWriter(
         }
         val index = dartBuilder.lastIndexOf("}")
         if (!dartBuilder.contains("static const String $idKey =")) {
-            dartBuilder.insert(index, "\tstatic const String $idKey = '$idKey';\n")
+            val value = mapValue["en"] ?: mapValue["zh-Hans"]
+            dartBuilder.insert(index, "\tstatic const String $idKey = '$value';\n")
             stringsFile.writeText(dartBuilder.toString())
         }
 
@@ -83,7 +84,7 @@ class LanguageDartWriter(
     }
 
     //将翻译的值生成到各个文件中
-    fun writeValue2Dart(fileName: String, code: String, value: String?) {
+    private fun writeValue2Dart(fileName: String, code: String, value: String?) {
         val importStringDart = "import '${getCurrentPackageName()}strings.dart';\n"
         var builder: java.lang.StringBuilder?
         val stringsFile = File("${dirPath}/$fileName")
