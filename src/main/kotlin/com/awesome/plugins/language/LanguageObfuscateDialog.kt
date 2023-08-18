@@ -1,14 +1,12 @@
 package com.awesome.plugins.language
 
-import com.awesome.utils.matchOneRegex
-import com.awesome.utils.matchRegexOne
+import com.alibaba.fastjson.JSONObject
 import com.awesome.utils.regex
 import com.awesome.utils.regexOne
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
+import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
-import okhttp3.internal.toHexString
-import org.jetbrains.annotations.NotNull
 import java.awt.event.ActionEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -41,11 +39,13 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
         WriteCommandAction.runWriteCommandAction(psiFile!!.project, runnable)
     }
 
-    //开始对数据进行混淆,intellij 这个方法是有效的
+    /**
+     * 开始对数据进行混淆,intellij 这个方法是有效的
+     **/
     private fun obfuscateResource() {
         val content = editor!!.document.text
         //匹配所有的双引号或者单引号内的key
-        content.regex("[\\n ]*[\\'\"]{1}.*?[\\'\"]{1}") {
+        content.regex("[\\n ]*[\\'\\\"]{1}.*?[\\'\\\"]{1}(?=;)") {
             try {
                 val index = editor.document.text.indexOf(it)
                 val hex = Integer.toHexString(count).uppercase()
@@ -63,37 +63,102 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
      * 对页面进行反混淆
      **/
     private fun onAntiObfuscate() {
-        val enFilePath = psiFile?.virtualFile?.path?.replace("strings.dart", "string_en.dart")
-        if (enFilePath != null) {
-            val maps = HashMap<String, String?>()
-            val enFile = File(enFilePath)
-            val content = enFile.readText()
-            //正则读取多有字段，并切匹配出所有数据
-            content.regex("(?<=Ids.)(.*?)(?=:)") { key ->
-                val value = content.regexOne("(?<=Ids.$key:[ \\n]*['|\"]).*?(?=['|\"],\\n)")
-                maps[key] = value
-            }
-            //根据匹配到的所有内容回复当前文件的所有key
-            maps.forEach { (key, value) ->
-                val pattern = " $key \\=[ \\n]*[\\'\\\"].*?[\\'\\\"];"
-                editor?.apply {
-                    val matchContent = document.text.regexOne(pattern) ?: return@forEach
-                    val content = " $key = '$value';"
-                    val index = document.text.indexOf(matchContent)
-                    try {
-                        document.replaceString(index, index + matchContent.length, content)
-                    } catch (e: Exception) {
-                        print(e)
-                    }
+        val maps = queryKeyAndEnValue() ?: return
+        //根据匹配到的所有内容回复当前文件的所有key
+        maps.forEach { (key, value) ->
+            val pattern = " $key \\=[ \\n]*[\\'\\\"].*?[\\'\\\"];"
+            editor?.apply {
+                val matchContent = document.text.regexOne(pattern) ?: return@forEach
+                val content = " $key = '$value';"
+                val index = document.text.indexOf(matchContent)
+                try {
+                    document.replaceString(index, index + matchContent.length, content)
+                } catch (e: Exception) {
+                    print(e)
                 }
             }
         }
         dispose()
     }
 
-    ///导出Json文件
-    private fun onExportJson() {
+    /**
+     * 查询驼峰字段对应的英语值
+     **/
+    private fun queryKeyAndEnValue(): HashMap<String, String?>? {
+        val enFilePath = psiFile?.virtualFile?.path?.replace("strings.dart", "string_en.dart")
+        if (enFilePath != null) {
+            val maps = HashMap<String, String?>()
+            val enFile = File(enFilePath)
+            val content = enFile.readText()
+            //正则读取多有字段，并切匹配出所有数据
+            content.regex("(?<=Ids\\.)(.*?)\\:[ \\n]*['|\"].*?['|\"](?=[,]*\\n)") {
+                val index = it.indexOf(":")
+                val key = it.substring(0, index)
+                var value = it.substring(index + 1, it.length).trim()
+                value = value.substring(1, value.length - 1)
+                maps[key] = value
+            }
+            return maps
+        }
+        return null
+    }
 
+    /**
+     * 查询对应的stringKeys
+     **/
+    private fun queryStringKeys(): HashMap<String, String?>? {
+        val idsFilePath = psiFile?.virtualFile?.path
+        if (idsFilePath != null) {
+            val maps = HashMap<String, String?>()
+            val enFile = File(idsFilePath)
+            val content = enFile.readText()
+            content.regex("(?<=String ).*? =[ \\n]*['|\"].*?['|\"](?=;)") {
+                val arrays = it.split("=")
+                val key = arrays.first().trim()
+                var value = arrays.last().trim()
+                value = value.substring(1, value.length - 1)
+                maps[key] = value
+            }
+            return maps
+        }
+        return null
+    }
+
+    /**
+     * 导出Json文件
+     **/
+    private fun onExportJson() {
+        psiFile?.apply {
+            val maps = queryStringKeys() ?: return
+            val dir = findLanguageDir()
+            if (maps.isEmpty()) return
+            virtualFile.parent.children.forEach { file ->
+                if (file.name.startsWith("string_")) {
+                    val realFile = File(file.path)
+                    val content = realFile.readText()
+                    val jsonObj = JSONObject()
+                    val jsonFile = File("${dir.path}/${file.nameWithoutExtension.replace("string_", "")}.json")
+                    content.regex("(?<=Ids\\.)(.*?)\\:[ \\n]*['|\"].*?['|\"](?=[,]*\\n)") {
+                        val index = it.indexOf(":")
+                        val key = it.substring(0, index)
+                        var value = it.substring(index + 1, it.length).trim()
+                        value = value.substring(1, value.length - 1)
+                        jsonObj.put(maps[key], value)
+                    }
+                    jsonFile.writeText(jsonObj.toString())
+                }
+            }
+        }
+        dispose()
+    }
+
+    private fun findLanguageDir(): File {
+        val languageDir = "${psiFile?.parent?.virtualFile?.path}/languages"
+        val dir = File(languageDir)
+        if (!dir.exists()) {
+            dir.mkdir()
+        }
+        return dir
     }
 
     private fun onCancel() {
