@@ -1,18 +1,24 @@
 package com.awesome.plugins.language
 
+import clearSymbol
 import com.alibaba.fastjson.JSONObject
 import com.awesome.utils.regex
 import com.awesome.utils.regexOne
+import com.awesome.utils.showCount
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiFile
+import toCamel
+import toJSON
+import toUpperCamel
 import java.awt.event.ActionEvent
+import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
-import java.awt.event.KeyEvent
 import java.io.File
 import javax.swing.*
+import javax.swing.filechooser.FileFilter
 
 /**
  * 对Key开启批量混淆的功能
@@ -26,8 +32,8 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
     ///反混淆
     var antiObfuscate: JButton? = null
 
-    ///取消按钮
-    var buttonCancel: JButton? = null
+    ///导入Json的按钮
+    var btnImportJson: JButton? = null
 
     ///导出Json的按钮
     var btnExportJson: JButton? = null
@@ -152,6 +158,83 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
         dispose()
     }
 
+    /**
+     *  导入Json文件，生成对应的key值
+     **/
+    private fun onImportJson() {
+        psiFile?.apply {
+            val file = selectFile() ?: return
+            editor ?: return
+            val json = file.readText().toJSON() as JSONObject
+            val editorContent = editor.document.text
+            for ((key, element) in json.innerMap) {
+                var idKey = key?.newIdKey(editorContent)
+                if (editorContent.contains("\"${element}\"") || editorContent.contains("'${element}'")) {
+                    continue
+                }
+                var index = editor.document.text.lastIndexOf("}")
+                if (name == "strings.dart") {
+                    if (index < 0) {
+                        val header = "class Ids {\n}\n"
+                        editor.document.insertString(editor.document.text.length, header)
+                    }
+                    index = editor.document.text.lastIndexOf("}")
+                    editor.document.insertString(index, "  static const String $idKey = '$element';\n")
+                } else if (name.startsWith("string_")) {
+                    if (index < 0) {
+                        val header =
+                            "import 'package:eplay/res/strings.dart';\n\nconst Map<String, String> language${file.nameWithoutExtension.toUpperCamel()} = {\n};\n"
+                        editor.document.insertString(editor.document.text.length, header)
+                    }
+                    index = editor.document.text.lastIndexOf("}")
+                    editor.document.insertString(index, "  Ids.$idKey: '$element',\n")
+                }
+            }
+
+        }
+        dispose()
+    }
+
+
+    private fun String.newIdKey(content: @NlsSafe String): String {
+        val idKey = this.replace(" ", "_")?.trim().clearSymbol().toCamel()
+        val count = content.showCount("static const String $idKey ")
+        if (count == 0) {
+            return idKey
+        }
+        return "$idKey${count + 1}"
+    }
+
+    /**
+     * 创建文件选择器
+     **/
+    private fun selectFile(): File? {
+        val fileChooser = JFileChooser(psiFile?.virtualFile?.parent?.path ?: "")
+        fileChooser.fileFilter = object : FileFilter() {
+            override fun accept(f: File?): Boolean {
+                return f?.extension == ".json"
+            }
+
+            override fun getDescription(): String {
+                return ""
+            }
+        }
+        fileChooser.fileSelectionMode = JFileChooser.FILES_ONLY
+        try {
+            val option = fileChooser.showSaveDialog(this)
+            if (option == JFileChooser.APPROVE_OPTION) {
+                return fileChooser.selectedFile
+            }
+        } catch (e: Exception) {
+            println(e.toString())
+        }
+        return null
+    }
+
+
+    /**
+     * 创建languages这个文件夹
+     **/
     private fun findLanguageDir(): File {
         val languageDir = "${psiFile?.parent?.virtualFile?.path}/languages"
         val dir = File(languageDir)
@@ -161,28 +244,24 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
         return dir
     }
 
-    private fun onCancel() {
-        dispose()
-    }
-
     init {
         setContentPane(contentPane)
         isModal = true
         getRootPane().defaultButton = buttonOK
         buttonOK!!.addActionListener { runBackGround { obfuscateResource() } }
-        buttonCancel!!.addActionListener { onCancel() }
+        btnImportJson!!.addActionListener { runBackGround { onImportJson() } }
         antiObfuscate!!.addActionListener { runBackGround { onAntiObfuscate() } }
         btnExportJson!!.addActionListener { runBackGround { onExportJson() } }
 
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
         addWindowListener(object : WindowAdapter() {
             override fun windowClosing(e: WindowEvent) {
-                onCancel()
+                dispose()
             }
         })
 
         contentPane!!.registerKeyboardAction(
-            { e: ActionEvent? -> onCancel() },
+            { e: ActionEvent? -> dispose() },
             KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
             JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
         )
@@ -193,6 +272,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
             }
         }
     }
+
 
     ///显示弹窗
     fun showDialog(): LanguageObfuscateDialog {

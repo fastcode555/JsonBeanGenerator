@@ -161,3 +161,15 @@ fun String.toStringFixed(): Double? {
     return format.format(this.toDouble())?.toDouble()
 }
 
+fun String.showCount(text: String, count: Int = 0): Int {
+    val index = this.indexOf(text)
+    var total = count
+    if (index > 0) {
+        total += 1
+    } else {
+        return total
+    }
+    val tail = this.substring(index, this.length)
+    total = tail.showCount(text, total)
+    return total
+}

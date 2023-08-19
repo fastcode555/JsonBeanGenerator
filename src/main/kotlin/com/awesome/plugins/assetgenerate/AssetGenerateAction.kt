@@ -74,7 +74,7 @@ class AssetGenerateAction : AnAction() {
         if (isContainFile(mDirectory)) {
             builder.append("\n\t///------------------------ ${mDirectory.name} ------------------------\n")
             if (!isRoot) {
-                builder.append("\tstatic const String $dirVariableName = '${parentVariableName}${File.separator}${mDirectory.name}';\n")
+                builder.append("  static const String $dirVariableName = '${parentVariableName}${File.separator}${mDirectory.name}';\n")
             }
 
         }

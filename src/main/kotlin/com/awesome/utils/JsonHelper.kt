@@ -49,7 +49,7 @@ fun String?.clearSymbol(): String? {
         if (it.trim().isEmpty()) return@regex
         finalKey = finalKey.replace(it, "_")
     }
-    return finalKey
+    return finalKey.replace("\n", "").replace("\\", "")
 }
 
 fun String?.formatJson(): String? {

@@ -40,7 +40,7 @@ class LanguageDartWriter(
         val index = dartBuilder.lastIndexOf("}")
         if (!dartBuilder.contains("static const String $idKey =")) {
             val value = mapValue["en"] ?: mapValue["zh-Hans"]
-            dartBuilder.insert(index, "\tstatic const String $idKey = '$value';\n")
+            dartBuilder.insert(index, "  static const String $idKey = '$value';\n")
             stringsFile.writeText(dartBuilder.toString())
         }
 
