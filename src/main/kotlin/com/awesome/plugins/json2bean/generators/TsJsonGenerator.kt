@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import toUpperCamel
 
-//用于生成Dart对象的生成器
+/**
+ * 用于生成TypeScript对象
+ **/
 class TsJsonGenerator(
     content: String,
     private val fileName: String,

@@ -6,7 +6,9 @@ import org.apache.http.util.TextUtils
 import toCamel
 import toUpperCamel
 
-//用于生成Dart对象的生成器
+/**
+ * 用于生成对应的dart对象
+ **/
 class DartJsonGenerator(
     content: String,
     private val fileName: String,

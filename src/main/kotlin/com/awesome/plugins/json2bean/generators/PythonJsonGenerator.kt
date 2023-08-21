@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSONObject
 import toCamel
 import toUpperCamel
 
-//用于生成Dart对象的生成器
+/**
+ * 用于生成对应的Python对象
+ **/
 class PythonJsonGenerator(
     content: String,
     val fileName: String,

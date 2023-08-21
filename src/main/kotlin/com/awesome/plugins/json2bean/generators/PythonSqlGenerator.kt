@@ -6,7 +6,9 @@ import toUpperCamel
 import java.awt.Dialog
 import java.io.File
 
-
+/**
+ * 用于生成Python数据库的存储
+ **/
 class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
     var className: String? = null
     val pythonBuilder by lazy {
