@@ -3,12 +3,15 @@ package com.awesome
 import com.awesome.plugins.json2bean.database.DartDataBaseGenerator
 import com.awesome.plugins.json2bean.generators.DartJsonGenerator
 import com.awesome.plugins.json2bean.generators.PythonJsonGenerator
+import com.awesome.plugins.json2bean.generators.TsJsonGenerator
 import com.awesome.utils.JTextFieldHintListener
 import com.awesome.utils.PropertiesHelper
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
 import formatJson
 import org.apache.http.util.TextUtils
+import java.awt.event.ActionEvent
+import java.awt.event.ActionListener
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -25,6 +28,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     var tvExtends: JTextField? = null
     var tvImplements: JTextField? = null
     var tvError: JLabel? = null
+    var rbTs: JRadioButton? = null
     var rbPy: JRadioButton? = null
     var rbDart: JRadioButton? = null
     var cbSqlite: JCheckBox? = null
@@ -32,6 +36,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     var fileType = ".dart"
     private var properties: PropertiesHelper? = null
     private var tvPrimaryKeyListener: JTextFieldHintListener
+    private var radioBtns: List<JRadioButton?>? = null
 
 
     private fun isEmpty(text: String?): Boolean {
@@ -87,6 +92,13 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 tvExtends!!.text,
                 tvImplements!!.text
             ).toString()
+        } else if (fileType.equals(".ts")) {
+            return TsJsonGenerator(
+                tvField!!.text,
+                tvClassField!!.text,
+                tvExtends!!.text,
+                tvImplements!!.text,
+            ).toString()
         }
         return DartJsonGenerator(
             tvField!!.text,
@@ -137,6 +149,20 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 tvError?.text = "JSON Error!!"
                 println(e)
             }
+        } else if (fileType.equals(".ts")) {
+            try {
+                val content = TsJsonGenerator(
+                    tvField!!.text,
+                    tvClassField!!.text,
+                    tvExtends!!.text,
+                    tvImplements!!.text
+                ).toString()
+                val previewDialog = PreViewDialog(content)
+                previewDialog.showDialog()
+            } catch (e: Exception) {
+                tvError?.text = "JSON Error!!"
+                println(e)
+            }
         }
 
     }
@@ -161,6 +187,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 println(e)
             }
         }
+        radioBtns = listOf(rbPy, rbDart, rbTs)
         confirmBtn!!.addActionListener { onGenerate() }
         previewBtn!!.addActionListener { onPreView() }
 
@@ -184,6 +211,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         }
     }
 
+
     private fun initRadioButtons() {
         try {
             properties = PropertiesHelper(mDirectory)
@@ -191,31 +219,36 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             print(e)
         }
         fileType = properties?.getProperty("plugin.modelType") ?: ".dart"
-        if (fileType.equals(".py")) {
+        cbSqlite!!.isEnabled = fileType == ".dart"
+        if (fileType == ".py") {
             rbPy!!.isSelected = true
-            //暂不支持sqlite的数据库
-            cbSqlite!!.isEnabled = false
+        } else if (fileType == ".ts") {
+            rbTs!!.isSelected = true
         } else {
             rbDart!!.isSelected = true
-            fileType = ".dart"
-            cbSqlite!!.isEnabled = true
         }
 
-        rbDart!!.addActionListener {
-            if (rbDart!!.isSelected) {
-                fileType = ".dart"
-                rbPy!!.isSelected = false
-                properties?.setProperty("plugin.modelType", ".dart")
-                cbSqlite!!.isEnabled = true
-            }
-        }
-        rbPy!!.addActionListener {
-            if (rbPy!!.isSelected) {
-                fileType = ".py"
-                rbDart!!.isSelected = false
-                properties?.setProperty("plugin.modelType", ".py")
+        rbDart!!.statusChanged(".dart")
+        rbPy!!.statusChanged(".py")
+        rbTs!!.statusChanged(".ts")
+    }
+
+    /**
+     * 添加状态变更的函数
+     **/
+    private fun JRadioButton.statusChanged(type: String/*, callback: (ActionEvent) -> Unit*/) {
+        this.addActionListener {
+            if (this.isSelected) {
+                fileType = type
+                properties?.setProperty("plugin.modelType", fileType)
                 cbSqlite!!.isSelected = false
-                cbSqlite!!.isEnabled = false
+                cbSqlite!!.isEnabled = type == ".dart"
+                //callback(it)
+                radioBtns?.forEach {
+                    if (it != this) {
+                        it!!.isSelected = false
+                    }
+                }
             }
         }
     }
