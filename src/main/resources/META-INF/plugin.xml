@@ -10,7 +10,6 @@
     <br/>2.支持Json 转 TypeScript<br/>
     <br/>3.支持Json 转 Python<br/>
     <br/>4.支持Json 转 Kotlin<br/>
-    <br/>5.支持Json 转 Java<br/>
      <b><br>Features:</br></b>
      <br>Generating Dart data class from any legal JSON string
      <br>Support null-safety-feature

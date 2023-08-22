@@ -1,5 +1,6 @@
 package com.awesome.utils
 
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.module.ModuleUtil
 import com.intellij.psi.PsiDirectory
@@ -49,6 +50,10 @@ fun PsiElement.moduleName(): String {
     val pubspecFile = File("${this.basePath()}/pubspec.yaml").readText()
     val moduleName = pubspecFile.regexOne("(?<=name\\:).*?(?=\\n)")?.trim() ?: ""
     return moduleName;
+}
+
+fun PsiElement.run(runnable: Runnable) {
+    WriteCommandAction.runWriteCommandAction(this.project, runnable)
 }
 
 object PsiFileUtils {

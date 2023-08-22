@@ -4,10 +4,10 @@ import com.awesome.plugins.json2bean.database.DartDataBaseGenerator
 import com.awesome.plugins.json2bean.utils.GeneratorHelper
 import com.awesome.utils.JTextFieldHintListener
 import com.awesome.utils.PropertiesHelper
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
 import formatJson
 import org.apache.http.util.TextUtils
+import toUpperCamel
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
@@ -50,6 +50,9 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     //选中json转Dart的按钮
     var rbDart: JRadioButton? = null
 
+    //选中json转Kotlin的按钮
+    var rbKt: JRadioButton? = null
+
     //数据库的支持
     var cbSqlite: JCheckBox? = null
 
@@ -58,6 +61,18 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
 
     //文件的类型
     var fileType = ".dart"
+
+    //选择生成方式的面板
+    var mKtPanel: JPanel? = null
+
+    //生成java或者kotlin
+    var rbNone: JRadioButton? = null
+
+    //使用Gson的方式生成Bean
+    var rbGson: JRadioButton? = null
+
+    //使用FastJson的方式生成Bean
+    var rbFastJson: JRadioButton? = null
 
     //属性帮助类
     private var properties: PropertiesHelper? = null
@@ -68,20 +83,54 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     //所有可选类型的按钮
     private var radioBtns: List<JRadioButton?>? = null
 
+    //选择需要依赖的方式
+    private var radioDeps: List<JRadioButton?>? = null
+
+    //Kotlin或者java生成所依赖的库
+    private var depType: String = "gson"
 
     private fun isEmpty(text: String?): Boolean {
         return text.isNullOrEmpty()
     }
 
+    private fun onGenerateJavaOrKt() {
+        tvError?.text = ""
+        if (isEmpty(tvClassField?.text)) {
+            tvClassField!!.text = "auto_root"
+        }
+        val file = File(mDirectory.virtualFile.path, tvClassField?.text.toUpperCamel() + fileType)
+        if (!file.exists()) {
+            try {
+                mDirectory.run {
+                    GeneratorHelper.json2KtOrJava(
+                        fileType,
+                        tvClassField!!.text,
+                        tvField!!.text,
+                        tvExtends!!.text,
+                        tvImplements!!.text,
+                        depType,
+                        mDirectory,
+                    )
+                    dispose()
+                }
+            } catch (e: Exception) {
+                tvError?.text = "JSON Error!!"
+                println(e)
+            }
+        } else {
+            dispose()
+        }
+    }
+
     private fun onGenerate() {
         tvError?.text = ""
         if (isEmpty(tvClassField?.text)) {
-            tvClassField!!.text = "auto_generated_name"
+            tvClassField!!.text = "auto_root"
         }
         val file = File(mDirectory.virtualFile.path, tvClassField?.text + fileType)
         if (!file.exists()) {
             try {
-                WriteCommandAction.runWriteCommandAction(mDirectory.project) {
+                mDirectory.run {
                     file.writeText(json2Bean())
                     //生成数据库基类跟dao类
                     println("isSelected:${cbSqlite!!.isSelected}  $fileType")
@@ -123,13 +172,19 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             tvImplements!!.text,
             isSqliteEnable(),
             tvPrimaryKeyListener.getText(),
+            depType ?: "gson",
+            mDirectory,
         )
     }
 
+
+    /**
+     * 直接生成预览的值
+     **/
     private fun onPreView() {
         tvError?.text = ""
         if (isEmpty(tvClassField!!.text)) {
-            tvClassField!!.text = "auto_generated_name"
+            tvClassField!!.text = "auto_root"
         }
         try {
             val previewDialog = PreViewDialog(json2Bean())
@@ -160,8 +215,17 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 println(e)
             }
         }
-        radioBtns = listOf(rbPy, rbDart, rbTs)
-        confirmBtn!!.addActionListener { onGenerate() }
+        radioBtns = listOf(rbPy, rbDart, rbTs, rbKt)
+        radioDeps = listOf(rbNone, rbGson, rbFastJson)
+
+        confirmBtn!!.addActionListener {
+            if (fileType == ".kt") {
+                onGenerateJavaOrKt()
+            } else {
+                onGenerate()
+            }
+
+        }
         previewBtn!!.addActionListener { onPreView() }
 
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
@@ -177,6 +241,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT
         )
         initRadioButtons()
+        tvPrimaryKey!!.isEnabled = false
         tvPrimaryKeyListener = JTextFieldHintListener(tvPrimaryKey!!, "please input the database primary key")
         cbSqlite!!.addActionListener {
             tvPrimaryKey!!.isEnabled = cbSqlite!!.isSelected
@@ -184,6 +249,9 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     }
 
 
+    /**
+     * 初始化JRadioButton的状态
+     **/
     private fun initRadioButtons() {
         try {
             properties = PropertiesHelper(mDirectory)
@@ -193,23 +261,53 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         fileType = properties?.getProperty("plugin.modelType") ?: ".dart"
         cbSqlite!!.isVisible = fileType == ".dart"
         tvPrimaryKey!!.isVisible = cbSqlite!!.isVisible
+        mKtPanel!!.isVisible = fileType == ".kt"
         if (fileType == ".py") {
             rbPy!!.isSelected = true
         } else if (fileType == ".ts") {
             rbTs!!.isSelected = true
+        } else if (fileType == ".kt") {
+            rbKt!!.isSelected = true
         } else {
             rbDart!!.isSelected = true
         }
-
         rbDart!!.statusChanged(".dart")
         rbPy!!.statusChanged(".py")
         rbTs!!.statusChanged(".ts")
+        rbKt!!.statusChanged(".kt")
+
+        //设置生成Kotlin或者Java 所需要的方式
+        depType = properties?.getProperty("plugin.depType") ?: "gson"
+        if (depType == "none") {
+            rbNone!!.isSelected = true
+        } else if (depType == "gson") {
+            rbGson!!.isSelected = true
+        } else {
+            rbFastJson!!.isSelected = true
+        }
+        rbNone!!.depStatusChanged("none")
+        rbGson!!.depStatusChanged("gson")
+        rbFastJson!!.depStatusChanged("fastjson")
+    }
+
+    private fun JRadioButton.depStatusChanged(type: String) {
+        this.addActionListener {
+            if (this.isSelected) {
+                depType = type
+            }
+            radioDeps?.forEach {
+                if (it != this) {
+                    it!!.isSelected = false
+                }
+            }
+            properties?.setProperty("plugin.depType", depType)
+        }
     }
 
     /**
      * 添加状态变更的函数
      **/
-    private fun JRadioButton.statusChanged(type: String) {
+    private fun JRadioButton.statusChanged(type: String/*, callBack: (ActionEvent) -> Unit*/) {
         this.addActionListener {
             if (this.isSelected) {
                 fileType = type
@@ -221,6 +319,8 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                         it!!.isSelected = false
                     }
                 }
+                mKtPanel!!.isVisible = fileType == ".kt"
+                //callBack(it)
             }
         }
     }
