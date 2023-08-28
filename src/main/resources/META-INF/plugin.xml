@@ -55,10 +55,10 @@
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
 
-        <action id="json2bean Copy Bean"
+        <action id="json2bean Clone Bean"
                 class="com.awesome.plugins.json2bean.CopyJsonGenerateAction"
-                text="copy"
-                icon="/plugin_icon.png" description="Copy from object">
+                text="clone"
+                icon="/plugin_icon.png" description="Clone from object">
             <add-to-group group-id="GenerateGroup" anchor="first"/>
         </action>
 

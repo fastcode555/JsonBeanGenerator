@@ -108,7 +108,10 @@
           "tag": 2,
           "name": "维特",
           "phone": "86900000",
-          "images": [],
+          "images": [
+            "1",
+            "2"
+          ],
           "address": "22 St 306, Phnom Penh, 柬埔寨",
           "landmark": "疯猴客栈",
           "tag_text": "公司",

@@ -71,7 +71,7 @@ class DartJsonGenerator(
                         builder.append("\tList<${getType(result)}>? ${key.toCamel()};\n")
                         toJsonMethod.append("\t\t\t'$key':${key.toCamel()},\n")
                         fromJsonMethod.append("\t\t${key.toCamel()} = json.asList<${getType(result)}>('$key');\n")
-                        cloneMethod.append("        ${key.toCamel()}: List.from(${key.toCamel()}??[]),\n")
+                        cloneMethod.append("        ${key.toCamel()}: List<${getType(result)}>.from(${key.toCamel()}??[]),\n")
                     } else {//对象类型
                         builder.append("\tList<${key.toUpperCamel()}>? ${key.toCamel()};\n")
                         toJsonMethod.append("\t\t\t'$key':${key.toCamel()}?.map((v)=>v.toJson()).toList(),\n")

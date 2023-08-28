@@ -30,17 +30,40 @@ class CopyJsonGenerateAction : AnAction() {
                     }
                 }
                 val classContent = content.substring(targetIndex, selectionModel.selectionStart)
-                val fromJsonBuilder = StringBuilder("  $className.copy($className copy) {\n")
+                val cloneMethod = StringBuilder("  $className clone() => $className(\n")
                 classContent.regex(FILED_REGEX) {
                     val results = it.split(" ")
                     if (results.size == 2) {
+                        var type = results[0].trim()
+                        type = type.substring(0, results[0].length - 1)
                         val fieldName = results[1]
-                        fromJsonBuilder.append("    $fieldName = copy.$fieldName;\n")
+                        generate(type, fieldName, cloneMethod)
                     }
                 }
-                fromJsonBuilder.append("  }\n")
-                editor.document.insertString(selectionModel.selectionStart, fromJsonBuilder.toString())
+                cloneMethod.append("      );\n")
+                editor.document.insertString(selectionModel.selectionStart, cloneMethod.toString())
             }
         }
+    }
+
+    private fun generate(type: String, fieldName: String, cloneMethod: StringBuilder) {
+        if (type.isNormalType()) {
+            cloneMethod.append("        $fieldName: $fieldName,\n")
+        } else if (type.startsWith("List<")) {
+            val newType = type.replace("List<", "").replace(">", "")
+            if (newType.isNormalType()) {
+                cloneMethod.append("        $fieldName: List<$newType>.from($fieldName??[]),\n")
+            } else {
+                cloneMethod.append("        $fieldName: $fieldName?.map((v) => v.clone()).toList(),\n")
+            }
+        } else {
+            cloneMethod.append("        $fieldName: $fieldName?.clone(),\n")
+        }
+
+    }
+
+    private fun String.isNormalType(): Boolean {
+        val type = this
+        return type == "String" || type == "num" || type == "int" || type == "double" || type == "bool"
     }
 }
