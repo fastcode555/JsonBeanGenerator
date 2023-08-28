@@ -1,6 +1,7 @@
 package com.awesome.plugins.assetgenerate
 
 import clearSymbol
+import com.awesome.utils.PropertiesHelper
 import com.awesome.utils.basePath
 import com.awesome.utils.moduleName
 import com.intellij.openapi.actionSystem.AnAction
@@ -20,8 +21,12 @@ import java.lang.StringBuilder
 private val FONT_TYPES: Array<String> = arrayOf("ttf", "otf", "woff", "eot")
 
 class AssetGenerateAction : AnAction() {
+    private var ignoreDirs: String? = null
     override fun actionPerformed(e: AnActionEvent) {
         val mDirectory = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)
+        val properties = mDirectory?.let { PropertiesHelper(it) }
+        ignoreDirs = properties?.getProperty("plugin.assetsIgnoreDirs")
+
         if (mDirectory != null && mDirectory is PsiDirectory) {
             WriteCommandAction.runWriteCommandAction(mDirectory.project) {
                 val builder = StringBuilder()
@@ -72,6 +77,9 @@ class AssetGenerateAction : AnAction() {
         val currentDirVariableName = "\$_${mDirectory.name.clearSymbol().toCamel()}"
 
         if (isContainFile(mDirectory)) {
+            if (ignoreDirs?.contains(mDirectory.name) == true) {
+                return
+            }
             builder.append("\n\t///------------------------ ${mDirectory.name} ------------------------\n")
             if (!isRoot) {
                 builder.append("  static const String $dirVariableName = '${parentVariableName}${File.separator}${mDirectory.name}';\n")
