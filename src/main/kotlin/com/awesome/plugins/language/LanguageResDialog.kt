@@ -1,6 +1,7 @@
 package com.awesome
 
 import clearSymbol
+import com.alibaba.fastjson.JSONObject
 import com.awesome.plugins.language.LanguageDartWriter
 import com.awesome.utils.HttpApi
 import com.awesome.utils.PropertiesHelper
@@ -9,13 +10,16 @@ import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
 import firstUpperCamel
 import org.apache.http.util.TextUtils
 import toCamel
+import toJSON
 import java.awt.Label
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent
 import java.awt.event.KeyEvent
+import java.io.File
 import java.lang.StringBuilder
 import javax.swing.*
 
@@ -115,11 +119,46 @@ class LanguageResDialog(
                     }
                 }
             }
-            val writer = LanguageDartWriter(mapValues, tvKey!!.text, dirPath, psiElement, textValue, selectionModel)
-            writer.startWrite()
+
+            if (isContainJson()) {
+                _handleWrite2JsonFile()
+            } else {
+                LanguageDartWriter(mapValues, tvKey!!.text, dirPath, psiElement, textValue, selectionModel).startWrite()
+            }
             //psiElement.reload()
             dispose()
         }
+    }
+
+    /**
+     * 将翻译写入到Json文件中
+     **/
+    private fun _handleWrite2JsonFile() {
+        for (psiElement in psiElement.children) {
+            if (psiElement is PsiFile) {
+                val file = psiElement.virtualFile
+                if (file.name.endsWith(".json")) {
+                    val name = file.nameWithoutExtension
+                    val jsonFile = File(file.path)
+                    val json = jsonFile.readText().toJSON() as JSONObject
+                    val value = mapValues[name]
+                    json.put(tvKey!!.text, value)
+                    jsonFile.writeText(json.toJSONString())
+                }
+            }
+        }
+    }
+
+    /**
+     * 是否包含json文件
+     **/
+    private fun isContainJson(): Boolean {
+        for (psiElement in psiElement.children) {
+            if (psiElement is PsiFile) {
+                return psiElement.virtualFile.name.endsWith(".json")
+            }
+        }
+        return false
     }
 
     init {
@@ -175,8 +214,19 @@ class LanguageResDialog(
         val languageString = properties?.getProperty("plugin.languages") ?: defaultLanguage
         rawLanguage = properties?.getProperty("plugin.rawLanguage") ?: rawLanguage
         needTranslate = "true" == properties?.getProperty("plugin.needTranslate")
-        languages = languageString.split(',')
-        tvLanguages?.text = languageString
+        if (isContainJson()) {
+            languages = arrayListOf()
+            val arrays = languages as ArrayList<String>
+            for (psi in psiElement.children) {
+                if (psi is PsiFile) {
+                    arrays.add(psi.virtualFile.nameWithoutExtension)
+                }
+            }
+            tvLanguages?.text = arrays.joinToString(separator = ",")
+        } else {
+            languages = languageString.split(',')
+            tvLanguages?.text = languageString
+        }
     }
 
     fun showDialog(): LanguageResDialog {
