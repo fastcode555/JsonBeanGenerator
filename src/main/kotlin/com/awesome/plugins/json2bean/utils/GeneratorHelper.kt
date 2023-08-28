@@ -22,6 +22,7 @@ object GeneratorHelper {
         primaryKey: String,
         depType: String,
         psiDirectory: PsiDirectory,
+        needClone: Boolean,
     ): String {
         if (fileType == ".dart") {
             return DartJsonGenerator(
@@ -31,6 +32,7 @@ object GeneratorHelper {
                 impName,
                 isSqliteEnable,
                 primaryKey,
+                needClone,
             ).toString()
         } else if (fileType == ".ts") {
             return TsJsonGenerator(
@@ -54,6 +56,7 @@ object GeneratorHelper {
             impName,
             isSqliteEnable,
             primaryKey,
+            needClone,
         ).toString()
     }
 

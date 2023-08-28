@@ -65,6 +65,9 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     //选择生成方式的面板
     var mKtPanel: JPanel? = null
 
+    //生成需要method的方法
+    var mMethodPanel: JPanel? = null
+
     //生成java或者kotlin
     var rbNone: JRadioButton? = null
 
@@ -73,6 +76,9 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
 
     //使用FastJson的方式生成Bean
     var rbFastJson: JRadioButton? = null
+
+    //是否支持Clone的方法
+    var rbClone: JRadioButton? = null
 
     //属性帮助类
     private var properties: PropertiesHelper? = null
@@ -172,8 +178,9 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             tvImplements!!.text,
             isSqliteEnable(),
             tvPrimaryKeyListener.getText(),
-            depType ?: "gson",
+            depType,
             mDirectory,
+            rbClone!!.isSelected,
         )
     }
 
@@ -259,9 +266,18 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             print(e)
         }
         fileType = properties?.getProperty("plugin.modelType") ?: ".dart"
+        if (fileType.isEmpty()) {
+            fileType = ".dart"
+        }
+
+        rbClone!!.isSelected = properties?.getProperty("plugin.clone") == "true"
+        rbClone!!.addActionListener {
+            properties!!.setProperty("plugin.clone", "${rbClone!!.isSelected}")
+        }
         cbSqlite!!.isVisible = fileType == ".dart"
         tvPrimaryKey!!.isVisible = cbSqlite!!.isVisible
         mKtPanel!!.isVisible = fileType == ".kt"
+        mMethodPanel!!.isVisible = fileType == ".dart"
         if (fileType == ".py") {
             rbPy!!.isSelected = true
         } else if (fileType == ".ts") {
@@ -275,6 +291,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         rbPy!!.statusChanged(".py")
         rbTs!!.statusChanged(".ts")
         rbKt!!.statusChanged(".kt")
+
 
         //设置生成Kotlin或者Java 所需要的方式
         depType = properties?.getProperty("plugin.depType") ?: "gson"
@@ -313,6 +330,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                 fileType = type
                 properties?.setProperty("plugin.modelType", fileType)
                 cbSqlite!!.isVisible = type == ".dart"
+                mMethodPanel!!.isVisible = fileType == ".dart"
                 tvPrimaryKey!!.isVisible = cbSqlite!!.isVisible
                 radioBtns?.forEach {
                     if (it != this) {
