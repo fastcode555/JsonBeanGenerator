@@ -151,7 +151,8 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
                         value = value.substring(1, value.length - 1)
                         jsonObj.put(maps[key], value)
                     }
-                    jsonFile.writeText(jsonObj.toString())
+                    val string = jsonObj.toString().replace("\\n", "\n").replace("\\'", "'")
+                    jsonFile.writeText(string)
                 }
             }
         }

@@ -39,7 +39,7 @@ class LanguageDartWriter(
         }
         val index = dartBuilder.lastIndexOf("}")
         if (!dartBuilder.contains("static const String $idKey =")) {
-            val value = mapValue["en"] ?: mapValue["zh-Hans"]
+            var value = mapValue["en"] ?: mapValue["zh-Hans"] ?: ""
             dartBuilder.insert(index, "  static const String $idKey = '$value';\n")
             stringsFile.writeText(dartBuilder.toString())
         }
@@ -85,6 +85,7 @@ class LanguageDartWriter(
 
     //将翻译的值生成到各个文件中
     private fun writeValue2Dart(fileName: String, code: String, value: String?) {
+
         val importStringDart = "import '${getCurrentPackageName()}strings.dart';\n"
         var builder: java.lang.StringBuilder?
         val stringsFile = File("${dirPath}/$fileName")
@@ -99,7 +100,11 @@ class LanguageDartWriter(
         }
         //写入每个翻译的文件中，如果该Key已经存在，就不使用
         val index = builder.lastIndexOf("};")
-        val idValue = "\tIds.${idKey}: '$value',\n"
+        var valueContent = value
+        if (valueContent!!.contains("'")) {
+            valueContent = valueContent.replace("'", "\\'")
+        }
+        val idValue = "\tIds.${idKey}: '$valueContent',\n"
         if (!builder.contains("Ids.${idKey}:")) {
             builder.insert(index, idValue)
             stringsFile.writeText(builder.toString())
