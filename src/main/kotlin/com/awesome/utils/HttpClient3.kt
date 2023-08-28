@@ -7,9 +7,10 @@ import org.apache.commons.httpclient.params.HttpMethodParams
 import java.io.*
 import java.nio.charset.Charset
 
-object HttpClient3 {
-    fun doGet(url: String?): String? {
 
+object HttpClient3 {
+
+    fun doGet(url: String?): String? {
         // 输入流
         var `is`: InputStream? = null
         var br: BufferedReader? = null
@@ -21,6 +22,7 @@ object HttpClient3 {
         httpClient.httpConnectionManager.params.connectionTimeout = 15000
         // 创建一个Get方法实例对象
         val getMethod = GetMethod(url)
+        addHeader(getMethod)
         // 设置get请求超时为60000毫秒
         getMethod.params.setParameter(HttpMethodParams.SO_TIMEOUT, 60000)
         // 设置请求重试机制，默认重试次数：3次，参数设置为true，重试机制可用，false相反
@@ -150,5 +152,12 @@ object HttpClient3 {
             postMethod.releaseConnection()
         }
         return result
+    }
+
+    ///需要增加随机的请求头
+    var index = 0
+    private fun addHeader(method: HttpMethodBase) {
+        method.addRequestHeader("User-Agent", UserAgents.randomUserAgent(index))
+        index++
     }
 }
