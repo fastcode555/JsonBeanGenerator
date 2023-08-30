@@ -1,5 +1,6 @@
 package com.awesome.plugins.json2bean
 
+import com.awesome.common.BaseAnAction
 import com.awesome.utils.regex
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -10,8 +11,8 @@ import com.intellij.openapi.editor.Editor
 //匹配到class的bean类的字段
 private const val FILED_REGEX = "[a-zA-Z0-9\\?\\<\\>\\,_]+ [0-9a-zA-Z_]*(?=;)"
 
-class ToJsonGenerateAction : AnAction() {
-
+class ToJsonGenerateAction : BaseAnAction() {
+    override fun fileType(): ArrayList<String> = arrayListOf("dart")
     override fun actionPerformed(e: AnActionEvent) {
         val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
         val selectionModel = editor?.selectionModel
@@ -62,11 +63,5 @@ class ToJsonGenerateAction : AnAction() {
 
     private fun getInnerType(typeName: String): String {
         return typeName.substring("List<".length, typeName.length - 1)
-    }
-
-    override fun update(e: AnActionEvent) {
-        super.update(e)
-        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
-        e.presentation.setEnabledAndVisible(psiFile != null && "dart" == psiFile.virtualFile.extension)
     }
 }

@@ -1,6 +1,7 @@
 package com.awesome.plugins.language
 
 import com.awesome.LanguageResDialog
+import com.awesome.common.BaseAnAction
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -10,7 +11,8 @@ import com.intellij.psi.PsiFile
 import org.apache.http.util.TextUtils
 
 //https://www.w3schools.com/tags/ref_language_codes.asp
-class LanguageResAction : AnAction() {
+class LanguageResAction : BaseAnAction() {
+    override fun fileType(): ArrayList<String> = arrayListOf("dart")
     override fun actionPerformed(e: AnActionEvent) {
         val mDirectory = e.getData(CommonDataKeys.PSI_ELEMENT)
         if (mDirectory != null && mDirectory is PsiDirectory) {
@@ -35,11 +37,5 @@ class LanguageResAction : AnAction() {
             val mDialog = LanguageResDialog(psiFile!!, value, selectionModel)
             mDialog.showDialog()
         }
-    }
-
-    override fun update(e: AnActionEvent) {
-        super.update(e)
-        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
-        e.presentation.setEnabledAndVisible(psiFile != null && "dart" == psiFile.virtualFile.extension)
     }
 }

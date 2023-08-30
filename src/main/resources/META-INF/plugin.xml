@@ -36,7 +36,7 @@
     </extensions>
 
     <actions>
-
+        <!-- dart 代码支持 -->
         <action id="json2dart_null_safety" class="com.awesome.plugins.json2bean.JsonBeanGeneratorAction"
                 text="Json2Dart-Null-Safety"
                 icon="/plugin_icon.png" description="Generated dart bean class.">
@@ -56,7 +56,7 @@
         </action>
 
         <action id="json2bean Clone Bean"
-                class="com.awesome.plugins.json2bean.CopyJsonGenerateAction"
+                class="com.awesome.plugins.json2bean.CloneJsonGenerateAction"
                 text="clone"
                 icon="/plugin_icon.png" description="Clone from object">
             <add-to-group group-id="GenerateGroup" anchor="first"/>
@@ -87,6 +87,11 @@
                 icon="/plugin_icon.png" description="Generated multi com.awesome.plugins.language resource.">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
+
+
+        <!-- Vue和TypeScript的代码支持 -->
+
+
         <!--        <action id="TestAction" class="com.awesome.plugins.testaction.TestAction"
                         text="TestAction"
                         icon="/plugin_icon.png" description="Use test action.">
