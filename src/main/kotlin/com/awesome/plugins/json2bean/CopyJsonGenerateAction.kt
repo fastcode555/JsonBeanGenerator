@@ -66,4 +66,10 @@ class CopyJsonGenerateAction : AnAction() {
         val type = this
         return type == "String" || type == "num" || type == "int" || type == "double" || type == "bool"
     }
+
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
+        e.presentation.setEnabledAndVisible(psiFile != null && "dart" == psiFile.virtualFile.extension)
+    }
 }

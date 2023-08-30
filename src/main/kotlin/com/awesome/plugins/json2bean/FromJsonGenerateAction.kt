@@ -7,6 +7,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 
+
 //匹配到class的bean类的字段
 private const val FILED_REGEX = "[a-zA-Z0-9\\?\\<\\>\\,_]+ [0-9a-zA-Z_]*(?=;)"
 
@@ -70,5 +71,11 @@ class FromJsonGenerateAction : AnAction() {
 
     private fun getInnerType(typeName: String): String {
         return typeName.substring("List<".length, typeName.length - 1)
+    }
+
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
+        e.presentation.setEnabledAndVisible(psiFile != null && "dart" == psiFile.virtualFile.extension)
     }
 }

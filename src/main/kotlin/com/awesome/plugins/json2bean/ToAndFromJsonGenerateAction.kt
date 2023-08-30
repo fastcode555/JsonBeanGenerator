@@ -94,4 +94,10 @@ class ToAndFromJsonGenerateAction : AnAction() {
     private fun getInnerType(typeName: String): String {
         return typeName.substring("List<".length, typeName.length - 1)
     }
+
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
+        e.presentation.setEnabledAndVisible(psiFile != null && "dart" == psiFile.virtualFile.extension)
+    }
 }
