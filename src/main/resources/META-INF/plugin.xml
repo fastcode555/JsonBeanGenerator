@@ -90,6 +90,11 @@
 
 
         <!-- Vue和TypeScript的代码支持 -->
+        <action id="com.awesome.plugins.ts.tomapfield.ToMapFieldAction" class="com.awesome.plugins.ts.tomapfield.ToMapFieldAction"
+                text="toMapField"
+                icon="/plugin_icon.png" description="Generate map field for the typescript.">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
 
 
         <!--        <action id="TestAction" class="com.awesome.plugins.testaction.TestAction"

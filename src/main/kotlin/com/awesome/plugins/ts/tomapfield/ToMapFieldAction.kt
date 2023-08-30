@@ -1,4 +1,4 @@
-package com.awesome.plugins.ts
+package com.awesome.plugins.ts.tomapfield
 
 import com.awesome.common.BaseAnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -11,6 +11,8 @@ import com.intellij.openapi.editor.Editor
 class ToMapFieldAction : BaseAnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
+        val dialog = TopMapFieldDialog(editor)
+        dialog.showDialog()
     }
 
     override fun fileType(): ArrayList<String> = arrayListOf("vue", "ts")
