@@ -90,9 +90,16 @@
 
 
         <!-- Vue和TypeScript的代码支持 -->
-        <action id="com.awesome.plugins.ts.tomapfield.ToMapFieldAction" class="com.awesome.plugins.ts.tomapfield.ToMapFieldAction"
-                text="toMapField"
+        <action id="com.awesome.plugins.ts.tomapfield.ToMapFieldAction"
+                class="com.awesome.plugins.ts.tomapfield.ToMapFieldAction"
+                text="To MapField"
                 icon="/plugin_icon.png" description="Generate map field for the typescript.">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
+        <action id="com.awesome.plugins.ts.totailwindcss.ToTailWindCssAction"
+                class="com.awesome.plugins.ts.totailwindcss.ToTailWindCssAction"
+                text="To TailWindCss"
+                icon="/plugin_icon.png" description="Convert the csss to the tailwindcss.">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
 
