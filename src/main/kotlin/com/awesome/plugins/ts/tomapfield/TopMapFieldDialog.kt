@@ -55,29 +55,36 @@ class TopMapFieldDialog(private val editor: Editor?) : JDialog() {
         }
     }
 
-    private fun parseJson(json: JSON?, deep: Int = 0, separator: String = "  "): StringBuilder {
+    private fun parseJson(json: JSON?, deep: Int = 0, separator: String = "  ", key: String = ""): StringBuilder {
         val builder = StringBuilder()
         val start = separators(separator, deep)
+        val lineStart = "$start$separator"
         if (json is JSONObject) {
-            builder.append("$separator{\n")
-            val lineStart = "$start$separator"
+            if (key.isEmpty()) {
+                builder.append("$lineStart{\n")
+            } else {
+                builder.append("$ {\n")
+            }
             for ((key, element) in json.innerMap) {
                 if (element is String) {
                     builder.append("$lineStart$key: '$element',\n")
                 } else if (element is Double || element is Int || element is BigDecimal || element is Float || element is Boolean) {
                     builder.append("$lineStart$key: $element,\n")
                 } else if (element is JSON) {
-                    builder.append("$lineStart$key:${parseJson(element, deep + 1, separator)}")
+                    builder.append("$lineStart$key:${parseJson(element, deep + 1, separator, key)}")
                     builder.append(",\n")
                 }
             }
             builder.append("$start}")
         } else if (json is JSONArray) {
-            builder.append("$separator[\n")
-            val lineStart = "$start$separator"
+            if (key.isEmpty()) {
+                builder.append("$lineStart[\n")
+            } else {
+                builder.append("$ [\n")
+            }
             for (element in json) {
                 if (element is JSONObject) {
-                    builder.append("${parseJson(element, deep + 1, separator)}")
+                    builder.append("${parseJson(element, deep + 1, separator, key)}")
                     builder.append(",\n")
                 } else if (element is String) {
                     builder.append("$lineStart'$element',\n")
