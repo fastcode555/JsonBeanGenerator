@@ -1,6 +1,10 @@
 package com.awesome.plugins.ts.totailwindcss
 
 object TailWindHelper {
+
+    /**
+     * 处理FontWeight 属性
+     **/
     fun fontWeight(key: String, value: String): String {
         val size = value.trim().toInt()
         return when (size) {
@@ -17,6 +21,9 @@ object TailWindHelper {
         }
     }
 
+    /**
+     * 处理边缘属性
+     **/
     fun border(key: String, value: String): String {
         if (value.contains("solid")) {
             val results = value.split("solid")
@@ -27,6 +34,9 @@ object TailWindHelper {
         return value
     }
 
+    /**
+     * 处理透明度属性
+     **/
     fun opacity(key: String, value: String): String {
         val size = (value.trim().toDouble() * 100).toInt()
         if (size == 100) return ""
@@ -51,6 +61,9 @@ object TailWindHelper {
         return this.replace(Regex(regexString), "").trim()
     }
 
+    /**
+     * 处理Margin值和Padding值
+     **/
     private fun dealMarginOrPadding(key: String, value: String, mark: String = "m"): String {
         if (value.contains(" ")) {
             val results = value.split(" ").clearEmpty()
@@ -84,6 +97,9 @@ object TailWindHelper {
         return "${mark}-[$value]"
     }
 
+    /**
+     * 处理圆角属性
+     **/
     fun borderRadius(key: String, value: String): String {
         if (value.contains(" ")) {
             val results = value.split(" ").clearEmpty()
@@ -251,5 +267,13 @@ object TailWindHelper {
         }
     }
 
-
+    /**
+     * 处理颜色属性
+     **/
+    fun color(key: String, value: String): String {
+        if (value.startsWith("#")) {
+            return "text-[$value]"
+        }
+        return "text-$value"
+    }
 }
