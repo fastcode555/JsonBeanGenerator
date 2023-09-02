@@ -1,6 +1,7 @@
 package com.awesome.plugins.ts.totailwindcss
 
 import com.awesome.common.BaseAnAction
+import com.awesome.plugins.ts.totailwindcss.processor.ColorProcessor
 import com.awesome.plugins.ts.totailwindcss.processor.ModifyProcessor
 import com.awesome.plugins.ts.totailwindcss.processor.TailConfigProcessor
 import com.awesome.plugins.ts.totailwindcss.processor.TailWindProcessor
@@ -22,7 +23,8 @@ class ToTailWindCssAction : BaseAnAction() {
             val processors = listOf(
                 TailWindProcessor(this),
                 ModifyProcessor(this),
-                TailConfigProcessor(this)
+                TailConfigProcessor(this),
+                ColorProcessor(this),
             )
             WriteCommandAction.runWriteCommandAction(editor.project) {
                 var content = ""

@@ -29,13 +29,32 @@ object TailWindHelper {
     /**
      * 处理边缘属性
      **/
-    fun border(key: String, value: String): String {
-        if (value.contains("solid")) {
-            val results = value.split("solid")
-            val color = results.last().trim()
-            return "${TailWindHelper.borderWidth("border", results.first().trim())} border-solid border-[$color]"
+    fun border(marker: String, value: String): String {
+        val lists =
+            arrayListOf<String>(
+                "none",
+                "hidden",
+                "dotted",
+                "dashed",
+                "solid",
+                "double",
+                "groove",
+                "ridge",
+                "inset",
+                "outset"
+            )
+        for (type in lists) {
+            if (value.contains(type)) {
+                val results = value.split(type)
+                val color = results.last().trim()
+                return "${borderWidth(marker, results.first().trim())} border-$type $marker-[$color]"
+            }
         }
         return value
+    }
+
+    private fun border() {
+
     }
 
     /**
@@ -56,7 +75,7 @@ object TailWindHelper {
 
     private fun String.replaceEmpty(mark: String = "m"): String {
         if (this.contains("[0]")) {
-            return this.replace(Regex("$mark.*?-\\[0\\]"), "")
+            return this.replace(Regex("$mark[a-z]{1,2}-\\[0\\]"), "")
         }
         return this;
     }
@@ -113,8 +132,8 @@ object TailWindHelper {
                 "0.375rem" -> "md"
                 "0.5rem" -> "lg"
                 "0.75rem" -> "xl"
-                "1rem" -> "'2xl'"
-                "1.5rem" -> "'3xl'"
+                "1rem" -> "2xl"
+                "1.5rem" -> "3xl"
                 "9999px" -> "full"
                 else -> "[$value]"
             }
@@ -164,6 +183,7 @@ object TailWindHelper {
                 if (results[0] != results[3] && results[1] == results[2]) {
                     return "rounded-tl-${results[0]} rounded-bl-${results[3]} rounded-r-${results[1]}"
                 }
+                return "rounded-tl-${results[0]} rounded-tr-${results[1]} rounded-br-${results[2]} rounded-bl-${results[3]}"
             }
             if (results.size == 3) {
                 if (results[0] == results[1]) {
@@ -963,5 +983,7 @@ object TailWindHelper {
         return "$key-$result"
     }
 
-
+    fun bgPosition(key: String, value: String): String {
+        return "bg-${value.replace(" ", "-")}"
+    }
 }

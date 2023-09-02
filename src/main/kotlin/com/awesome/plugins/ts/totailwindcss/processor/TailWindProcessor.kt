@@ -39,7 +39,7 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
             }
         }
         builder.insert(0, "@apply ")
-        return builder.toString().replace("-DEFAULT", "")
+        return builder.toString().replace("-DEFAULT", "").replace("  ", " ")
     }
 
     /**
@@ -54,20 +54,42 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
             "max-height" -> HeightProcessor("max-h").process(key, value)
             "min-height" -> HeightProcessor("min-h").process(key, value)
             "background" -> "bg-[$value]"
-            "background-attachment" -> "bg-[$value]"
+            "background-attachment" -> "bg-$value"
             "background-clip" -> TailWindHelper.backgroundClip(key, value)
             "background-repeat" -> TailWindHelper.backgroundRepeat(key, value)
             "background-origin" -> TailWindHelper.backgroundOrigin(key, value)
             "background-blend-mode" -> TailWindHelper.bgBlendMode(key, value)
+            "background-position" -> TailWindHelper.bgPosition(key, value)
             "mix-blend-mode" -> TailWindHelper.mixBlendMode(key, value)
             "color" -> TailWindHelper.color(key, value)
             "opacity" -> TailWindHelper.opacity(key, value)
 
             "border" -> TailWindHelper.border(key, value)
+            "border-bottom" -> TailWindHelper.border("border-b", value)
+            "border-top" -> TailWindHelper.border("border-t", value)
+            "border-left" -> TailWindHelper.border("border-l", value)
+            "border-right" -> TailWindHelper.border("border-r", value)
+
+            "border-radius" -> TailWindHelper.borderRadius(key, value)
+                .replaceRegex("rounded-[a-z\\-]{0,4}\\[0[rem]*\\]")
+
+            "border-style" -> "border-$value"
+            "border-bottom-style" -> "border-b-$value"
+            "border-left-style" -> "border-l-$value"
+            "border-top-style" -> "border-t-$value"
+            "border-right-style" -> "border-r-$value"
+
             "border-width" -> TailWindHelper.borderWidth("border", value)
+            "border-bottom-width" -> TailWindHelper.borderWidth("border-b", value)
+            "border-top-width" -> TailWindHelper.borderWidth("border-t", value)
+            "border-left-width" -> TailWindHelper.borderWidth("border-l", value)
+            "border-right-width" -> TailWindHelper.borderWidth("border-r", value)
+
             "border-color" -> "border-[$value]"
-            "border-style" -> "border-[$value]"
-            "border-radius" -> TailWindHelper.borderRadius(key, value).replaceRegex("rounded.*?\\[0rem\\]")
+            "border-bottom-color" -> "border-b-[$value]"
+            "border-top-color" -> "border-t-[$value]"
+            "border-left-color" -> "border-l-[$value]"
+            "border-right-color" -> "border-r-[$value]"
 
             "font-weight" -> TailWindHelper.fontWeight(key, value)
             "font-size" -> TailWindHelper.fontSize(key, value)
