@@ -54,6 +54,10 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
             "max-height" -> HeightProcessor("max-h").process(key, value)
             "min-height" -> HeightProcessor("min-h").process(key, value)
             "background" -> "bg-[$value]"
+            "background-attachment" -> "bg-[$value]"
+            "background-clip" -> TailWindHelper.backgroundClip(key, value)
+            "background-repeat" -> TailWindHelper.backgroundRepeat(key, value)
+            "background-origin" -> TailWindHelper.backgroundOrigin(key, value)
             "background-blend-mode" -> TailWindHelper.bgBlendMode(key, value)
             "mix-blend-mode" -> TailWindHelper.mixBlendMode(key, value)
             "color" -> TailWindHelper.color(key, value)
@@ -62,15 +66,21 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
             "border" -> TailWindHelper.border(key, value)
             "border-width" -> TailWindHelper.borderWidth("border", value)
             "border-color" -> "border-[$value]"
+            "border-style" -> "border-[$value]"
             "border-radius" -> TailWindHelper.borderRadius(key, value).replaceRegex("rounded.*?\\[0rem\\]")
 
             "font-weight" -> TailWindHelper.fontWeight(key, value)
             "font-size" -> TailWindHelper.fontSize(key, value)
             "line-height" -> TailWindHelper.lineHeight(key, value)
             "letter-spacing" -> TailWindHelper.letterSpacing(key, value)
+            "word-spacing" -> TailWindHelper.letterSpacing(key, value)
+            "gap" -> TailWindHelper.spacing(key, value)
+            "column-gap" -> TailWindHelper.spacing("gap-x", value)
+            "row-gap" -> TailWindHelper.spacing("gap-y", value)
             "font-family" -> TailWindHelper.fontFamily(key, value)
-            "text-transform" -> value
             "text-align" -> "text-$value"
+            "text-overflow" -> "text-$value"
+            "text-wrap" -> "text-$value"
             "text-transform" -> TailWindHelper.textTransform(key, value)
             "-webkit-background-clip" -> TailWindHelper.backgroundClip(key, value)
             "font-style" -> TailWindHelper.fontStyle(key, value)
@@ -106,17 +116,22 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
             "display" -> value
             "position" -> value
             "justify-content" -> TailWindHelper.justifyContent(value)
+            "justify-self" -> "$key-$value"
+            "justify-items" -> "$key-$value"
+            "place-self" -> "$key-$value"
             "align-items" -> TailWindHelper.alignItems(value)
             "align-self" -> TailWindHelper.alignSelf(value)
             "align-content" -> TailWindHelper.alignContent(value)
             "flex-grow" -> TailWindHelper.flexGrow(value)
-            "flex-shrink" -> TailWindHelper.flexShrink(value)
+            "flex-shrink" -> TailWindHelper.flexShrink(key, value)
+            "shrink" -> TailWindHelper.flexShrink(key, value)
             "overflow" -> "$key-$value"
             "overflow-x" -> "$key-$value"
             "overflow-y" -> "$key-$value"
             "overscroll-behavior" -> "overscroll-$value"
             "overscroll-behavior-x" -> "overscroll-x-$value"
             "overscroll-behavior-y" -> "overscroll-y-$value"
+            "scroll-behavior" -> "scroll-$value"
 
             "box-shadow" -> "shadow-"
             "cursor" -> "$key-$value"
@@ -124,15 +139,56 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
             "order" -> TailWindHelper.order(key, value)
             "aspect-ratio" -> TailWindHelper.aspectRatio(key, value)
             "background-size" -> "bg-$value"
+            "background-color" -> "bg-[$value]"
             "filter" -> TailWindHelper.filter(key, value)
+            "backdrop-filter" -> TailWindHelper.filter(key, value)
             "clear" -> "clear-$value"
             "outline-width" -> TailWindHelper.borderWidth("outline", value)
+            "outline-offset" -> "outline-offset-[$value]"
+            "outline-style" -> "outline-$value"
 
             "scale" -> TailWindHelper.scale("scale", value)
             "scale-x" -> TailWindHelper.scale("scale-x", value)
             "scale-y" -> TailWindHelper.scale("scale-y", value)
             "stroke-width" -> TailWindHelper.strokeWidth(key, value)
             "z-index" -> TailWindHelper.zIndex(key, value)
+
+            "vertical-align" -> TailWindHelper.verticalAlign(key, value)
+            "visibility" -> value
+            "transform" -> TailWindHelper.transform(key, value)
+
+            "object-fit" -> "object-$value"
+            "object-position" -> "object-${value.replace(" ", "-")}"
+            "flex-direction" -> TailWindHelper.flexDirection(key, value)
+            "flex-wrap" -> TailWindHelper.flexWrap(key, value)
+            "grid-auto-flow" -> TailWindHelper.gridAutoFlow(key, value)
+            "grid-column-start" -> "col-start-$value"
+            "grid-column-end" -> "col-end-$value"
+            "grid-row-start" -> "row-start-$value"
+            "grid-row-end" -> "row-end-$value"
+            "pointer-events" -> "$key-$value"
+
+            "break-before" -> TailWindHelper.breakBefore(key, value)
+            "break-inside" -> TailWindHelper.breakInside(key, value)
+            "break-after" -> TailWindHelper.breakAfter(key, value)
+            "table-layout" -> "table-$value"
+            "caption-side" -> "caption-$value"
+            "border-collapse" -> "border-$value"
+            "user-select" -> "select-$value"
+            "scroll-snap-stop" -> "snap-$value"
+            "resize" -> TailWindHelper.resize(key, value)
+            "list-style-position" -> "list-$value"
+            "scroll-snap-align" -> TailWindHelper.scrollSnapAlign(key, value)
+            "place-content" -> TailWindHelper.placeContent(key, value)
+            "place-items" -> "$key-$value"
+            "hyphens" -> "$key-$value"
+            "white-space" -> "whitespace-$value"
+            "word-break" -> TailWindHelper.wordBreak(key, value)
+            "overflow-wrap" -> TailWindHelper.overflowWrap(key, value)
+            "box-decoration-break" -> "box-decoration-$value"
+            "isolation" -> TailWindHelper.isolation(key, value)
+            "columns" -> TailWindHelper.columns(key, value)
+            "column-gap" -> TailWindHelper.columns(key, value)
             else -> "$key"
         }
     }

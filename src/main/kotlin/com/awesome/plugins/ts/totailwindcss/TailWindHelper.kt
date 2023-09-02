@@ -217,12 +217,14 @@ object TailWindHelper {
      **/
     fun justifyContent(value: String): String {
         return when (value) {
+            "normal" -> "justify-normal"
             "flex-start" -> "justify-start"
             "flex-end" -> "justify-end"
             "center" -> "justify-center"
             "space-between" -> "justify-between"
             "space-around" -> "justify-around"
             "space-evenly" -> "justify-evenly"
+            "stretch" -> "justify-stretch"
             else -> "justify-center"
         }
     }
@@ -259,6 +261,7 @@ object TailWindHelper {
             "flex-end" -> "self-end"
             "center" -> "self-center"
             "stretch" -> "self-stretch"
+            "baseline" -> "self-baseline"
             else -> "self-center"
         }
     }
@@ -299,11 +302,11 @@ object TailWindHelper {
      * flex-shrink: 开启元素的收缩效果，相当于 CSS 的 flex-shrink: 1
      * flex-shrink-0: 禁用元素的收缩效果，相当于 CSS 的 flex-shrink: 0
      **/
-    fun flexShrink(value: String): String {
+    fun flexShrink(marker: String, value: String): String {
         return when (value) {
-            "1" -> "flex-shrink"
-            "0" -> "flex-shrink-0"
-            else -> "flex-shrink"
+            "1" -> "$marker"
+            "0" -> "$marker-0"
+            else -> "$marker"
         }
     }
 
@@ -311,7 +314,7 @@ object TailWindHelper {
      * 处理颜色属性
      **/
     fun color(key: String, value: String): String {
-        if (value.startsWith("#")) {
+        if (value.startsWith("#") || value.startsWith("rgb")) {
             return "text-[$value]"
         }
         return "text-$value"
@@ -554,6 +557,9 @@ object TailWindHelper {
                 "64px" -> "3xl"
                 else -> "[$value]"
             }
+            if (key == "backdrop-filter") {
+                return "backdrop-blur-$finalValue"
+            }
             return "blur-$finalValue"
         }
         return "$key-[$text]"
@@ -575,23 +581,21 @@ object TailWindHelper {
     }
 
     fun textTransform(key: String, value: String): String {
-        val finalValue = when (value) {
+        return when (value) {
             "uppercase" -> "uppercase"
             "lowercase" -> "lowercase"
             "capitalize" -> "capitalize"
             "none" -> ""
             else -> ""
         }
-        return finalValue.ifEmpty { "" }
     }
 
     fun fontStyle(key: String, value: String): String {
-        val finalValue = when (value) {
+        return when (value) {
             "italic" -> "italic"
             "normal" -> ""
             else -> ""
         }
-        return finalValue.ifEmpty { "" }
     }
 
     fun backgroundClip(key: String, value: String): String {
@@ -606,7 +610,7 @@ object TailWindHelper {
     }
 
     fun textDecorationStyle(key: String, value: String): String {
-        val finalValue = when (value) {
+        return when (value) {
             "solid" -> "decoration-solid"
             "double" -> "decoration-double"
             "dotted" -> "decoration-dotted"
@@ -614,22 +618,20 @@ object TailWindHelper {
             "wavy" -> "decoration-wavy"
             else -> ""
         }
-        return finalValue.ifEmpty { "" }
     }
 
     fun textDecorationLine(key: String, value: String): String {
-        val finalValue = when (value) {
+        return when (value) {
             "underline" -> "underline"
             "overline" -> "overline"
             "line-through" -> "line-through"
             "none" -> "no-underline"
             else -> ""
         }
-        return finalValue.ifEmpty { "" }
     }
 
     fun bgBlendMode(key: String, value: String): String {
-        val finalValue = when (value) {
+        return when (value) {
             "normal" -> "bg-blend-normal"
             "multiply" -> "bg-blend-multiply"
             "screen" -> "bg-blend-screen"
@@ -648,11 +650,10 @@ object TailWindHelper {
             "luminosity" -> "bg-blend-luminosity"
             else -> ""
         }
-        return finalValue.ifEmpty { "" }
     }
 
     fun mixBlendMode(key: String, value: String): String {
-        val finalValue = when (value) {
+        return when (value) {
             "normal" -> "mix-blend-normal"
             "multiply" -> "mix-blend-multiply"
             "screen" -> "mix-blend-screen"
@@ -672,7 +673,6 @@ object TailWindHelper {
             "plus-lighter" -> "mix-blend-plus-lighter"
             else -> ""
         }
-        return finalValue.ifEmpty { "" }
     }
 
     fun scale(marker: String, value: String): String {
@@ -691,7 +691,9 @@ object TailWindHelper {
             "1.1" -> "110"
             "1.25" -> "125"
             "1.5" -> "150"
-            else -> ""
+            else -> {
+                "[${value.toDouble() * 100}]"
+            }
         }
         return if (finalValue.isNotEmpty()) "$marker-${finalValue}" else ""
     }
@@ -749,6 +751,216 @@ object TailWindHelper {
             else -> "[$value]"
         }
         return "z-${finalValue}"
+    }
+
+    fun verticalAlign(key: String, value: String): String {
+        val finalValue = when (value) {
+            "baseline" -> "align-baseline"
+            "top" -> "align-top"
+            "middle" -> "align-middle"
+            "bottom" -> "align-bottom"
+            "text-top" -> "align-text-top"
+            "text-bottom" -> "align-text-bottom"
+            "sub" -> "align-sub"
+            "super" -> "align-super"
+            else -> "align-$value"
+        }
+        return finalValue
+    }
+
+    /**
+     * TODO：
+     **/
+    fun transform(key: String, value: String): String {
+        var result = value
+        if (value.startsWith("scale(")) {
+            val scale = result.replace("scale(", "").replace(")", "").trim()
+            return scale("scale", scale)
+        } else if (value.startsWith("translate(")) {
+
+        } else if (value.startsWith("rotate(")) {
+
+        } else if (value.startsWith("skew(")) {
+
+        }
+        return "$key-[$value]"
+    }
+
+    fun flexDirection(key: String, value: String): String {
+        return when (value) {
+            "row" -> "flex-row"
+            "row-reverse" -> "flex-row-reverse"
+            "column" -> "flex-col"
+            "column-reverse" -> "flex-col-reverse"
+            else -> ""
+        }
+    }
+
+    fun flexWrap(key: String, value: String): String {
+        return when (value) {
+            "wrap" -> "flex-wrap"
+            "wrap-reverse" -> "flex-wrap-reverse"
+            "nowrap" -> "flex-nowrap"
+            else -> ""
+        }
+    }
+
+    fun gridAutoFlow(key: String, value: String): String {
+        return when (value) {
+            "row" -> "grid-flow-row"
+            "column" -> "grid-flow-col"
+            "dense" -> "grid-flow-dense"
+            "row dense" -> "grid-flow-row-dense"
+            "column dense" -> "grid-flow-col-dense"
+            else -> ""
+        }
+    }
+
+    fun breakAfter(key: String, value: String): String {
+        return when (value) {
+            "auto" -> "break-after-auto"
+            "avoid" -> "break-after-avoid"
+            "all" -> "break-after-all"
+            "avoid-page" -> "break-after-avoid-page"
+            "page" -> "break-after-page"
+            "left" -> "break-after-left"
+            "right" -> "break-after-right"
+            "column" -> "break-after-column"
+            else -> ""
+        }
+    }
+
+    fun breakBefore(key: String, value: String): String {
+        return when (value) {
+            "auto" -> "break-before-auto"
+            "avoid" -> "break-before-avoid"
+            "all" -> "break-before-all"
+            "avoid-page" -> "break-before-avoid-page"
+            "page" -> "break-before-page"
+            "left" -> "break-before-left"
+            "right" -> "break-before-right"
+            "column" -> "break-before-column"
+            else -> ""
+        }
+    }
+
+    fun breakInside(key: String, value: String): String {
+        return when (value) {
+            "auto" -> "break-inside-auto"
+            "avoid" -> "break-inside-avoid"
+            "avoid-page" -> "break-inside-avoid-page"
+            "avoid-column" -> "break-inside-avoid-column"
+            else -> ""
+        }
+    }
+
+    fun resize(key: String, value: String): String {
+        return when (value) {
+            "none" -> "resize-none"
+            "vertical" -> "resize-y"
+            "horizontal" -> "resize-x"
+            "both" -> "resize"
+            else -> ""
+        }
+    }
+
+    fun scrollSnapAlign(key: String, value: String): String {
+        return when (value) {
+            "start" -> "snap-start"
+            "end" -> "snap-end"
+            "center" -> "snap-center"
+            "none" -> "snap-align-none"
+            else -> ""
+        }
+    }
+
+    fun placeContent(key: String, value: String): String {
+        return when (value) {
+            "center" -> "place-content-center"
+            "start" -> "place-content-start"
+            "end" -> "place-content-end"
+            "space-between" -> "place-content-between"
+            "space-around" -> "place-content-around"
+            "space-evenly" -> "place-content-evenly"
+            "baseline" -> "place-content-baseline"
+            "stretch" -> "place-content-stretch"
+            else -> ""
+        }
+    }
+
+    fun backgroundRepeat(key: String, value: String): String {
+        return when (value) {
+            "repeat" -> "bg-repeat"
+            "no-repeat" -> "bg-no-repeat"
+            "repeat-x" -> "bg-repeat-x"
+            "repeat-y" -> "bg-repeat-y"
+            "round" -> "bg-repeat-round"
+            "space" -> "bg-repeat-space"
+            else -> ""
+        }
+    }
+
+    fun backgroundOrigin(key: String, value: String): String {
+        return when (value) {
+            "border-box" -> "bg-origin-border"
+            "padding-box" -> "bg-origin-padding"
+            "content-box" -> "bg-origin-content"
+            else -> ""
+        }
+    }
+
+    fun isolation(key: String, value: String): String {
+        return when (value) {
+            "isolate" -> "isolate"
+            "auto" -> "isolation-auto"
+            else -> ""
+        }
+    }
+
+    fun wordBreak(key: String, value: String): String {
+        return when (value) {
+            "break-all" -> "break-all"
+            "keep-all" -> "break-keep"
+            else -> ""
+        }
+    }
+
+    fun overflowWrap(key: String, value: String): String {
+        return when (value) {
+            "break-word" -> "break-word"
+            "normal" -> "break-normal"
+            else -> ""
+        }
+    }
+
+    fun columns(key: String, value: String): String {
+        val result = when (value) {
+            "1" -> "1"
+            "10" -> "10"
+            "11" -> "11"
+            "12" -> "12"
+            "2" -> "2"
+            "3" -> "3"
+            "48rem" -> "3xl"
+            "16rem" -> "3xs"
+            "4" -> "4"
+            "56rem" -> "4xl"
+            "5" -> "5"
+            "64rem" -> "5xl"
+            "6" -> "6"
+            "7" -> "7"
+            "80rem" -> "7xl"
+            "8" -> "8"
+            "9" -> "9"
+            "auto" -> "auto"
+            "32rem" -> "lg"
+            "28rem" -> "md"
+            "24rem" -> "sm"
+            "36rem" -> "xl"
+            "20rem" -> "xs"
+            else -> "[$value]"
+        }
+        return "$key-$result"
     }
 
 
