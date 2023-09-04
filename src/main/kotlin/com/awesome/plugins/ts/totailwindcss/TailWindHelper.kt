@@ -7,7 +7,7 @@ object TailWindHelper {
     /**
      * 处理FontWeight 属性
      **/
-    fun fontWeight(key: String, value: String): String {
+    fun fontWeight(value: String): String {
         if (value.isNumber()) {
             val size = value.trim().toInt()
             return when (size) {
@@ -31,7 +31,7 @@ object TailWindHelper {
      **/
     fun border(marker: String, value: String): String {
         val lists =
-            arrayListOf<String>(
+            arrayListOf(
                 "none",
                 "hidden",
                 "dotted",
@@ -53,10 +53,6 @@ object TailWindHelper {
         return value
     }
 
-    private fun border() {
-
-    }
-
     /**
      * 处理透明度属性
      **/
@@ -69,9 +65,9 @@ object TailWindHelper {
         return "$marker-[$size]"
     }
 
-    fun padding(key: String, value: String): String = dealMarginOrPadding(key, value, "p").replaceEmpty("p")
+    fun padding(value: String): String = dealMarginOrPadding(value, "p").replaceEmpty("p")
 
-    fun margin(key: String, value: String): String = dealMarginOrPadding(key, value, "m").replaceEmpty("m")
+    fun margin(value: String): String = dealMarginOrPadding(value, "m").replaceEmpty("m")
 
     private fun String.replaceEmpty(mark: String = "m"): String {
         if (this.contains("[0]")) {
@@ -85,7 +81,7 @@ object TailWindHelper {
     /**
      * 处理Margin值和Padding值
      **/
-    private fun dealMarginOrPadding(key: String, value: String, mark: String = "m"): String {
+    private fun dealMarginOrPadding(value: String, mark: String = "m"): String {
         if (value.contains(" ")) {
             val results = value.split(" ").clearEmpty().checkSpacing()
             if (results.isSame()) {
@@ -158,7 +154,7 @@ object TailWindHelper {
     /**
      * 处理圆角属性
      **/
-    fun borderRadius(key: String, value: String): String {
+    fun borderRadius(value: String): String {
         if (value.contains(" ")) {
             val results = value.split(" ").clearEmpty().borderRadius()
             if (results.isSame()) {
@@ -335,9 +331,163 @@ object TailWindHelper {
      **/
     fun color(key: String, value: String): String {
         if (value.startsWith("#") || value.startsWith("rgb")) {
-            return "text-[$value]"
+            return "$key-[$value]"
         }
-        return "text-$value"
+        return "$key-[${defaultCssColor(value)}]"
+    }
+
+    private fun defaultCssColor(value: String): String {
+        return when (value) {
+            "aliceblue" -> "#f0f8ff"
+            "antiquewhite" -> "#faebd7"
+            "aqua" -> "#00ffff"
+            "aquamarine" -> "#7fffd4"
+            "azure" -> "#f0ffff"
+            "beige" -> "#f5f5dc"
+            "bisque" -> "#ffe4c4"
+            "black" -> "#000000"
+            "blanchedalmond" -> "#ffebcd"
+            "blue" -> "#0000ff"
+            "blueviolet" -> "#8a2be2"
+            "brown" -> "#a52a2a"
+            "burlywood" -> "#deb887"
+            "cadetblue" -> "#5f9ea0"
+            "chartreuse" -> "#7fff00"
+            "chocolate" -> "#d2691e"
+            "coral" -> "#ff7f50"
+            "cornflowerblue" -> "#6495ed"
+            "cornsilk" -> "#fff8dc"
+            "crimson" -> "#dc143c"
+            "cyan" -> "#00ffff"
+            "darkblue" -> "#00008b"
+            "darkcyan" -> "#008b8b"
+            "darkgoldenrod" -> "#b8860b"
+            "darkgray" -> "#a9a9a9"
+            "darkgreen" -> "#006400"
+            "darkgrey" -> "#a9a9a9"
+            "darkkhaki" -> "#bdb76b"
+            "darkmagenta" -> "#8b008b"
+            "darkolivegreen" -> "#556b2f"
+            "darkorange" -> "#ff8c00"
+            "darkorchid" -> "#9932cc"
+            "darkred" -> "#8b0000"
+            "darksalmon" -> "#e9967a"
+            "darkseagreen" -> "#8fbc8f"
+            "darkslateblue" -> "#483d8b"
+            "darkslategray" -> "#2f4f4f"
+            "darkslategrey" -> "#2f4f4f"
+            "darkturquoise" -> "#00ced1"
+            "darkviolet" -> "#9400d3"
+            "deeppink" -> "#ff1493"
+            "deepskyblue" -> "#00bfff"
+            "dimgray" -> "#696969"
+            "dimgrey" -> "#696969"
+            "dodgerblue" -> "#1e90ff"
+            "firebrick" -> "#b22222"
+            "floralwhite" -> "#fffaf0"
+            "forestgreen" -> "#228b22"
+            "fuchsia" -> "#ff00ff"
+            "gainsboro" -> "#dcdcdc"
+            "ghostwhite" -> "#f8f8ff"
+            "gold" -> "#ffd700"
+            "goldenrod" -> "#daa520"
+            "gray" -> "#808080"
+            "green" -> "#008000"
+            "greenyellow" -> "#adff2f"
+            "grey" -> "#808080"
+            "honeydew" -> "#f0fff0"
+            "hotpink" -> "#ff69b4"
+            "indianred" -> "#cd5c5c"
+            "indigo" -> "#4b0082"
+            "ivory" -> "#fffff0"
+            "khaki" -> "#f0e68c"
+            "lavender" -> "#e6e6fa"
+            "lavenderblush" -> "#fff0f5"
+            "lawngreen" -> "#7cfc00"
+            "lemonchiffon" -> "#fffacd"
+            "lightblue" -> "#add8e6"
+            "lightcoral" -> "#f08080"
+            "lightcyan" -> "#e0ffff"
+            "lightgoldenrodyellow" -> "#fafad2"
+            "lightgray" -> "#d3d3d3"
+            "lightgreen" -> "#90ee90"
+            "lightgrey" -> "#d3d3d3"
+            "lightpink" -> "#ffb6c1"
+            "lightsalmon" -> "#ffa07a"
+            "lightseagreen" -> "#20b2aa"
+            "lightskyblue" -> "#87cefa"
+            "lightslategray" -> "#778899"
+            "lightslategrey" -> "#778899"
+            "lightsteelblue" -> "#b0c4de"
+            "lightyellow" -> "#ffffe0"
+            "lime" -> "#00ff00"
+            "limegreen" -> "#32cd32"
+            "linen" -> "#faf0e6"
+            "magenta" -> "#ff00ff"
+            "maroon" -> "#800000"
+            "mediumaquamarine" -> "#66cdaa"
+            "mediumblue" -> "#0000cd"
+            "mediumorchid" -> "#ba55d3"
+            "mediumpurple" -> "#9370db"
+            "mediumseagreen" -> "#3cb371"
+            "mediumslateblue" -> "#7b68ee"
+            "mediumspringgreen" -> "#00fa9a"
+            "mediumturquoise" -> "#48d1cc"
+            "mediumvioletred" -> "#c71585"
+            "midnightblue" -> "#191970"
+            "mintcream" -> "#f5fffa"
+            "mistyrose" -> "#ffe4e1"
+            "moccasin" -> "#ffe4b5"
+            "navajowhite" -> "#ffdead"
+            "navy" -> "#000080"
+            "oldlace" -> "#fdf5e6"
+            "olive" -> "#808000"
+            "olivedrab" -> "#6b8e23"
+            "orange" -> "#ffa500"
+            "orangered" -> "#ff4500"
+            "orchid" -> "#da70d6"
+            "palegoldenrod" -> "#eee8aa"
+            "palegreen" -> "#98fb98"
+            "paleturquoise" -> "#afeeee"
+            "palevioletred" -> "#db7093"
+            "papayawhip" -> "#ffefd5"
+            "peachpuff" -> "#ffdab9"
+            "peru" -> "#cd853f"
+            "pink" -> "#ffc0cb"
+            "plum" -> "#dda0dd"
+            "powderblue" -> "#b0e0e6"
+            "purple" -> "#800080"
+            "rebeccapurple" -> "#663399"
+            "red" -> "#ff0000"
+            "rosybrown" -> "#bc8f8f"
+            "royalblue" -> "#4169e1"
+            "saddlebrown" -> "#8b4513"
+            "salmon" -> "#fa8072"
+            "sandybrown" -> "#f4a460"
+            "seagreen" -> "#2e8b57"
+            "seashell" -> "#fff5ee"
+            "sienna" -> "#a0522d"
+            "silver" -> "#c0c0c0"
+            "skyblue" -> "#87ceeb"
+            "slateblue" -> "#6a5acd"
+            "slategray" -> "#708090"
+            "slategrey" -> "#708090"
+            "snow" -> "#fffafa"
+            "springgreen" -> "#00ff7f"
+            "steelblue" -> "#4682b4"
+            "tan" -> "#d2b48c"
+            "teal" -> "#008080"
+            "thistle" -> "#d8bfd8"
+            "tomato" -> "#ff6347"
+            "turquoise" -> "#40e0d0"
+            "violet" -> "#ee82ee"
+            "wheat" -> "#f5deb3"
+            "white" -> "#ffffff"
+            "whitesmoke" -> "#f5f5f5"
+            "yellow" -> "#ffff00"
+            "yellowgreen" -> "#9acd32"
+            else -> value
+        }
     }
 
     fun rotate(key: String, value: String): String {
@@ -356,7 +506,7 @@ object TailWindHelper {
         return "$key-$finalValue"
     }
 
-    fun letterSpacing(key: String, value: String): String {
+    fun letterSpacing(value: String): String {
         val finalValue = when (value) {
             "-0.05rem" -> "tighter"
             "-0.025rem" -> "tight"
@@ -369,7 +519,7 @@ object TailWindHelper {
         return "tracking-$finalValue"
     }
 
-    fun lineHeight(key: String, value: String): String {
+    fun lineHeight(value: String): String {
         val finalValue = when (value) {
             "1" -> "none"
             "1.25" -> "tight"
@@ -391,7 +541,7 @@ object TailWindHelper {
         return "leading-$finalValue"
     }
 
-    fun fontSize(key: String, value: String): String {
+    fun fontSize(value: String): String {
         val finalValue = when (value) {
             "0.75rem" -> "xs"
             "0.875rem" -> "sm"
@@ -411,7 +561,7 @@ object TailWindHelper {
         return "text-$finalValue"
     }
 
-    fun fontFamily(key: String, value: String): String {
+    fun fontFamily(value: String): String {
         val finalValue = when (value) {
             "ui-sans-serif", "sans-serif", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji" -> "sans"
             "ui-serif", "Georgia", "Cambria", "Times New Roman", "Times", "serif" -> "serif"
@@ -421,7 +571,7 @@ object TailWindHelper {
         return "font-$finalValue"
     }
 
-    fun order(key: String, value: String): String {
+    fun order(value: String): String {
         val finalValue = when (value) {
             "-9999" -> "first"
             "9999" -> "last"
@@ -485,44 +635,23 @@ object TailWindHelper {
             "33.333333%" -> "1/3"
             "66.666667%" -> "2/3"
             "25%" -> "1/4"
-            "50%" -> "2/4"
             "75%" -> "3/4"
             "100%" -> "full"
-            "50%" -> "1/2"
             "33.33%" -> "1/3"
-            "33.333333%" -> "1/3"
             "66.66%" -> "2/3"
             "66.67%" -> "2/3"
-            "66.666667%" -> "2/3"
-            "25%" -> "1/4"
-            "50%" -> "2/4"
-            "75%" -> "3/4"
             "20%" -> "1/5"
             "40%" -> "2/5"
             "60%" -> "3/5"
             "80%" -> "4/5"
             "16.666667%" -> "1/6"
-            "33.333333%" -> "2/6"
-            "33.33%" -> "2/6"
-            "50%" -> "3/6"
-            "66.67%" -> "4/6"
-            "66.66%" -> "4/6"
-            "66.666667%" -> "4/6"
             "83.33%" -> "5/6"
             "83.333333%" -> "5/6"
             "8.333333%" -> "1/12"
             "16.66%" -> "2/12"
             "16.67%" -> "2/12"
-            "16.666667%" -> "2/12"
-            "25%" -> "3/12"
-            "33.333333%" -> "4/12"
             "41.666667%" -> "5/12"
-            "50%" -> "6/12"
             "58.333333%" -> "7/12"
-            "66.666667%" -> "8/12"
-            "75%" -> "9/12"
-            "83.33%" -> "10/12"
-            "83.333333%" -> "10/12"
             "91.66%" -> "11/12"
             "91.666667%" -> "11/12"
             else -> {
@@ -551,7 +680,7 @@ object TailWindHelper {
         return "$marker-$finalValue"
     }
 
-    fun aspectRatio(key: String, text: String): String {
+    fun aspectRatio(text: String): String {
         var value = text.replace(" ", "").trim()
         val finalValue = when (value) {
             "auto" -> "auto"
@@ -585,7 +714,7 @@ object TailWindHelper {
         return "$key-[$text]"
     }
 
-    fun boxShadow(key: String, value: String): String {
+    fun boxShadow(value: String): String {
         val finalValue = when (value) {
             "0 1px 2px 0 rgb(0 0 0 / 0.05)" -> "sm"
             "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)" -> "DEFAULT"
@@ -600,7 +729,7 @@ object TailWindHelper {
         return "shadow-$finalValue"
     }
 
-    fun textTransform(key: String, value: String): String {
+    fun textTransform(value: String): String {
         return when (value) {
             "uppercase" -> "uppercase"
             "lowercase" -> "lowercase"
@@ -610,7 +739,7 @@ object TailWindHelper {
         }
     }
 
-    fun fontStyle(key: String, value: String): String {
+    fun fontStyle(value: String): String {
         return when (value) {
             "italic" -> "italic"
             "normal" -> ""
@@ -618,7 +747,7 @@ object TailWindHelper {
         }
     }
 
-    fun backgroundClip(key: String, value: String): String {
+    fun backgroundClip(value: String): String {
         val finalValue = when (value) {
             "text" -> "bg-clip-text"
             "content-box" -> "bg-clip-content"
@@ -629,7 +758,7 @@ object TailWindHelper {
         return finalValue
     }
 
-    fun textDecorationStyle(key: String, value: String): String {
+    fun textDecorationStyle(value: String): String {
         return when (value) {
             "solid" -> "decoration-solid"
             "double" -> "decoration-double"
@@ -640,7 +769,7 @@ object TailWindHelper {
         }
     }
 
-    fun textDecorationLine(key: String, value: String): String {
+    fun textDecorationLine(value: String): String {
         return when (value) {
             "underline" -> "underline"
             "overline" -> "overline"
@@ -650,7 +779,7 @@ object TailWindHelper {
         }
     }
 
-    fun bgBlendMode(key: String, value: String): String {
+    fun bgBlendMode(value: String): String {
         return when (value) {
             "normal" -> "bg-blend-normal"
             "multiply" -> "bg-blend-multiply"
@@ -672,7 +801,7 @@ object TailWindHelper {
         }
     }
 
-    fun mixBlendMode(key: String, value: String): String {
+    fun mixBlendMode(value: String): String {
         return when (value) {
             "normal" -> "mix-blend-normal"
             "multiply" -> "mix-blend-multiply"
@@ -718,7 +847,7 @@ object TailWindHelper {
         return if (finalValue.isNotEmpty()) "$marker-${finalValue}" else ""
     }
 
-    fun strokeWidth(key: String, value: String): String {
+    fun strokeWidth(value: String): String {
         val finalValue = when (value) {
             "0" -> "0"
             "1" -> "1"
@@ -731,7 +860,7 @@ object TailWindHelper {
         return ""
     }
 
-    fun textDecorationThickness(key: String, value: String): String {
+    fun textDecorationThickness(value: String): String {
         val finalValue = when (value) {
             "auto" -> "auto"
             "from-font" -> "from-font"
@@ -745,7 +874,7 @@ object TailWindHelper {
         return "decoration-$finalValue"
     }
 
-    fun textUnderLineOffset(key: String, value: String): String {
+    fun textUnderLineOffset(value: String): String {
         val finalValue = when (value) {
             "auto" -> "auto"
             "from-font" -> "from-font"
@@ -759,7 +888,7 @@ object TailWindHelper {
         return "underline-offset-$finalValue"
     }
 
-    fun zIndex(key: String, value: String): String {
+    fun zIndex(value: String): String {
         val finalValue = when (value) {
             "auto" -> "auto"
             "0" -> "0"
@@ -773,7 +902,7 @@ object TailWindHelper {
         return "z-${finalValue}"
     }
 
-    fun verticalAlign(key: String, value: String): String {
+    fun verticalAlign(value: String): String {
         val finalValue = when (value) {
             "baseline" -> "align-baseline"
             "top" -> "align-top"
@@ -806,7 +935,7 @@ object TailWindHelper {
         return "$key-[$value]"
     }
 
-    fun flexDirection(key: String, value: String): String {
+    fun flexDirection(value: String): String {
         return when (value) {
             "row" -> "flex-row"
             "row-reverse" -> "flex-row-reverse"
@@ -816,7 +945,7 @@ object TailWindHelper {
         }
     }
 
-    fun flexWrap(key: String, value: String): String {
+    fun flexWrap(value: String): String {
         return when (value) {
             "wrap" -> "flex-wrap"
             "wrap-reverse" -> "flex-wrap-reverse"
@@ -825,7 +954,7 @@ object TailWindHelper {
         }
     }
 
-    fun gridAutoFlow(key: String, value: String): String {
+    fun gridAutoFlow(value: String): String {
         return when (value) {
             "row" -> "grid-flow-row"
             "column" -> "grid-flow-col"
@@ -836,7 +965,7 @@ object TailWindHelper {
         }
     }
 
-    fun breakAfter(key: String, value: String): String {
+    fun breakAfter(value: String): String {
         return when (value) {
             "auto" -> "break-after-auto"
             "avoid" -> "break-after-avoid"
@@ -850,7 +979,7 @@ object TailWindHelper {
         }
     }
 
-    fun breakBefore(key: String, value: String): String {
+    fun breakBefore(value: String): String {
         return when (value) {
             "auto" -> "break-before-auto"
             "avoid" -> "break-before-avoid"
@@ -864,7 +993,7 @@ object TailWindHelper {
         }
     }
 
-    fun breakInside(key: String, value: String): String {
+    fun breakInside(value: String): String {
         return when (value) {
             "auto" -> "break-inside-auto"
             "avoid" -> "break-inside-avoid"
@@ -874,7 +1003,7 @@ object TailWindHelper {
         }
     }
 
-    fun resize(key: String, value: String): String {
+    fun resize(value: String): String {
         return when (value) {
             "none" -> "resize-none"
             "vertical" -> "resize-y"
@@ -884,7 +1013,7 @@ object TailWindHelper {
         }
     }
 
-    fun scrollSnapAlign(key: String, value: String): String {
+    fun scrollSnapAlign(value: String): String {
         return when (value) {
             "start" -> "snap-start"
             "end" -> "snap-end"
@@ -894,7 +1023,7 @@ object TailWindHelper {
         }
     }
 
-    fun placeContent(key: String, value: String): String {
+    fun placeContent(value: String): String {
         return when (value) {
             "center" -> "place-content-center"
             "start" -> "place-content-start"
@@ -908,7 +1037,7 @@ object TailWindHelper {
         }
     }
 
-    fun backgroundRepeat(key: String, value: String): String {
+    fun backgroundRepeat(value: String): String {
         return when (value) {
             "repeat" -> "bg-repeat"
             "no-repeat" -> "bg-no-repeat"
@@ -920,7 +1049,7 @@ object TailWindHelper {
         }
     }
 
-    fun backgroundOrigin(key: String, value: String): String {
+    fun backgroundOrigin(value: String): String {
         return when (value) {
             "border-box" -> "bg-origin-border"
             "padding-box" -> "bg-origin-padding"
@@ -929,7 +1058,7 @@ object TailWindHelper {
         }
     }
 
-    fun isolation(key: String, value: String): String {
+    fun isolation(value: String): String {
         return when (value) {
             "isolate" -> "isolate"
             "auto" -> "isolation-auto"
@@ -937,7 +1066,7 @@ object TailWindHelper {
         }
     }
 
-    fun wordBreak(key: String, value: String): String {
+    fun wordBreak(value: String): String {
         return when (value) {
             "break-all" -> "break-all"
             "keep-all" -> "break-keep"
@@ -945,7 +1074,7 @@ object TailWindHelper {
         }
     }
 
-    fun overflowWrap(key: String, value: String): String {
+    fun overflowWrap(value: String): String {
         return when (value) {
             "break-word" -> "break-word"
             "normal" -> "break-normal"
@@ -983,7 +1112,7 @@ object TailWindHelper {
         return "$key-$result"
     }
 
-    fun bgPosition(key: String, value: String): String {
+    fun bgPosition(value: String): String {
         return "bg-${value.replace(" ", "-")}"
     }
 }
