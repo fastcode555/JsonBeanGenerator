@@ -41,7 +41,6 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
                 }
             }
         }
-        builder.insert(0, "@apply ")
         return builder.toString().replace("-DEFAULT", "").replace("  ", " ")
     }
 
@@ -109,6 +108,7 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
             "text-transform" -> TailWindHelper.textTransform(value)
             "-webkit-background-clip" -> TailWindHelper.backgroundClip(value)
             "font-style" -> TailWindHelper.fontStyle(value)
+            "text-decoration" -> TailWindHelper.textDecorationLine(value)
             "text-decoration-style" -> TailWindHelper.textDecorationStyle(value)
             "text-decoration-line" -> TailWindHelper.textDecorationLine(value)
             "text-decoration-thickness" -> TailWindHelper.textDecorationThickness(value)
@@ -158,7 +158,6 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
             "overscroll-behavior-y" -> "overscroll-y-$value"
             "scroll-behavior" -> "scroll-$value"
 
-            "box-shadow" -> "shadow-"
             "cursor" -> "$key-$value"
             "rotate" -> TailWindHelper.rotate(key, value)
             "order" -> TailWindHelper.order(value)
@@ -213,7 +212,7 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
             "box-decoration-break" -> "box-decoration-$value"
             "isolation" -> TailWindHelper.isolation(value)
             "columns" -> TailWindHelper.columns(key, value)
-            "column-gap" -> TailWindHelper.columns(key, value)
+            "box-sizing" -> TailWindHelper.boxSizing(value)
             else -> "$key"
         }
     }

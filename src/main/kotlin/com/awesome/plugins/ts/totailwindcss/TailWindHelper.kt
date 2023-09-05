@@ -43,6 +43,9 @@ object TailWindHelper {
                 "inset",
                 "outset"
             )
+        if (value == "none") {
+            return "$marker-none"
+        }
         for (type in lists) {
             if (value.contains(type)) {
                 val results = value.split(type)
@@ -65,16 +68,9 @@ object TailWindHelper {
         return "$marker-[$size]"
     }
 
-    fun padding(value: String): String = dealMarginOrPadding(value, "p").replaceEmpty("p")
+    fun padding(value: String): String = dealMarginOrPadding(value, "p")
 
-    fun margin(value: String): String = dealMarginOrPadding(value, "m").replaceEmpty("m")
-
-    private fun String.replaceEmpty(mark: String = "m"): String {
-        if (this.contains("[0]")) {
-            return this.replace(Regex("$mark[a-z]{1,2}-\\[0\\]"), "")
-        }
-        return this;
-    }
+    fun margin(value: String): String = dealMarginOrPadding(value, "m")
 
     fun String.replaceRegex(regexString: String): String = this.replace(Regex(regexString), "").trim()
 
@@ -1114,5 +1110,13 @@ object TailWindHelper {
 
     fun bgPosition(value: String): String {
         return "bg-${value.replace(" ", "-")}"
+    }
+
+    fun boxSizing(value: String): String {
+        return when (value) {
+            "border-box" -> "box-border"
+            "content-box" -> "box-content"
+            else -> value
+        }
     }
 }

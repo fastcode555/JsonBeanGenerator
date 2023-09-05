@@ -30,6 +30,9 @@ class ToTailWindCssAction : BaseAnAction() {
                 var content = ""
                 processors.forEach { content = it.process(content) }
                 //替换掉css的代码
+                if (content.isNotEmpty()) {
+                    content = "@apply $content"
+                }
                 document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, content)
             }
         }

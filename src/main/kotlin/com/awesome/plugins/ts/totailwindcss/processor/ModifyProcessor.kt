@@ -14,6 +14,7 @@ class ModifyProcessor(private val editor: Editor) : BaseProcessor(editor) {
         maps.forEach { (key, value) ->
             content = content.replace(key, value)
         }
-        return content.trim()
+        content = content.replace(Regex("[p|m]{1}[l|r|t|b|x|y]{0,1}-\\[0(rem|px|dp)*\\]"), "")
+        return content.replace("  ", " ").trim()
     }
 }
