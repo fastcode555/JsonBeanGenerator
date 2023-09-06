@@ -1,6 +1,7 @@
 package com.awesome.plugins.assetgenerate
 
-import com.awesome.plugins.assetgenerate.generator.DartAssetGenerator
+import com.awesome.plugins.assetgenerate.generator.FlutterAssetGenerator
+import com.awesome.plugins.assetgenerate.generator.WebAssetGenerator
 import com.awesome.utils.PropertiesHelper
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -20,12 +21,18 @@ class AssetGenerateAction : AnAction() {
             WriteCommandAction.runWriteCommandAction(mDirectory.project) {
                 val fileContent = File(mDirectory.project.projectFile?.path).readText()
                 if (fileContent.contains("\"io.flutter\"")) {
-                    DartAssetGenerator(mDirectory, ignoreDirs, targetDir).generate()
-                } else if (fileContent.contains("\"web\"")) {
-                    DartAssetGenerator(mDirectory, ignoreDirs, targetDir).generate()
+                    FlutterAssetGenerator(mDirectory, ignoreDirs, targetDir).generate()
+                } else if (isWeb(fileContent, mDirectory)) {
+                    WebAssetGenerator(mDirectory, ignoreDirs, targetDir).generate()
+                } else {
+
                 }
             }
         }
+    }
+
+    fun isWeb(fileContent: String, mDirectory: PsiDirectory): Boolean {
+        return fileContent.contains("\"web\"") || File(mDirectory.project.basePath, "package.json").exists()
     }
 
 

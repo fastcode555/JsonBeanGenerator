@@ -14,7 +14,7 @@ import java.lang.StringBuilder
  **/
 private val FONT_TYPES: Array<String> = arrayOf("ttf", "otf", "woff", "eot")
 
-class DartAssetGenerator(
+class FlutterAssetGenerator(
     private val mDirectory: PsiDirectory,
     private val ignoreDirs: String?,
     private val targetDir: String?
