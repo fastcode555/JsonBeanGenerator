@@ -118,6 +118,8 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
      **/
     private fun onAntiObfuscate() {
         val maps = queryKeyAndEnValue() ?: return
+        val restoreKeys = hashMapOf<String, String>()
+        val allKeys = arrayListOf<String>()
         //根据匹配到的所有内容回复当前文件的所有key
         maps.forEach { (key, value) ->
             val pattern = " $key \\=[ \\n]*[\\'\\\"].*?[\\'\\\"];"
@@ -125,11 +127,41 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
                 val matchContent = document.text.regexOne(pattern) ?: return@forEach
                 val content = " $key = '$value';"
                 val index = document.text.indexOf(matchContent)
+                var oldKey = matchContent.split("=").last().trim()
+                oldKey = oldKey.substring(1, oldKey.length - 2)
+                if (value != null) {
+                    restoreKeys[oldKey] = value
+                    allKeys.add(oldKey)
+                }
                 try {
                     document.replaceString(index, index + matchContent.length, content)
                 } catch (e: Exception) {
                     print(e)
                 }
+            }
+        }
+        val properties = PropertiesHelper(psiFile)
+        val value = properties.getProperty("plugin.languageAssetsDir")
+        var dir = psiFile.findExistsDirectory(value) ?: return
+        if (dir.exists()) {
+            dir.listFiles().forEach {
+                val json = it.readText().toJSON() as JSONObject
+                val removeKeys = arrayListOf<String>()
+                for ((key, _) in json.innerMap) {
+                    if (!allKeys.contains(key)) {
+                        removeKeys.add(key)
+                    }
+                }
+                for (key in removeKeys) {
+                    println("remove useless $key")
+                    json.remove(key)
+                }
+                val newJson = JSONObject()
+                for ((key, ele) in json.innerMap) {
+                    newJson.put(restoreKeys[key], ele)
+                }
+                it.writeText(newJson.toJSONString().trimJson())
+                removeKeys.clear()
             }
         }
         dispose()
@@ -199,12 +231,16 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
                         value = value.substring(1, value.length - 1)
                         jsonObj.put(maps[key], value)
                     }
-                    val string = jsonObj.toString().replace("\\n", "\n").replace("\\'", "'")
+                    val string = jsonObj.toJSONString().trimJson()
                     jsonFile.writeText(string)
                 }
             }
         }
         dispose()
+    }
+
+    private fun String.trimJson(): String {
+        return this.replace("\\\\n", "\\n").replace("\\'", "'")
     }
 
     /**
