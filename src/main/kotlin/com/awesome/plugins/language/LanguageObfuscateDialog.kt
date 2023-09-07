@@ -2,13 +2,13 @@ package com.awesome.plugins.language
 
 import clearSymbol
 import com.alibaba.fastjson.JSONObject
-import com.awesome.utils.regex
-import com.awesome.utils.regexOne
-import com.awesome.utils.showCount
+import com.awesome.utils.*
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.NlsSafe
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileSystemItem
 import toCamel
 import toJSON
 import toUpperCamel
@@ -23,7 +23,7 @@ import javax.swing.filechooser.FileFilter
 /**
  * 对Key开启批量混淆的功能
  **/
-class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDialog() {
+class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDialog() {
     var contentPane: JPanel? = null
 
     ///混淆
@@ -42,7 +42,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
     var count = 0
 
     private fun runBackGround(runnable: Runnable) {
-        WriteCommandAction.runWriteCommandAction(psiFile!!.project, runnable)
+        WriteCommandAction.runWriteCommandAction(psiFile.project, runnable)
     }
 
     /**
@@ -50,6 +50,8 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
      **/
     private fun obfuscateResource() {
         val content = editor!!.document.text
+        val keyLists = hashMapOf<String, String>()
+        val allKeys = arrayListOf<String>()
         //匹配所有的双引号或者单引号内的key
         content.regex("[\\n ]*[\\'\\\"]{1}.*?[\\'\\\"]{1}(?=;)") {
             try {
@@ -57,12 +59,58 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
                 val hex = Integer.toHexString(count).uppercase()
                 val key = if (tvSuffix!!.text!!.isEmpty()) "$hex" else "${tvSuffix!!.text}#$hex"
                 editor.document.replaceString(index, index + it.length, " '$key'")
+                var rawKey = it.trim()
+                rawKey = rawKey.substring(1, rawKey.length - 1)
+                allKeys.add(rawKey)
+                if (rawKey != key) {
+                    keyLists[rawKey] = key
+                }
                 count++
             } catch (e: Exception) {
                 count++
             }
         }
+        val properties = PropertiesHelper(psiFile)
+        val value = properties.getProperty("plugin.languageAssetsDir")
+        var dir = psiFile.findExistsDirectory(value) ?: return
+        if (dir.exists()) {
+            dir.listFiles().forEach {
+                val json = it.readText().toJSON() as JSONObject
+                val removeKeys = arrayListOf<String>()
+                for ((key, _) in json.innerMap) {
+                    if (!allKeys.contains(key)) {
+                        removeKeys.add(key)
+                    }
+                }
+                for (key in removeKeys) {
+                    println("remove useless $key")
+                    json.remove(key)
+                }
+                val newJson = JSONObject()
+                for ((key, newKey) in keyLists) {
+                    newJson.put(newKey, json.remove(key))
+                }
+                for ((key, ele) in json.innerMap) {
+                    newJson.put(key, ele)
+                }
+                it.writeText(newJson.toJSONString())
+                removeKeys.clear()
+            }
+        }
         dispose()
+    }
+
+    /**
+     * 找寻项目中存在的语言文件的文件夹
+     **/
+    private fun PsiFileSystemItem.findExistsDirectory(value: String?): File? {
+        val parent = this.parent
+        val file = File(parent!!.virtualFile.path, value)
+        if (file.exists()) {
+            return file
+        }
+        if (this.basePath() == file.path) return null
+        return parent.parent!!.findExistsDirectory(value)
     }
 
     /**
@@ -91,7 +139,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
      * 查询驼峰字段对应的英语值
      **/
     private fun queryKeyAndEnValue(): HashMap<String, String?>? {
-        val enFilePath = psiFile?.virtualFile?.path?.replace("strings.dart", "string_en.dart")
+        val enFilePath = psiFile.virtualFile?.path?.replace("strings.dart", "string_en.dart")
         if (enFilePath != null) {
             val maps = HashMap<String, String?>()
             val enFile = File(enFilePath)
@@ -113,7 +161,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
      * 查询对应的stringKeys
      **/
     private fun queryStringKeys(): HashMap<String, String?>? {
-        val idsFilePath = psiFile?.virtualFile?.path
+        val idsFilePath = psiFile.virtualFile?.path
         if (idsFilePath != null) {
             val maps = HashMap<String, String?>()
             val enFile = File(idsFilePath)
@@ -134,7 +182,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
      * 导出Json文件
      **/
     private fun onExportJson() {
-        psiFile?.apply {
+        psiFile.apply {
             val maps = queryStringKeys() ?: return
             val dir = findLanguageDir()
             if (maps.isEmpty()) return
@@ -163,13 +211,13 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
      *  导入Json文件，生成对应的key值
      **/
     private fun onImportJson() {
-        psiFile?.apply {
+        psiFile.apply {
             val file = selectFile() ?: return
             editor ?: return
             val json = file.readText().toJSON() as JSONObject
             val editorContent = editor.document.text
             for ((key, element) in json.innerMap) {
-                var idKey = key?.newIdKey(editorContent)
+                val idKey = key?.newIdKey(editorContent)
                 if (editorContent.contains("\"${element}\"") || editorContent.contains("'${element}'")) {
                     continue
                 }
@@ -198,7 +246,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
 
 
     private fun String.newIdKey(content: @NlsSafe String): String {
-        val idKey = this.replace(" ", "_")?.trim().clearSymbol().toCamel()
+        val idKey = this.replace(" ", "_").trim().clearSymbol().toCamel()
         val count = content.showCount("static const String $idKey ")
         if (count == 0) {
             return idKey
@@ -210,7 +258,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
      * 创建文件选择器
      **/
     private fun selectFile(): File? {
-        val fileChooser = JFileChooser(psiFile?.virtualFile?.parent?.path ?: "")
+        val fileChooser = JFileChooser(psiFile.virtualFile?.parent?.path ?: "")
         fileChooser.fileFilter = object : FileFilter() {
             override fun accept(f: File?): Boolean {
                 return f?.extension == ".json"
@@ -237,7 +285,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile?) : JDia
      * 创建languages这个文件夹
      **/
     private fun findLanguageDir(): File {
-        val languageDir = "${psiFile?.parent?.virtualFile?.path}/languages"
+        val languageDir = "${psiFile.parent?.virtualFile?.path}/languages"
         val dir = File(languageDir)
         if (!dir.exists()) {
             dir.mkdir()

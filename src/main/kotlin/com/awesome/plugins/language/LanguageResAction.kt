@@ -24,7 +24,7 @@ class LanguageResAction : BaseAnAction() {
             val selectionModel = editor?.selectionModel
             var value = selectionModel?.selectedText
             if (TextUtils.isEmpty(selectionModel?.selectedText)) {
-                val mDialog = LanguageObfuscateDialog(editor, psiFile)
+                val mDialog = LanguageObfuscateDialog(editor, psiFile!!)
                 mDialog.showDialog()
                 return
             }
