@@ -18,7 +18,7 @@ class WebAssetGenerator(
         generateAssetDartFile(mDirectory, builder, mDirectory.virtualFile.path, arraylists)
         mDirectory.parent?.virtualFile?.path?.let {
             val newTargetDir =
-                if (targetDir != null && targetDir!!.trim().isNotEmpty()) targetDir else "${File.separator}res"
+                if (targetDir != null && targetDir.trim().isNotEmpty()) targetDir else "${File.separator}res"
             val genDartFilePath = "${it}$newTargetDir${File.separator}r.ts".replace("//", "/")
             val file = File(genDartFilePath)
             //生成相关的dart.文件

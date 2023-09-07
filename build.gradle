@@ -1,23 +1,26 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.5.31'
-    id 'org.jetbrains.intellij' version '1.3.0'
+    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
+    id 'org.jetbrains.intellij' version '1.15.0'
+
 }
 
 group 'org.example'
-version '1.7.5-SNAPSHOT'
+version '1.7.6-SNAPSHOT'
+
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
     implementation "com.alibaba:fastjson:1.2.73"
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = '2021.2.2'
+    version = '2022.3.1'
     updateSinceUntilBuild = false
 }
 patchPluginXml {

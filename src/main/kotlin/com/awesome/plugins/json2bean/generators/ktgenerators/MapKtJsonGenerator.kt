@@ -21,12 +21,12 @@ class MapKtJsonGenerator(
     BaseGenerator(
         content
     ) {
-    val classNames = ArrayList<String>()
+    private val classNames = ArrayList<String>()
 
     override fun toString(): String {
         val classes = HashMap<String, java.lang.StringBuilder>()
         val classBuilder = parseJson(json, fileName.toUpperCamel(), classes)
-        classes.forEach { (key, builder) ->
+        classes.forEach { (_, builder) ->
             classBuilder.append("\n\n").append(builder)
         }
         return classBuilder.toString().trim()
@@ -41,8 +41,8 @@ class MapKtJsonGenerator(
         val file = File(psiDir.virtualFile.path, "${fileName.toUpperCamel()}.kt")
         file.writeText(classBuilder.toString())
         classes.forEach { (key, builder) ->
-            val file = File(psiDir.virtualFile.path, "${key}.kt")
-            file.writeText(builder.toString())
+            val newFile = File(psiDir.virtualFile.path, "${key}.kt")
+            newFile.writeText(builder.toString())
         }
     }
 
@@ -93,7 +93,7 @@ class MapKtJsonGenerator(
     }
 
     private fun generateClassHeader(className: String): String {
-        var finalImplementClass = implementClass
+        val finalImplementClass = implementClass
         val extends = if (extendsClass.isNotEmpty()) " extends $extendsClass" else ""
         val implements =
             if (finalImplementClass.isNotEmpty()) " with $finalImplementClass" else ""
@@ -110,18 +110,13 @@ class MapKtJsonGenerator(
     }
 
     private fun getType(element: Any): String {
-        if (element is String) {
-            return "String"
-        } else if (element is Int) {
-            return "Int"
-        } else if (element is Double || element is BigDecimal) {
-            return "Double"
-        } else if (element is Float) {
-            return "Float"
-        } else if (element is Boolean) {
-            return "Boolean"
-        } else {
-            return "String"
+        return when (element) {
+            (element is String) -> "String"
+            (element is Int) -> "Int"
+            (element is Double || element is BigDecimal) -> "Double"
+            (element is Float) -> "Float"
+            (element is Boolean) -> "Boolean"
+            else -> "String"
         }
     }
 }

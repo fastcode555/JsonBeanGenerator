@@ -27,7 +27,7 @@ class KtGsonGenerator(
     override fun toString(): String {
         val classes = HashMap<String, java.lang.StringBuilder>()
         val classBuilder = parseJson(json, fileName.toUpperCamel(), classes)
-        classes.forEach { (key, builder) ->
+        classes.forEach { (_, builder) ->
             classBuilder.append("\n\n").append(builder)
         }
         return classBuilder.toString().trim()

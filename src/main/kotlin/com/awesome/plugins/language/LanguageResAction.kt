@@ -12,7 +12,7 @@ import org.apache.http.util.TextUtils
 
 //https://www.w3schools.com/tags/ref_language_codes.asp
 class LanguageResAction : BaseAnAction() {
-    override fun fileType(): ArrayList<String> = arrayListOf("dart")
+    override fun fileType(): ArrayList<String> = arrayListOf()
     override fun actionPerformed(e: AnActionEvent) {
         val mDirectory = e.getData(CommonDataKeys.PSI_ELEMENT)
         if (mDirectory != null && mDirectory is PsiDirectory) {
