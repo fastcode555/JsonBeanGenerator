@@ -8,7 +8,7 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.editor.SelectionModel
 
 /**
- * \<style lang\=\"scss\" scoped\>[  	\u4e00-\u9fa5\n.\w_\{\}:;#-,\-!//\(\)\>@"'\[\]]*\</style\>
+ * 处理Css 代码，转换成 TailWindCss
  **/
 class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
     override fun process(content: String): String = convertTailCss(editor.selectionModel)

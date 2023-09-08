@@ -5,6 +5,9 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
 import java.io.File
 
+/**
+ * 读取TailWindConfig文件
+ **/
 class TailConfigProcessor(private val editor: Editor) : BaseProcessor(editor) {
     private val props: HashMap<String, String> = hashMapOf()
 

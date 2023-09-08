@@ -2,6 +2,9 @@ package com.awesome.plugins.ts.totailwindcss.processor
 
 import com.intellij.openapi.editor.Editor
 
+/**
+ * 修正TailWindCss中存在的代码问题
+ **/
 class ModifyProcessor(private val editor: Editor) : BaseProcessor(editor) {
     override fun process(text: String): String {
         var content = text
