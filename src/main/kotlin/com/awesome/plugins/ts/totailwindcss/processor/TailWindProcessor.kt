@@ -28,7 +28,7 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
             }
             val results = line.split(":")
             val key = results.first().trim()
-            val value = results.last().trim().replace(";", "")
+            val value = results.last().trim().replace(";", "").replace("!important", "").trim()
             val prop = convertTailProp(key, value)
             if (prop.trim().isEmpty()) continue
             if (index == lines.size - 1) {
