@@ -26,14 +26,22 @@ class ToTailWindCssAction : BaseAnAction() {
                 TailConfigProcessor(this),
                 ColorProcessor(this),
             )
-            WriteCommandAction.runWriteCommandAction(editor.project) {
-                var content = ""
-                processors.forEach { content = it.process(content) }
-                //替换掉css的代码
-                if (content.isNotEmpty()) {
-                    content = "@apply $content"
+
+            val selectText = selectionModel.selectedText
+            if (!selectText.isNullOrEmpty()) {
+                WriteCommandAction.runWriteCommandAction(editor.project) {
+                    var content = ""
+                    processors.forEach { content = it.process(content) }
+                    //替换掉css的代码
+                    if (content.isNotEmpty()) {
+                        content = "@apply $content"
+                    }
+                    document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, content)
                 }
-                document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, content)
+            } else {
+                val dialog = TailWindCssDialog(this, processors)
+                dialog.showDialog()
+
             }
         }
     }

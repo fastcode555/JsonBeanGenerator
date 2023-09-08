@@ -5,20 +5,24 @@ import com.awesome.plugins.ts.totailwindcss.TailWindHelper.replaceRegex
 import com.awesome.plugins.ts.totailwindcss.processor.props.HeightProcessor
 import com.awesome.plugins.ts.totailwindcss.processor.props.WidthProcessor
 import com.intellij.openapi.editor.Editor
-import com.intellij.openapi.editor.SelectionModel
 
 /**
  * 处理Css 代码，转换成 TailWindCss
  **/
 class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
-    override fun process(content: String): String = convertTailCss(editor.selectionModel)
+    override fun process(content: String): String {
+        val selectedText = editor.selectionModel.selectedText
+        if (!selectedText.isNullOrEmpty()) {
+            return convertTailCss(selectedText)
+        }
+        return convertTailCss(content)
+    }
 
     /**
      * 处理选中的文本，并将css转换为tailwindcss
      **/
-    private fun convertTailCss(selectionModel: SelectionModel): String {
-        val selectText = selectionModel.selectedText ?: ""
-        val lines = selectText.split("\n")
+    private fun convertTailCss(selectedText: String): String {
+        val lines = selectedText.split("\n")
         val builder = StringBuilder()
         for (index in lines.indices) {
             val line = lines[index]
