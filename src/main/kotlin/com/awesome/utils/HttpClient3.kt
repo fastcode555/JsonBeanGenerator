@@ -6,6 +6,9 @@ import org.apache.http.client.methods.HttpRequestBase
 import org.apache.http.impl.client.HttpClients
 import org.apache.http.util.EntityUtils
 import java.io.*
+import java.net.URI
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 
 object HttpClient3 {

@@ -15,7 +15,7 @@ import com.intellij.openapi.editor.Editor
  **/
 class ToTailWindCssAction : BaseAnAction() {
 
-    override fun fileType(): ArrayList<String> = arrayListOf("vue", "css")
+    override fun fileType(): ArrayList<String> = arrayListOf("vue", "css", "tsx", "vue", "js", "ts", "jsx")
 
     override fun actionPerformed(e: AnActionEvent) {
         val editor: Editor? = e.getData(CommonDataKeys.EDITOR)

@@ -102,6 +102,7 @@ object TailWindHelper {
                 if (results[0] == results[1]) {
                     return "${mark}x-${results[1]} ${mark}t-${results[0]} ${mark}b-${results[2]}"
                 }
+                return "${mark}t-${results[0]} ${mark}x-${results[1]} ${mark}b-${results[2]}"
             }
             if (results.size == 2) {
                 return "${mark}x-${results[0]} ${mark}y-${results[1]}"
@@ -517,6 +518,12 @@ object TailWindHelper {
 
     fun lineHeight(value: String): String {
         val finalValue = when (value) {
+            "none" -> "none"
+            "tight" -> "tight"
+            "snug" -> "snug"
+            "normal" -> "normal"
+            "relaxed" -> "relaxed"
+            "loose" -> "loose"
             "1" -> "none"
             "1.25" -> "tight"
             "1.375" -> "snug"
