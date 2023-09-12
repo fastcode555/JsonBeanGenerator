@@ -102,6 +102,12 @@
                 icon="/plugin_icon.png" description="Convert the csss to the tailwindcss.">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
+        <action id="com.awesome.plugins.stringassociate.StringAssociateAction"
+                class="com.awesome.plugins.stringassociate.StringAssociateAction"
+                text="String Association"
+                icon="/plugin_icon.png" description="Convert the string to normal may be will use">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
+        </action>
 
 
         <!--        <action id="TestAction" class="com.awesome.plugins.testaction.TestAction"

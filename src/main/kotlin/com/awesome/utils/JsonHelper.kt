@@ -41,6 +41,16 @@ fun String?.toUpperCamel(): String {
     return if (UPPER_KEYS.contains(result)) "${result}x" else "$result"
 }
 
+fun String?.toLowerUnderScore(): String {
+    if (this.isNullOrEmpty()) return ""
+    return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, this.clearSymbol().toCamel())
+}
+
+fun String?.toUpperUnderScore(): String {
+    if (this.isNullOrEmpty()) return ""
+    return CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, this.clearSymbol().toCamel())
+}
+
 fun String?.clearSymbol(): String? {
     if (this.isNullOrEmpty()) return this
     val key: String = this
