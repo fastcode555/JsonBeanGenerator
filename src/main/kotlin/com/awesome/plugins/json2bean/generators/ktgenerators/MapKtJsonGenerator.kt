@@ -18,9 +18,7 @@ class MapKtJsonGenerator(
     private val implementClass: String,
     private val psiDir: PsiDirectory
 ) :
-    BaseGenerator(
-        content
-    ) {
+    BaseGenerator(content) {
     private val classNames = ArrayList<String>()
 
     override fun toString(): String {

@@ -51,10 +51,11 @@ Macos 使用 <font color=red>Command+N</font>键，就能看到如下弹窗： �
 
 ```dart
   ///增加了..put的扩展方法，如果是null，字段就不会被放进去，为空字符串也不会
-  Map<String, dynamic> toJson() => <String, dynamic>{}
-    ..put('condition', condition?.toJson())
-    ..put('albumInfo', albumInfo?.toJson())
-    ..put('trackList', trackList?.map((v) => v.toJson()).toList());
+  Map<String, dynamic> toJson() => {
+    'condition': condition?.toJson(),
+    'albumInfo': albumInfo?.toJson(),
+    'trackList': trackList?.map((v) => v.toJson()).toList(),
+  };
 ```
 
 - toBean <br/>
