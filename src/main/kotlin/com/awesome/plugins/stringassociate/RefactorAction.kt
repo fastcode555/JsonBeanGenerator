@@ -13,7 +13,7 @@ class RefactorAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val mDirectory = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)
         if (mDirectory != null && mDirectory is PsiDirectory) {
-            val dialog = RefactoryDialog(mDirectory)
+            val dialog = RefactorDialog(mDirectory)
             dialog.showDialog()
         }
     }

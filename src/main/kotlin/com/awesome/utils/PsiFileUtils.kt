@@ -7,6 +7,7 @@ import com.intellij.openapi.module.ModuleUtil
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiFileSystemItem
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
 import org.jetbrains.annotations.NotNull
@@ -24,7 +25,6 @@ fun PsiElement.reload() {
         }
     } else if (this is PsiFile) {
         this.manager.reloadFromDisk(this)
-
     }
 }
 
@@ -66,8 +66,65 @@ fun PsiElement.moduleName(): String {
     return moduleName;
 }
 
-fun PsiElement.run(runnable: Runnable) {
-    WriteCommandAction.runWriteCommandAction(this.project, runnable)
+/**
+ * 遍历文件夹
+ **/
+fun PsiDirectory.travse(callback: (File) -> Unit) {
+    this.subdirectories.forEach {
+        it.travse(callback)
+    }
+    this.files.forEach {
+        callback(File(it.virtualFile.path))
+    }
+}
+
+fun PsiDirectory.traveseDirectory(callback: (PsiDirectory) -> Unit) {
+    this.subdirectories.forEach {
+        if (it is PsiDirectory) {
+            it.traveseDirectory(callback)
+            callback(it)
+        }
+    }
+}
+
+fun PsiDirectory.searchFile(path: String): File? {
+    var file = this.findFile(path)?.virtualFile
+    if (file != null && file.exists()) return File(file.path)
+
+    var targetFile: File? = File(this.virtualFile.path, path)
+    if (targetFile!!.exists()) return targetFile
+    targetFile = null
+    this.traveseDirectory {
+        if (targetFile != null && targetFile!!.exists()) return@traveseDirectory
+        val newFile = File(it.virtualFile.path, path)
+        if (newFile.exists()) {
+            targetFile = newFile
+        }
+    }
+    if (targetFile != null && targetFile!!.exists())
+        return targetFile!!
+
+    this.findRootDirectory().traveseDirectory {
+        if (targetFile != null && targetFile!!.exists()) return@traveseDirectory
+        val newFile = File(it.virtualFile.path, path)
+        if (newFile.exists()) {
+            targetFile = newFile
+        }
+    }
+    if (targetFile != null && targetFile!!.exists())
+        return targetFile!!
+
+    return null
+}
+
+/**
+ * 找寻根目录下的路径
+ **/
+fun PsiFileSystemItem.findRootDirectory(): PsiDirectory {
+    if (this.basePath() == this.virtualFile.path) {
+        return this as PsiDirectory
+    }
+    return this.parent!!.findRootDirectory()
 }
 
 object PsiFileUtils {
