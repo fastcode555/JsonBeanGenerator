@@ -6,7 +6,7 @@ import com.awesome.plugins.language.LanguageDartWriter
 import com.awesome.utils.HttpApi
 import com.awesome.utils.PropertiesHelper
 import com.awesome.utils.basePath
-import com.intellij.openapi.command.WriteCommandAction
+import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
@@ -78,7 +78,7 @@ class LanguageResDialog(
     private fun onTranslate() {
         builder.clear()
         mapValues.clear()
-        WriteCommandAction.runWriteCommandAction(psiElement.project) { runTranslate() }
+        psiElement.runWriteCmd(::runTranslate)
     }
 
     private fun runTranslate() {
@@ -105,7 +105,7 @@ class LanguageResDialog(
 
     //直接点击生成就不会进行翻译
     private fun onOK() {
-        WriteCommandAction.runWriteCommandAction(psiElement.project) {
+        psiElement.runWriteCmd {
             if (mapValues.isEmpty()) {
                 runTranslate()
             }

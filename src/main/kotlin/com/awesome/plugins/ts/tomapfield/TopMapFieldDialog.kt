@@ -3,7 +3,7 @@ package com.awesome.plugins.ts.tomapfield
 import com.alibaba.fastjson.JSON
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
-import com.intellij.openapi.command.WriteCommandAction
+import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.editor.Editor
 import toJSON
 import java.awt.event.KeyEvent
@@ -38,10 +38,6 @@ class TopMapFieldDialog(private val editor: Editor?) : JDialog() {
         )
     }
 
-    private fun runBackGround(runnable: Runnable) {
-        WriteCommandAction.runWriteCommandAction(editor!!.project, runnable)
-    }
-
     private fun onOK() {
         val text = tvArea!!.text
         val json = text.toJSON()
@@ -49,7 +45,7 @@ class TopMapFieldDialog(private val editor: Editor?) : JDialog() {
         val selectionModel = editor!!.selectionModel
         val index = selectionModel.selectionStart
         print(builder)
-        runBackGround {
+        editor.runWriteCmd {
             editor.document.insertString(index, "${builder}\n")
             dispose()
         }

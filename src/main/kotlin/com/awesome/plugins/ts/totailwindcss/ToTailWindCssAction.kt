@@ -5,9 +5,9 @@ import com.awesome.plugins.ts.totailwindcss.processor.ColorProcessor
 import com.awesome.plugins.ts.totailwindcss.processor.ModifyProcessor
 import com.awesome.plugins.ts.totailwindcss.processor.TailConfigProcessor
 import com.awesome.plugins.ts.totailwindcss.processor.TailWindProcessor
+import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 
 /**
@@ -29,7 +29,7 @@ class ToTailWindCssAction : BaseAnAction() {
 
             val selectText = selectionModel.selectedText
             if (!selectText.isNullOrEmpty()) {
-                WriteCommandAction.runWriteCommandAction(editor.project) {
+                editor.runWriteCmd {
                     var content = ""
                     processors.forEach { content = it.process(content) }
                     //替换掉css的代码

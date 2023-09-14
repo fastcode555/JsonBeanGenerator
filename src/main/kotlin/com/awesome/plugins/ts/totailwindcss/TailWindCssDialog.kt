@@ -1,7 +1,7 @@
 package com.awesome.plugins.ts.totailwindcss
 
 import com.awesome.plugins.ts.totailwindcss.processor.BaseProcessor
-import com.intellij.openapi.command.WriteCommandAction
+import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.editor.Editor
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
@@ -42,7 +42,7 @@ class TailWindCssDialog(private val editor: Editor, private val processors: List
     }
 
     private fun onGenerate() {
-        WriteCommandAction.runWriteCommandAction(editor.project) {
+        editor.runWriteCmd {
             val selectionModel = editor.selectionModel
             var content = tvTo!!.text
             if (content.isEmpty()) {
@@ -55,13 +55,11 @@ class TailWindCssDialog(private val editor: Editor, private val processors: List
     }
 
     private fun onConvert() {
-        WriteCommandAction.runWriteCommandAction(editor.project)
-        {
+        editor.runWriteCmd {
             var content = tvFrom!!.text
             processors.forEach { content = it.process(content) }
             tvTo!!.text = content
         }
-
     }
 
     fun showDialog(): TailWindCssDialog {

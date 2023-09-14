@@ -2,10 +2,9 @@ package com.awesome.plugins.json2bean
 
 import com.awesome.common.BaseAnAction
 import com.awesome.utils.regex
-import com.intellij.openapi.actionSystem.AnAction
+import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import org.apache.http.util.TextUtils
 
@@ -18,7 +17,7 @@ class ToAndFromJsonGenerateAction : BaseAnAction() {
         val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
         val selectionModel = editor?.selectionModel
         if (selectionModel != null) {
-            WriteCommandAction.runWriteCommandAction(e.project) {
+            e.runWriteCmd {
                 val content = editor.document.text
                 var targetIndex = 0
                 var className = ""

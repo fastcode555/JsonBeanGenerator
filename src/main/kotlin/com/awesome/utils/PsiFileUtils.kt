@@ -1,5 +1,6 @@
 package com.awesome.utils
 
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.module.ModuleUtil
@@ -8,6 +9,7 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.search.FilenameIndex
 import com.intellij.psi.search.GlobalSearchScope
+import org.jetbrains.annotations.NotNull
 import java.io.File
 
 /**
@@ -24,6 +26,18 @@ fun PsiElement.reload() {
         this.manager.reloadFromDisk(this)
 
     }
+}
+
+fun PsiElement.runWriteCmd(@NotNull runnable: Runnable) {
+    WriteCommandAction.runWriteCommandAction(this.project, runnable)
+}
+
+fun AnActionEvent.runWriteCmd(@NotNull runnable: Runnable) {
+    WriteCommandAction.runWriteCommandAction(this.project, runnable)
+}
+
+fun Editor.runWriteCmd(@NotNull runnable: Runnable) {
+    WriteCommandAction.runWriteCommandAction(this.project, runnable)
 }
 
 /**

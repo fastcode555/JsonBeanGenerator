@@ -3,10 +3,10 @@ package com.awesome.plugins.assetgenerate
 import com.awesome.plugins.assetgenerate.generator.FlutterAssetGenerator
 import com.awesome.plugins.assetgenerate.generator.WebAssetGenerator
 import com.awesome.utils.PropertiesHelper
+import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import java.io.File
@@ -18,7 +18,7 @@ class AssetGenerateAction : AnAction() {
         val ignoreDirs = properties?.getProperty("plugin.assetsIgnoreDirs")
         val targetDir = properties?.getProperty("plugin.generateAssetDirs")
         if (mDirectory != null && mDirectory is PsiDirectory) {
-            WriteCommandAction.runWriteCommandAction(mDirectory.project) {
+            mDirectory.runWriteCmd {
                 val fileContent = File(mDirectory.project.projectFile?.path).readText()
                 if (fileContent.contains("\"io.flutter\"")) {
                     FlutterAssetGenerator(mDirectory, ignoreDirs, targetDir).generate()

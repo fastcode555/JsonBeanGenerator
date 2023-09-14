@@ -1,7 +1,7 @@
 package com.awesome.plugins.stringassociate
 
 import clearSymbol
-import com.intellij.openapi.command.WriteCommandAction
+import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.editor.Editor
 import toCamel
 import toLowerUnderScore
@@ -60,7 +60,7 @@ class AssociateDialog(private val editor: Editor) : JDialog() {
         val string = this
         val jbutton = JButton(this)
         jbutton.addActionListener {
-            WriteCommandAction.runWriteCommandAction(editor.project) {
+            editor.runWriteCmd {
                 editor.selectionModel.apply {
                     editor.document.replaceString(selectionStart, selectionEnd, string)
                 }

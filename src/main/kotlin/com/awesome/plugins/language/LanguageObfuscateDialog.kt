@@ -3,10 +3,8 @@ package com.awesome.plugins.language
 import clearSymbol
 import com.alibaba.fastjson.JSONObject
 import com.awesome.utils.*
-import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.NlsSafe
-import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileSystemItem
 import toCamel
@@ -40,10 +38,6 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
 
     var tvSuffix: JTextField? = null
     var count = 0
-
-    private fun runBackGround(runnable: Runnable) {
-        WriteCommandAction.runWriteCommandAction(psiFile.project, runnable)
-    }
 
     /**
      * 开始对数据进行混淆,intellij 这个方法是有效的
@@ -333,10 +327,10 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
         setContentPane(contentPane)
         isModal = true
         getRootPane().defaultButton = buttonOK
-        buttonOK!!.addActionListener { runBackGround { obfuscateResource() } }
-        btnImportJson!!.addActionListener { runBackGround { onImportJson() } }
-        antiObfuscate!!.addActionListener { runBackGround { onAntiObfuscate() } }
-        btnExportJson!!.addActionListener { runBackGround { onExportJson() } }
+        buttonOK!!.addActionListener { psiFile.runWriteCmd(::obfuscateResource) }
+        btnImportJson!!.addActionListener { psiFile.runWriteCmd(::onImportJson) }
+        antiObfuscate!!.addActionListener { psiFile.runWriteCmd(::onAntiObfuscate) }
+        btnExportJson!!.addActionListener { psiFile.runWriteCmd(::onExportJson) }
 
         defaultCloseOperation = DO_NOTHING_ON_CLOSE
         addWindowListener(object : WindowAdapter() {

@@ -1,6 +1,6 @@
 package com.awesome.plugins.json2bean.generators
 
-import com.intellij.openapi.command.WriteCommandAction
+import com.awesome.utils.runWriteCmd
 import com.intellij.psi.PsiDirectory
 import toUpperCamel
 import java.awt.Dialog
@@ -121,7 +121,7 @@ class PythonSqlGenerator(val tableName: String, val directory: PsiDirectory) {
         val file = File(directory.virtualFile.path, "${tableName}_dao.py")
         if (!file.exists()) {
             try {
-                WriteCommandAction.runWriteCommandAction(directory.project) {
+                directory.runWriteCmd {
                     file.writeText(content)
                     dialog.dispose()
                 }

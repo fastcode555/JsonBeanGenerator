@@ -121,6 +121,11 @@
         <!--                description="生成相关的sql语句">-->
         <!--            <add-to-group group-id="NewGroup" anchor="last"/>-->
         <!--        </action>-->
+        <action id="com.awesome.plugins.stringassociate.RefactorAction"
+                class="com.awesome.plugins.stringassociate.RefactorAction" text="Refactory Resources"
+                description="A plugin to refactory the image resource or icon resourceR">
+            <add-to-group group-id="RefactoringMenu" anchor="first"/>
+        </action>
     </actions>
 
 </idea-plugin>
