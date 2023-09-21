@@ -8,9 +8,7 @@ import com.google.common.base.CaseFormat
 var KEYS: Array<String> = arrayOf("num", "int", "String", "double", "bool")
 var UPPER_KEYS: Array<String> = arrayOf("List", "Map")
 
-val REGEX_SYMBOL = "[~'`!@#\$%^&*()_\\-+=<>?:\"{}|,./;’\\[\\]·！@#￥%……&*（）——\\-+=\\{\\}|《》？：“”【】；‘’，。、]*";
-var SPECIAL_SYMBOL: Array<String> =
-    arrayOf("-", ",", ".", "=", "'", "?", "!", "！", "？", "，", "。", " ", "\\", "/", "…", "+", ":", "：", "'")
+const val REGEX_SYMBOL = "[~'`!@#\$%^&*()_\\-+=<>?:\"{}|,./;’\\[\\]·！@#￥%……&*（）——\\-+=\\{\\}|《》？：“”【】；‘’，。、]*";
 
 fun String?.toCamel(): String {
     var result = this.clearSymbol()

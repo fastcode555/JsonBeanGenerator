@@ -40,6 +40,10 @@ fun Editor.runWriteCmd(@NotNull runnable: Runnable) {
     WriteCommandAction.runWriteCommandAction(this.project, runnable)
 }
 
+fun Editor.replaceSelect(content: String) {
+    document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, content)
+}
+
 /**
  * 获取主工程或者子工程的项目文件夹
  **/
