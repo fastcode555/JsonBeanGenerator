@@ -1,15 +1,21 @@
 package com.awesome.plugins.ts.totailwindcss.processor
 
+import com.awesome.plugins.stringassociate.processor.StringHelper
 import com.awesome.utils.regex
 import com.intellij.openapi.editor.Editor
 
 /**
  * 将颜色替换为tailwindcss的默认颜色
  **/
+
 class ColorProcessor(private val editor: Editor) : BaseProcessor(editor) {
     override fun process(text: String): String {
         var content = text
-        text.regex("\\[\\#.*?\\]") {
+        text.regex("rgb(a){0,1}\\(.*?\\)") {
+            content = content.replace(it, StringHelper.toHexColor(it))
+        }
+        val newText = content
+        newText.regex("\\[\\#.*?\\]") {
             val color = it.substring(1, it.length - 1).trim().lowercase()
             val colorName = getColorName(color)
             if (colorName.isNotEmpty()) {

@@ -11,7 +11,7 @@ import com.intellij.openapi.editor.Editor
 /**
  * 字符串联想，给出相应的提示
  **/
-val colorRegex = Regex("rgb(a){0,1}\\(.*?\\)")
+private val colorRegex = Regex("rgb(a){0,1}\\(.*?\\)")
 
 class StringAssociateAction : AnAction() {
 

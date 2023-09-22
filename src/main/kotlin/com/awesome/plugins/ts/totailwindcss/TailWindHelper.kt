@@ -65,7 +65,7 @@ object TailWindHelper {
         if (size % 5 == 0) {
             return "$marker-${size}"
         }
-        return "$marker-[$size]"
+        return "$marker-[$value]"
     }
 
     fun padding(value: String): String = dealMarginOrPadding(value, "p")
@@ -105,7 +105,7 @@ object TailWindHelper {
                 return "${mark}t-${results[0]} ${mark}x-${results[1]} ${mark}b-${results[2]}"
             }
             if (results.size == 2) {
-                return "${mark}x-${results[0]} ${mark}y-${results[1]}"
+                return "${mark}y-${results[0]} ${mark}x-${results[1]}"
             }
         }
         return "${mark}-${spacing("", value)}"
