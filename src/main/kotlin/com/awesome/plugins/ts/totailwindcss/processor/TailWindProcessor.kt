@@ -142,7 +142,7 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
             "text-indent" -> TailWindHelper.spacing("indent", value, key)
             "box-shadow" -> TailWindHelper.boxShadow(value)
 
-            "display" -> value
+            "display" -> TailWindHelper.display(value)
             "position" -> value
             "justify-content" -> TailWindHelper.justifyContent(value)
             "justify-self" -> "$key-$value"

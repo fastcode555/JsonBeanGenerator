@@ -1126,4 +1126,9 @@ object TailWindHelper {
             else -> value
         }
     }
+
+    fun display(value: String): String {
+        if (value == "none") return ""
+        return value
+    }
 }
