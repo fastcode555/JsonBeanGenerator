@@ -41,7 +41,8 @@ class FlutterAssetGenerator(
         builder.append("}")
 
         mDirectory.parent?.virtualFile?.path?.let {
-            val newTargetDir = targetDir ?: "${File.separator}lib${File.separator}res"
+            val newTargetDir =
+                if (!targetDir.isNullOrEmpty()) targetDir else "${File.separator}lib${File.separator}res"
             val genDartFilePath = "${it}$newTargetDir${File.separator}r.dart".replace("//", "/")
             val file = File(genDartFilePath)
             //生成相关的dart.文件
