@@ -121,7 +121,7 @@ class LanguageResDialog(
             }
 
             if (isContainJson()) {
-                _handleWrite2JsonFile()
+                handleWrite2JsonFile()
             } else {
                 LanguageDartWriter(mapValues, tvKey!!.text, dirPath, psiElement, textValue, selectionModel).startWrite()
             }
@@ -133,17 +133,22 @@ class LanguageResDialog(
     /**
      * 将翻译写入到Json文件中
      **/
-    private fun _handleWrite2JsonFile() {
+    private fun handleWrite2JsonFile() {
         for (psiElement in psiElement.children) {
             if (psiElement is PsiFile) {
                 val file = psiElement.virtualFile
-                if (file.name.endsWith(".json")) {
-                    val name = file.nameWithoutExtension
-                    val jsonFile = File(file.path)
-                    val json = jsonFile.readText().toJSON() as JSONObject
-                    val value = mapValues[name]
-                    json.put(tvKey!!.text, value)
-                    jsonFile.writeText(json.toJSONString())
+                try {
+                    if (file.name.endsWith(".json")) {
+                        val name = file.nameWithoutExtension
+                        val jsonFile = File(file.path)
+                        val json = jsonFile.readText().toJSON() as JSONObject
+                        val value = mapValues[name]
+                        json.put(tvKey!!.text, value)
+                        jsonFile.writeText(json.toJSONString())
+                    }
+                } catch (e: Exception) {
+                    print("the file have problem ${file.name}")
+                    print(e.message)
                 }
             }
         }
