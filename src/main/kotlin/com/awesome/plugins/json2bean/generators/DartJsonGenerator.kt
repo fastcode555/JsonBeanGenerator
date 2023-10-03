@@ -173,8 +173,9 @@ class DartJsonGenerator(
             } else {
                 builder.append("\n\t${uniqueClassName} clone() => ${uniqueClassName}();\n\n")
             }
+            return builder
         }
-        return builder
+        return java.lang.StringBuilder()
     }
 
     private fun generateClassHeader(className: String, sqliteEnable: Boolean): String {
@@ -189,13 +190,12 @@ class DartJsonGenerator(
     }
 
     private fun generateUniqueClassName(className: String): String {
-        return if (classNames.contains(className)) {
-            generateUniqueClassName("${className}x")
+        if (classNames.contains(className)) {
+            return generateUniqueClassName("${className}x")
         } else {
             classNames.add(className)
-            className
+            return className
         }
-
     }
 
     private fun getParseType(element: Any): String {
