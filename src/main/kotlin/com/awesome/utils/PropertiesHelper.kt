@@ -1,5 +1,6 @@
 package com.awesome.utils
 
+import com.awesome.common.PluginProps
 import com.awesome.utils.PsiFileUtils
 import com.intellij.psi.PsiElement
 import org.apache.http.util.TextUtils
@@ -16,7 +17,7 @@ import java.util.*
  */
 class PropertiesHelper(element: PsiElement) {
     private var properties: Properties? = null
-    private var propertiestFilePath = "plugins.properties"
+    private var propertiestFilePath = PluginProps.properties
 
     /**
      * 获取某个属性
@@ -34,8 +35,8 @@ class PropertiesHelper(element: PsiElement) {
         get() {
             val map: HashMap<Any?, Any?> = HashMap<Any?, Any?>()
             val enu = properties?.propertyNames()
-            while (enu?.hasMoreElements() ?: false) {
-                val key = enu?.nextElement() as String
+            while (enu?.hasMoreElements() == true) {
+                val key = enu.nextElement() as String
                 val value = properties?.getProperty(key)
                 map[key] = value
             }
@@ -64,7 +65,7 @@ class PropertiesHelper(element: PsiElement) {
             }
             val fos: OutputStream = FileOutputStream(file)
             properties?.setProperty(key, value)
-            // 将此 Properties 表中的属性列表（键和元素对）写入输出流  
+            // 将此 Properties 表中的属性列表（键和元素对）写入输出流
             properties?.store(fos, "『comments』Update key：$key")
         } catch (e: Exception) {
             e.printStackTrace()
@@ -72,7 +73,7 @@ class PropertiesHelper(element: PsiElement) {
     }
 
     init {
-        val mFile = PsiFileUtils.getFileByName(element, "plugins.properties")
+        val mFile = PsiFileUtils.getFileByName(element, PluginProps.properties)
         if (mFile != null && mFile.virtualFile.exists()) {
             propertiestFilePath = mFile.virtualFile.path
             properties = Properties()
@@ -85,7 +86,7 @@ class PropertiesHelper(element: PsiElement) {
                 e.printStackTrace()
             }
         } else {
-            propertiestFilePath = "${element!!.project.basePath}/plugins.properties"
+            propertiestFilePath = "${element.project.basePath}/${PluginProps.properties}"
         }
 
     }

@@ -2,6 +2,7 @@ package com.awesome.plugins.language
 
 import clearSymbol
 import com.alibaba.fastjson.JSONObject
+import com.awesome.common.PluginProps
 import com.awesome.utils.*
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.NlsSafe
@@ -65,7 +66,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
             }
         }
         val properties = PropertiesHelper(psiFile)
-        val value = properties.getProperty("plugin.languageAssetsDir")
+        val value = properties.getProperty(PluginProps.languageAssetsDir)
         var dir = psiFile.findExistsDirectory(value) ?: return
         if (dir.exists()) {
             dir.listFiles().forEach {
@@ -135,7 +136,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
             }
         }
         val properties = PropertiesHelper(psiFile)
-        val value = properties.getProperty("plugin.languageAssetsDir")
+        val value = properties.getProperty(PluginProps.languageAssetsDir)
         var dir = psiFile.findExistsDirectory(value) ?: return
         if (dir.exists()) {
             dir.listFiles().forEach {

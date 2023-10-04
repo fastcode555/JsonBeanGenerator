@@ -1,5 +1,6 @@
 package com.awesome
 
+import com.awesome.common.PluginProps
 import com.awesome.plugins.json2bean.database.DartDataBaseGenerator
 import com.awesome.plugins.json2bean.utils.GeneratorHelper
 import com.awesome.utils.JTextFieldHintListener
@@ -265,14 +266,14 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         } catch (e: Exception) {
             print(e)
         }
-        fileType = properties?.getProperty("plugin.modelType") ?: ".dart"
+        fileType = properties?.getProperty(PluginProps.modelType) ?: ".dart"
         if (fileType.isEmpty()) {
             fileType = ".dart"
         }
 
-        rbClone!!.isSelected = properties?.getProperty("plugin.clone") == "true"
+        rbClone!!.isSelected = properties?.getProperty(PluginProps.clone) == "true"
         rbClone!!.addActionListener {
-            properties!!.setProperty("plugin.clone", "${rbClone!!.isSelected}")
+            properties!!.setProperty(PluginProps.clone, "${rbClone!!.isSelected}")
         }
         cbSqlite!!.isVisible = fileType == ".dart"
         tvPrimaryKey!!.isVisible = cbSqlite!!.isVisible
@@ -294,7 +295,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
 
 
         //设置生成Kotlin或者Java 所需要的方式
-        depType = properties?.getProperty("plugin.depType") ?: "gson"
+        depType = properties?.getProperty(PluginProps.depType) ?: "gson"
         if (depType == "none") {
             rbNone!!.isSelected = true
         } else if (depType == "gson") {
@@ -317,7 +318,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                     it!!.isSelected = false
                 }
             }
-            properties?.setProperty("plugin.depType", depType)
+            properties?.setProperty(PluginProps.depType, depType)
         }
     }
 
@@ -328,7 +329,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         this.addActionListener {
             if (this.isSelected) {
                 fileType = type
-                properties?.setProperty("plugin.modelType", fileType)
+                properties?.setProperty(PluginProps.modelType, fileType)
                 cbSqlite!!.isVisible = type == ".dart"
                 mMethodPanel!!.isVisible = fileType == ".dart"
                 tvPrimaryKey!!.isVisible = cbSqlite!!.isVisible

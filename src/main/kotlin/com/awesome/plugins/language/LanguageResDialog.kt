@@ -2,6 +2,7 @@ package com.awesome
 
 import clearSymbol
 import com.alibaba.fastjson.JSONObject
+import com.awesome.common.PluginProps
 import com.awesome.plugins.language.LanguageDartWriter
 import com.awesome.utils.HttpApi
 import com.awesome.utils.PropertiesHelper
@@ -176,7 +177,7 @@ class LanguageResDialog(
         if (psiElement is PsiDirectory) {
             dirPath = psiElement.virtualFile.path
         } else {
-            val dir = properties!!.getProperty("plugin.languageDir")
+            val dir = properties!!.getProperty(PluginProps.languageDir)
             dirPath = "${psiElement.basePath()}$dir"
         }
         setContentPane(contentPane)
@@ -216,9 +217,9 @@ class LanguageResDialog(
 
     private fun initProperties() {
         val defaultLanguage = "zh-Hans,zh-Hant,en,ja,km,th,vi"
-        val languageString = properties?.getProperty("plugin.languages") ?: defaultLanguage
-        rawLanguage = properties?.getProperty("plugin.rawLanguage") ?: rawLanguage
-        needTranslate = "true" == properties?.getProperty("plugin.needTranslate")
+        val languageString = properties?.getProperty(PluginProps.languages) ?: defaultLanguage
+        rawLanguage = properties?.getProperty(PluginProps.rawLanguage) ?: rawLanguage
+        needTranslate = "true" == properties?.getProperty(PluginProps.needTranslate)
         if (isContainJson()) {
             languages = arrayListOf()
             val arrays = languages as ArrayList<String>

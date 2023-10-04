@@ -1,5 +1,6 @@
 package com.awesome.plugins.assetgenerate
 
+import com.awesome.common.PluginProps
 import com.awesome.plugins.assetgenerate.generator.FlutterAssetGenerator
 import com.awesome.plugins.assetgenerate.generator.WebAssetGenerator
 import com.awesome.utils.PropertiesHelper
@@ -15,8 +16,8 @@ class AssetGenerateAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val mDirectory = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)
         val properties = mDirectory?.let { PropertiesHelper(it) }
-        val ignoreDirs = properties?.getProperty("plugin.assetsIgnoreDirs")
-        val targetDir = properties?.getProperty("plugin.generateAssetDirs")
+        val ignoreDirs = properties?.getProperty(PluginProps.assetsIgnoreDirs)
+        val targetDir = properties?.getProperty(PluginProps.generateAssetDirs)
         if (mDirectory != null && mDirectory is PsiDirectory) {
             mDirectory.runWriteCmd {
                 val fileContent = File(mDirectory.project.projectFile?.path).readText()
