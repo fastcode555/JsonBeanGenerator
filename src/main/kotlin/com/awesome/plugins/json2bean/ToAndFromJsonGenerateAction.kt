@@ -1,18 +1,39 @@
 package com.awesome.plugins.json2bean
 
 import com.awesome.common.BaseAnAction
+import com.awesome.utils.RegexText
 import com.awesome.utils.regex
 import com.awesome.utils.runWriteCmd
+import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.openapi.editor.Editor
 import org.apache.http.util.TextUtils
+import java.io.File
 
 //匹配到class的bean类的字段
 private const val FILED_REGEX = "[a-zA-Z0-9\\?\\<\\>\\,_]+ [0-9a-zA-Z_]*(?=;)"
 
-class ToAndFromJsonGenerateAction : BaseAnAction() {
-    override fun fileType(): ArrayList<String> = arrayListOf("dart")
+class ToAndFromJsonGenerateAction : AnAction() {
+
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
+        val file = File(psiFile?.virtualFile?.path)
+        if (file.exists()) {
+            val lines = file.readLines()
+            val regex = Regex(RegexText.variableRegex)
+            var isEnable = false
+            for (line in lines) {
+                if (line.matches(regex)) {
+                    isEnable = true
+                    break
+                }
+            }
+            e.presentation.setEnabledAndVisible(isEnable)
+        }
+    }
+
     override fun actionPerformed(e: AnActionEvent) {
         val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
         val selectionModel = editor?.selectionModel
@@ -96,9 +117,4 @@ class ToAndFromJsonGenerateAction : BaseAnAction() {
         return typeName.substring("List<".length, typeName.length - 1)
     }
 
-    override fun update(e: AnActionEvent) {
-        super.update(e)
-        val psiFile = e.getData(CommonDataKeys.PSI_FILE)
-        e.presentation.setEnabledAndVisible(psiFile != null && "dart" == psiFile.virtualFile.extension)
-    }
 }

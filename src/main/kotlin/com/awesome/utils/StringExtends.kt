@@ -58,8 +58,7 @@ fun String.matchRegexOne(content: String): String? {
     val index = this.indexOf(content)
     if (index >= 0) {
         var tail = this.substring(index, this.length)
-        val result = tail.matchTail()
-        return result
+        return tail.matchTail()
     }
     return null
 }
