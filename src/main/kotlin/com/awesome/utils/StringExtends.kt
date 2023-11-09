@@ -16,6 +16,16 @@ inline fun String.regex(regex: String, method: (String) -> Unit) {
     }
 }
 
+inline fun String.regexAll(regex: String): ArrayList<String> {
+    val pattern = Pattern.compile(regex)
+    val matcher = pattern.matcher(this)
+    val list = arrayListOf<String>()
+    while (matcher.find()) {
+        list.add(matcher.group())
+    }
+    return list
+}
+
 fun String.regexOne(regex: String): String? {
     val pattern = Pattern.compile(regex)
     val matcher = pattern.matcher(this)

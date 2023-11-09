@@ -9,4 +9,7 @@ object RegexText {
      **/
     const val variableRegex = "^([ ]*)([a-zA-Z\\<\\>]*)\\? [a-zA-Z]*;\$"
     const val variableConstStringRegex = "static const String .*? = '.*?';"
+    const val variableConstNameRegex = "(?<=static const String ).*?(?= = '.*?';)"
+    const val colorConstRegex = "static const Color .*? = Color\\(.*?\\);"
+    const val colorConstNameRegex = "(?<=static const Color ).*?(?= = Color\\(.*?\\);)"
 }

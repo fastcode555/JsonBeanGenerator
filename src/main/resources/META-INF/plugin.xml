@@ -49,6 +49,13 @@
             <add-to-group group-id="NewGroup" anchor="last"/>
         </action>
 
+        <action id="Generate the Tailwind extension"
+                class="com.awesome.plugins.colorext.ColorExtAction"
+                text="Colors Extension Tailwind"
+                icon="/plugin_icon.png" description="generate the color extension tailwind.">
+            <add-to-group group-id="NewGroup" anchor="first"/>
+        </action>
+
         <action id="com.awesome.plugins.language res" class="com.awesome.plugins.language.LanguageResAction"
                 text="Languages-Res"
                 icon="/plugin_icon.png" description="Generated multi com.awesome.plugins.language resource.">
@@ -75,6 +82,7 @@
                 icon="/plugin_icon.png" description="generate toJson for a bean.">
             <add-to-group group-id="GenerateGroup" anchor="first"/>
         </action>
+
         <action id="json2bean ToAndFromGenerateAction"
                 class="com.awesome.plugins.json2bean.ToAndFromJsonGenerateAction"
                 text="toJson and fromJson"
@@ -87,7 +95,6 @@
                 icon="/plugin_icon.png" description="Generated multi com.awesome.plugins.language resource.">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
-
 
         <!-- Vue和TypeScript的代码支持 -->
         <action id="com.awesome.plugins.ts.tomapfield.ToMapFieldAction"
