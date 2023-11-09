@@ -8,6 +8,13 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 
 class JsonBeanGeneratorAction : AnAction() {
+
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+        val mDirectory = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)
+        e.presentation.isEnabledAndVisible = mDirectory != null && mDirectory is PsiDirectory
+    }
+
     override fun actionPerformed(e: AnActionEvent) {
         val mDirectory = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)
         if (mDirectory != null && mDirectory is PsiDirectory) {

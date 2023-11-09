@@ -1,7 +1,6 @@
 package com.awesome.plugins.language
 
 import com.awesome.LanguageResDialog
-import com.awesome.common.BaseAnAction
 import com.awesome.utils.RegexText
 import com.awesome.utils.regexOne
 import com.intellij.openapi.actionSystem.AnAction
@@ -20,6 +19,8 @@ class LanguageResAction : AnAction() {
         val mDirectory = e.getData(CommonDataKeys.PSI_ELEMENT)
         if (mDirectory != null && mDirectory is PsiDirectory) {
             e.presentation.setEnabledAndVisible(true)
+        } else if (mDirectory is PsiFile) {
+            e.presentation.isEnabledAndVisible = false
         } else {
             val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
             val psiFile: PsiFile? = e.getData(CommonDataKeys.PSI_FILE)

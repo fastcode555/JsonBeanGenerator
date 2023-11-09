@@ -13,6 +13,12 @@ import com.intellij.psi.PsiElement
 import java.io.File
 
 class AssetGenerateAction : AnAction() {
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+        val mDirectory = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)
+        e.presentation.isEnabledAndVisible = mDirectory != null && mDirectory is PsiDirectory
+    }
+
     override fun actionPerformed(e: AnActionEvent) {
         val mDirectory = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)
         val properties = mDirectory?.let { PropertiesHelper(it) }
@@ -35,6 +41,4 @@ class AssetGenerateAction : AnAction() {
     fun isWeb(fileContent: String, mDirectory: PsiDirectory): Boolean {
         return fileContent.contains("\"web\"") || File(mDirectory.project.basePath, "package.json").exists()
     }
-
-
 }
