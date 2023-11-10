@@ -5,7 +5,6 @@ import com.awesome.utils.*
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
-import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import firstUpperCamel
@@ -48,7 +47,7 @@ class ColorExtAction : AnAction() {
     /**
      * 需要解析出颜色的名字，并生成文件tailwind extension的文件
      **/
-    private fun parseColor(text: @NlsSafe String): StringBuilder {
+    private fun parseColor(text: String): StringBuilder {
         return parseText(
             text,
             "  T get %s => this..color = Colours.%s;\n",
@@ -60,7 +59,7 @@ class ColorExtAction : AnAction() {
     /**
      * 需要解析出颜色的名字，生成tailwind extension的文件
      **/
-    private fun parseColorText(text: @NlsSafe String): StringBuilder {
+    private fun parseColorText(text: String): StringBuilder {
         return parseText(
             text,
             "  T get %s => this..color = Colours.%s.cr;\n",
@@ -69,7 +68,7 @@ class ColorExtAction : AnAction() {
         )
     }
 
-    private fun parseText(text: @NlsSafe String, string1: String, string2: String, regex: String): StringBuilder {
+    private fun parseText(text: String, string1: String, string2: String, regex: String): StringBuilder {
         val firstClass = StringBuilder()
         val secondClass = StringBuilder()
         val filedNames = text.regexAll(regex)
