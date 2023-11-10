@@ -1,20 +1,16 @@
-package com.awesome.plugins.ts.totailwindcss.processor
+package com.awesome.plugins.codestyle.interceptor.tailwind
 
-import com.awesome.plugins.ts.totailwindcss.TailWindHelper
-import com.awesome.plugins.ts.totailwindcss.TailWindHelper.replaceRegex
-import com.awesome.plugins.ts.totailwindcss.processor.props.HeightProcessor
-import com.awesome.plugins.ts.totailwindcss.processor.props.WidthProcessor
+import com.awesome.plugins.codestyle.interceptor.tailwind.TailWindHelper.replaceRegex
+import com.awesome.plugins.codestyle.base.BaseInterceptor
+import com.awesome.plugins.codestyle.interceptor.tailwind.props.HeightInterceptor
+import com.awesome.plugins.codestyle.interceptor.tailwind.props.WidthInterceptor
 import com.intellij.openapi.editor.Editor
 
 /**
  * 处理Css 代码，转换成 TailWindCss
  **/
-class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
+class TailWindInterceptor(private val editor: Editor) : BaseInterceptor(editor) {
     override fun process(content: String): String {
-        val selectedText = editor.selectionModel.selectedText
-        if (!selectedText.isNullOrEmpty()) {
-            return convertTailCss(selectedText)
-        }
         return convertTailCss(content)
     }
 
@@ -53,12 +49,12 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
      **/
     private fun convertTailProp(key: String, value: String): String {
         return when (key) {
-            "width" -> WidthProcessor().process(key, value)
-            "max-width" -> WidthProcessor("max-w").process(key, value)
-            "min-width" -> WidthProcessor("min-w").process(key, value)
-            "height" -> HeightProcessor().process(key, value)
-            "max-height" -> HeightProcessor("max-h").process(key, value)
-            "min-height" -> HeightProcessor("min-h").process(key, value)
+            "width" -> WidthInterceptor().process(key, value)
+            "max-width" -> WidthInterceptor("max-w").process(key, value)
+            "min-width" -> WidthInterceptor("min-w").process(key, value)
+            "height" -> HeightInterceptor().process(key, value)
+            "max-height" -> HeightInterceptor("max-h").process(key, value)
+            "min-height" -> HeightInterceptor("min-h").process(key, value)
             "background" -> TailWindHelper.color("bg", value)
             "background-attachment" -> "bg-$value"
             "background-clip" -> TailWindHelper.backgroundClip(value)

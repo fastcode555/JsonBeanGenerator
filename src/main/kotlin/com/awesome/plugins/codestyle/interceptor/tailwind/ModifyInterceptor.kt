@@ -1,11 +1,12 @@
-package com.awesome.plugins.ts.totailwindcss.processor
+package com.awesome.plugins.codestyle.interceptor.tailwind
 
+import com.awesome.plugins.codestyle.base.BaseInterceptor
 import com.intellij.openapi.editor.Editor
 
 /**
  * 修正TailWindCss中存在的代码问题
  **/
-class ModifyProcessor(private val editor: Editor) : BaseProcessor(editor) {
+class ModifyInterceptor(private val editor: Editor) : BaseInterceptor(editor) {
     override fun process(text: String): String {
         var content = text
 

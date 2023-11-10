@@ -1,4 +1,4 @@
-package com.awesome.plugins.ts.totailwindcss
+package com.awesome.plugins.codestyle.interceptor.tailwind
 
 import com.awesome.utils.isNumber
 

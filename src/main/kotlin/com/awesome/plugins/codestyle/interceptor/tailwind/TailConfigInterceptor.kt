@@ -1,5 +1,6 @@
-package com.awesome.plugins.ts.totailwindcss.processor
+package com.awesome.plugins.codestyle.interceptor.tailwind
 
+import com.awesome.plugins.codestyle.base.BaseInterceptor
 import com.awesome.utils.regex
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.project.Project
@@ -8,7 +9,7 @@ import java.io.File
 /**
  * 读取TailWindConfig文件
  **/
-class TailConfigProcessor(private val editor: Editor) : BaseProcessor(editor) {
+class TailConfigInterceptor(private val editor: Editor) : BaseInterceptor(editor) {
     private val props: HashMap<String, String> = hashMapOf()
 
     init {

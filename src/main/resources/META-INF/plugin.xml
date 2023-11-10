@@ -103,10 +103,10 @@
                 icon="/plugin_icon.png" description="Generate map field for the typescript.">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
-        <action id="com.awesome.plugins.ts.totailwindcss.ToTailWindCssAction"
-                class="com.awesome.plugins.ts.totailwindcss.ToTailWindCssAction"
-                text="To TailWindCss"
-                icon="/plugin_icon.png" description="Convert the csss to the tailwindcss.">
+        <action id="com.awesome.plugins.codestyle.CodeStyleGeneratorAction"
+                class="com.awesome.plugins.codestyle.CodeStyleGeneratorAction"
+                text="To Code"
+                icon="/plugin_icon.png" description="Convert the csss to the Code.">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
         <action id="com.awesome.plugins.stringassociate.StringAssociateAction"

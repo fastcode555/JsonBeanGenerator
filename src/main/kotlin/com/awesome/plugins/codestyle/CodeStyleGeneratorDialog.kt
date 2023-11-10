@@ -1,6 +1,6 @@
-package com.awesome.plugins.ts.totailwindcss
+package com.awesome.plugins.codestyle
 
-import com.awesome.plugins.ts.totailwindcss.processor.BaseProcessor
+import com.awesome.plugins.codestyle.interceptor.TailWindProcessor
 import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.editor.Editor
 import java.awt.event.KeyEvent
@@ -11,7 +11,7 @@ import javax.swing.*
 /**
  * 将复制的Css转换成TailWindCss
  **/
-class TailWindCssDialog(private val editor: Editor, private val processors: List<BaseProcessor>) : JDialog() {
+class CodeStyleGeneratorDialog(private val editor: Editor) : JDialog() {
     var contentPane: JPanel? = null
     var buttonOK: JButton? = null
     var buttonCancel: JButton? = null
@@ -44,10 +44,11 @@ class TailWindCssDialog(private val editor: Editor, private val processors: List
     private fun onGenerate() {
         editor.runWriteCmd {
             val selectionModel = editor.selectionModel
-            var content = tvTo!!.text
-            if (content.isEmpty()) {
-                content = tvFrom!!.text
-                processors.forEach { content = it.process(content) }
+            var content = ""
+            if (tvTo!!.text.isNotEmpty()) {
+                content = tvTo!!.text
+            } else {
+                content = TailWindProcessor(editor).process(tvFrom!!.text!!)
             }
             editor.document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, content)
             dispose()
@@ -56,13 +57,12 @@ class TailWindCssDialog(private val editor: Editor, private val processors: List
 
     private fun onConvert() {
         editor.runWriteCmd {
-            var content = tvFrom!!.text
-            processors.forEach { content = it.process(content) }
+            val content = TailWindProcessor(editor).process(tvFrom!!.text!!)
             tvTo!!.text = content
         }
     }
 
-    fun showDialog(): TailWindCssDialog {
+    fun showDialog(): CodeStyleGeneratorDialog {
         pack()
         setLocationRelativeTo(null)
         isVisible = true

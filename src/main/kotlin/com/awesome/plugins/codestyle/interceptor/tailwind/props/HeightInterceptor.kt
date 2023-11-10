@@ -1,11 +1,12 @@
-package com.awesome.plugins.ts.totailwindcss.processor.props
+package com.awesome.plugins.codestyle.interceptor.tailwind.props
 
-import com.awesome.plugins.ts.totailwindcss.TailWindHelper
+import com.awesome.plugins.codestyle.interceptor.tailwind.TailWindHelper
+import com.awesome.plugins.codestyle.base.BasePropInterceptor
 
 /**
  * 高度的处理
  **/
-class HeightProcessor(private val mark: String = "h") : BasePropProcessor() {
+class HeightInterceptor(private val mark: String = "h") : BasePropInterceptor() {
     override fun process(key: String, text: String): String {
         var value = text
         if (text.endsWith("%") || text.endsWith("vh")) {

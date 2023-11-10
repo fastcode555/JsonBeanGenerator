@@ -1,8 +1,9 @@
-package com.awesome.plugins.ts.totailwindcss.processor.props
+package com.awesome.plugins.codestyle.interceptor.tailwind.props
 
-import com.awesome.plugins.ts.totailwindcss.TailWindHelper
+import com.awesome.plugins.codestyle.interceptor.tailwind.TailWindHelper
+import com.awesome.plugins.codestyle.base.BasePropInterceptor
 
-class WidthProcessor(private val mark: String = "w") : BasePropProcessor() {
+class WidthInterceptor(private val mark: String = "w") : BasePropInterceptor() {
 
     override fun process(key: String, text: String): String {
         var value = text

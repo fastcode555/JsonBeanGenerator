@@ -1,5 +1,6 @@
-package com.awesome.plugins.ts.totailwindcss.processor
+package com.awesome.plugins.codestyle.interceptor.tailwind
 
+import com.awesome.plugins.codestyle.base.BaseInterceptor
 import com.awesome.plugins.stringassociate.processor.StringHelper
 import com.awesome.utils.regex
 import com.intellij.openapi.editor.Editor
@@ -8,7 +9,7 @@ import com.intellij.openapi.editor.Editor
  * 将颜色替换为tailwindcss的默认颜色
  **/
 
-class ColorProcessor(private val editor: Editor) : BaseProcessor(editor) {
+class ColorInterceptor(private val editor: Editor) : BaseInterceptor(editor) {
     override fun process(text: String): String {
         var content = text
         text.regex("rgb(a){0,1}\\(.*?\\)") {

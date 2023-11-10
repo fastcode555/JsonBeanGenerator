@@ -1,4 +1,4 @@
-package com.awesome.plugins.testaction
+package com.awesome.testaction
 
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
