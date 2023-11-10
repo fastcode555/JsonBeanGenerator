@@ -26,7 +26,6 @@ class ToTailWindCssAction : BaseAnAction() {
                 TailConfigProcessor(this),
                 ColorProcessor(this),
             )
-
             val selectText = selectionModel.selectedText
             if (!selectText.isNullOrEmpty()) {
                 editor.runWriteCmd {
@@ -41,7 +40,6 @@ class ToTailWindCssAction : BaseAnAction() {
             } else {
                 val dialog = TailWindCssDialog(this, processors)
                 dialog.showDialog()
-
             }
         }
     }
