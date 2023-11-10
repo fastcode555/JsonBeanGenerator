@@ -33,4 +33,7 @@ object PluginProps {
 
     ///原型语言是什么,如果设置是英语，配合needTranslate，就不会去获取翻译的内容了,多数情况下无用，适用于无法连接网络的情况
     const val rawLanguage = "plugin.rawLanguage"
+
+    ///配置是否生成的代码为链式代码
+    const val flutterChain = "plugin.flutterChain"
 }

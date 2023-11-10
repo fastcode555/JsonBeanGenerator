@@ -1,6 +1,6 @@
 package com.awesome.plugins.codestyle
 
-import com.awesome.plugins.codestyle.interceptor.TailWindProcessor
+import com.awesome.plugins.codestyle.interceptor.StrategyManager
 import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.editor.Editor
 import java.awt.event.KeyEvent
@@ -11,13 +11,14 @@ import javax.swing.*
 /**
  * 将复制的Css转换成TailWindCss
  **/
-class CodeStyleGeneratorDialog(private val editor: Editor) : JDialog() {
+class CodeStyleGeneratorDialog(private val strategy: StrategyManager) : JDialog() {
     var contentPane: JPanel? = null
     var buttonOK: JButton? = null
     var buttonCancel: JButton? = null
     var btnConvert: JButton? = null
     var tvFrom: JTextArea? = null
     var tvTo: JTextArea? = null
+    val editor: Editor = strategy.editor
 
     init {
         setContentPane(contentPane)
@@ -48,7 +49,7 @@ class CodeStyleGeneratorDialog(private val editor: Editor) : JDialog() {
             if (tvTo!!.text.isNotEmpty()) {
                 content = tvTo!!.text
             } else {
-                content = TailWindProcessor(editor).process(tvFrom!!.text!!)
+                content = strategy.process(tvFrom!!.text!!)
             }
             editor.document.replaceString(selectionModel.selectionStart, selectionModel.selectionEnd, content)
             dispose()
@@ -57,7 +58,7 @@ class CodeStyleGeneratorDialog(private val editor: Editor) : JDialog() {
 
     private fun onConvert() {
         editor.runWriteCmd {
-            val content = TailWindProcessor(editor).process(tvFrom!!.text!!)
+            val content = strategy.process(tvFrom!!.text!!)
             tvTo!!.text = content
         }
     }
