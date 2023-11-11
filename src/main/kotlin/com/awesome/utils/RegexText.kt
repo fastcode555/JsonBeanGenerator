@@ -13,5 +13,12 @@ object RegexText {
     const val variableConstStringRegex = "static const String .*? = '.*?';"
     const val variableConstNameRegex = "(?<=static const String ).*?(?= = '.*?';)"
     const val colorConstRegex = "static const Color .*? = Color\\(.*?\\);"
+    const val colorConstRegex2 = "Colours\\..*?\\: Color\\(.*?\\)"
+
+    //static const Color black = Color(0xff000000);匹配出black这个名字
     const val colorConstNameRegex = "(?<=static const Color ).*?(?= = Color\\(.*?\\);)"
+    const val colorConstNameRegex2 = "(?<=Colours\\.).*?(?=\\:)"
+
+    //匹配出Color(0xff000000)中的0xff000000
+    const val colorConstValueRegex = "(?<=Color\\().*?(?=\\))"
 }

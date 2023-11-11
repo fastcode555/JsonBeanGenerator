@@ -1,11 +1,9 @@
 package com.awesome.plugins.codestyle.interceptor.flutter
 
-import com.awesome.common.PluginProps
-import com.awesome.utils.PropertiesHelper
 import com.awesome.utils.RegexText
 import kotlin.math.roundToInt
 
-class FlutterBuilder {
+class FlutterBuilder(private val colorMap: HashMap<String, String>, private val needThemeMode: Boolean) {
     var width: Double? = null
     var height: Double? = null
     var fontFamily: String? = null
@@ -84,11 +82,14 @@ class FlutterBuilder {
             builder.append("fontWeight: FontWeight.w$fontWeight,")
         }
         if (color != null) {
-            builder.append("color: Color($color),")
+            val colorName = colorMap[color]
+            if (colorName != null) {
+                builder.append("color: Colours.$colorName${if (needThemeMode) ".cr" else ""},")
+            } else {
+                builder.append("color: const Color($color),")
+            }
         }
-        builder.append("overflow: TextOverflow.ellipsis")
-        builder.append(")")
-        return builder.toString()
+        return builder.append("overflow: TextOverflow.ellipsis)").toString()
     }
 
     private fun buildChainTextStyle(): String {
@@ -100,11 +101,14 @@ class FlutterBuilder {
             builder.append(if (fontWeight == 700) ".bold" else ".w$fontWeight")
         }
         if (color != null) {
-            builder.append(".Color($color)")
+            val colorName = colorMap[color]
+            if (colorName != null) {
+                builder.append(".$colorName")
+            } else {
+                builder.append(".Color($color)")
+            }
         }
-        builder.append(".ellipsis")
-        builder.append(".mk")
-        return builder.toString()
+        return builder.append(".ellipsis").append(".mk").toString()
     }
 
     private fun maxLine(): Int {
