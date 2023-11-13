@@ -1,7 +1,10 @@
 package com.awesome.plugins.codestyle.interceptor.flutter
 
 object FlutterHelper {
-    fun background(value: String): String? {
+    fun background(value: String): String {
+        if (value.startsWith("#")) {
+            return getColor(value)
+        }
         return ""
     }
 

@@ -28,9 +28,6 @@ class FlutterInterceptor(
             val value = results.last().trim().replace(";", "").replace("!important", "").trim()
             flutterBuilder.parseProp(key, value)
         }
-        if (isChain) {
-            return flutterBuilder.buildChain()
-        }
-        return flutterBuilder.build()
+        return flutterBuilder.build(isChain)
     }
 }
