@@ -37,14 +37,7 @@ class TextBuilder(private val style: FlutterBuilder, private val isChain: Boolea
         if (style.fontWeight != 400 && style.fontWeight != null) {
             builder.append("fontWeight: FontWeight.w${style.fontWeight},")
         }
-        if (style.color != null) {
-            val colorName = style.colorMap[style.color]
-            if (colorName != null) {
-                builder.append("color: Colours.$colorName${style.crTail()},")
-            } else {
-                builder.append("color: const Color(${style.color}),")
-            }
-        }
+        builder.append(style.colorProp(style.color))
         return builder.append("overflow: TextOverflow.ellipsis)").toString()
     }
 
@@ -56,14 +49,7 @@ class TextBuilder(private val style: FlutterBuilder, private val isChain: Boolea
         if (style.fontWeight != 400 && style.fontWeight != null) {
             builder.append(if (style.fontWeight == 700) ".bold" else ".w${style.fontWeight}")
         }
-        if (style.color != null) {
-            val colorName = style.colorMap[style.color]
-            if (colorName != null) {
-                builder.append(".$colorName")
-            } else {
-                builder.append(".Color(${style.color})")
-            }
-        }
+        builder.append(style.colorChainProp(style.color))
         return builder.append(".ellipsis").append(".mk").toString()
     }
 

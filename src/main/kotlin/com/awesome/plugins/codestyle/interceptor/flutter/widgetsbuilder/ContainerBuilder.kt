@@ -14,17 +14,12 @@ class ContainerBuilder(val style: FlutterBuilder, val isChain: Boolean) : BaseWi
             builder.append("height: ${style.height}.r,")
         } else {
             builder.append("width: ${style.width}.w,")
-            builder.append("height: ${style.width}.h,")
+            builder.append("height: ${style.height}.h,")
         }
         ///如果没有，就认定为普通的Container
         val bg = FlutterHelper.background(style.background!!)
         if (style.border == null && style.borderRadius == null && bg.startsWith("0x")) {
-            val colorName = style.colorMap[bg]
-            if (colorName != null) {
-                builder.append("color: Colours.$colorName${style.crTail()}")
-            } else {
-                builder.append("color: const Color($bg)")
-            }
+            builder.append(style.colorProp(FlutterHelper.getColor(style.background ?: "")))
             builder.append(")")
             return builder.toString()
         }
@@ -33,16 +28,23 @@ class ContainerBuilder(val style: FlutterBuilder, val isChain: Boolean) : BaseWi
         } else {
             builder.append("decoration: ${buildDecoration()}")
         }
-        builder.append(")")
-        return builder.toString()
+        return builder.append("),").toString()
     }
 
     private fun buildDecoration(): String {
-        TODO("Not yet implemented")
+        val builder = StringBuilder("BoxDecoration(")
+        builder.append(style.colorProp(FlutterHelper.getColor(style.background ?: "")))
+        FlutterHelper.borderRadius(style.borderRadius)?.apply {
+            builder.append("borderRadius: ${FlutterHelper.removeUselessRadius(this)}")
+        }
+        return builder.append("),").toString()
     }
 
     private fun buildChainDecoration(): String {
-        TODO("Not yet implemented")
+        val builder = StringBuilder("bd.")
+        builder.append(style.colorChainProp(FlutterHelper.getColor(style.background ?: "")))
+        FlutterHelper.borderRadius(style.borderRadius)?.apply { builder.append("borderRadius: $this") }
+        return builder.append("),").toString()
     }
 
 }

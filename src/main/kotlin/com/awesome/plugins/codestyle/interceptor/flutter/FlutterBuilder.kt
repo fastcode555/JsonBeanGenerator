@@ -48,5 +48,29 @@ class FlutterBuilder(val colorMap: HashMap<String, String>, private val needThem
 
     fun crTail() = if (needThemeMode) ".cr" else ""
 
+    /**
+     * 颜色的属性
+     **/
+    fun colorProp(color: String?): String {
+        if (color != null) {
+            val colorName = colorMap[color]
+            if (colorName != null) {
+                return "color: Colours.$colorName${crTail()},"
+            } else {
+                return "color: const Color(${color}),"
+            }
+        }
+        return ""
+    }
 
+    /**
+     *链式编程的颜色属性
+     **/
+    fun colorChainProp(color: String?): String {
+        if (color != null) {
+            val colorName = colorMap[color]
+            return if (colorName != null) ".$colorName" else ".Color(${color})"
+        }
+        return ""
+    }
 }
