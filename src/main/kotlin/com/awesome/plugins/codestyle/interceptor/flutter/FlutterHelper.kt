@@ -9,7 +9,7 @@ import java.math.RoundingMode
 
 object FlutterHelper {
     fun background(value: String, flutter: FlutterBuilder): String? {
-        if (value.isEmpty()) return ""
+        if (value.isEmpty()) return null
         if (value.startsWith("#")) {
             return getColor(value)
         }
@@ -55,7 +55,7 @@ object FlutterHelper {
         if (value == null) return null
         val results = value.split(" ").clearEmpty()
         if (results.isSame()) {
-            return "BorderRadius.circular(${results[0]}.r),"
+            return "BorderRadius.circular(${results[0]}.r)"
         }
         if (results.size == 4) {
             if (results[0] == results[1] && results[2] == results[3]) {
@@ -89,14 +89,14 @@ object FlutterHelper {
         if (results.size == 2) {
             return "BorderRadius.only(topLeft: Radius.circular(${results[0]}.r),topRight: Radius.circular(${results[1]}.r), bottomRight: Radius.circular(${results[0]}.r), bottomLeft: Radius.circular(${results[1]}.r))"
         }
-        return "BorderRadius.circular(${results[0]}.r),"
+        return "BorderRadius.circular(${results[0]}.r)"
     }
 
     fun borderRadiusChain(value: String?): String? {
         if (value == null) return null
         val results = value.split(" ").clearEmpty()
         if (results.isSame()) {
-            return ".r${results[0]}"
+            return ".r${results[0].toDouble().toInt()}"
         }
         if (results.size == 4) {
             if (results[0] == results[1] && results[2] == results[3]) {
@@ -130,7 +130,7 @@ object FlutterHelper {
         if (results.size == 2) {
             return ".rOnly(${results[0]}.r,${results[1]}.r,${results[1]}.r,${results[0]}.r)"
         }
-        return ".r${results[0]}"
+        return ".r${results[0].toDouble().toInt()}"
     }
 
     fun getColor(value: String): String {
@@ -184,5 +184,59 @@ object FlutterHelper {
         var content = text
         text.regex(",[ 0.r]+(?=\\))") { content = content.replace(it, "") }
         return content
+    }
+
+    /**
+     * 解析border的属性值
+     **/
+    fun border(border: String?, style: FlutterBuilder): String? {
+        if (border == null) return null
+        val results = border.trim().split(" ")
+        if (results.size == 3) {
+            val borderWidth = RegexText.getNum(results[0]) ?: 0.0
+            val borderType = results[1].trim()
+            var color = results[2]
+            if (color.startsWith("#")) {
+                color = style.getColorName(getColor(color))
+            } else {
+                color = "Colors.$color"
+            }
+            val builder = StringBuilder("Border.all(")
+            if (borderWidth > 1.0) {
+                builder.append("width: $borderWidth.r,")
+            }
+            builder.append("color: $color,")
+            if (borderType != "solid") {
+                builder.append("style: BorderStyle.$borderType,")
+            }
+            builder.append(")")
+            return builder.toString()
+        }
+        return null
+    }
+
+    /**
+     * 设置border的属性值
+     **/
+    fun borderChain(border: String?, style: FlutterBuilder): String? {
+        if (border == null) return null
+        val results = border.trim().split(" ")
+        if (results.size == 3) {
+            val borderWidth = RegexText.getNum(results[0]) ?: 0.0
+            var color = results[2]
+            if (color.startsWith("#")) {
+                color = style.getColorName(getColor(color))
+            } else {
+                color = "Colors.$color"
+            }
+            val builder = StringBuilder(".border($color")
+            if (borderWidth > 1.0) {
+                builder.append(",$borderWidth.r)")
+            } else {
+                builder.append(")")
+            }
+            return builder.toString()
+        }
+        return null
     }
 }

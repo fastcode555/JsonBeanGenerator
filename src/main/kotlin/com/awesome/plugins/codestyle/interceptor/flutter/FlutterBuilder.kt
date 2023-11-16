@@ -63,6 +63,18 @@ class FlutterBuilder(val colorMap: HashMap<String, String>, private val needThem
         return ""
     }
 
+    fun getColorName(color: String?): String {
+        if (color != null) {
+            val colorName = colorMap[color]
+            if (colorName != null) {
+                return "Colours.$colorName${crTail()}"
+            } else {
+                return "const Color(${color})"
+            }
+        }
+        return ""
+    }
+
     /**
      *链式编程的颜色属性
      **/
