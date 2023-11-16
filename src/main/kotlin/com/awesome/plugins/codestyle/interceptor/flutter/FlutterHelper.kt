@@ -2,13 +2,53 @@ package com.awesome.plugins.codestyle.interceptor.flutter
 
 import com.awesome.utils.RegexText
 import com.awesome.utils.regex
+import com.awesome.utils.regexAll
+import com.awesome.utils.regexOne
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 object FlutterHelper {
-    fun background(value: String): String {
+    fun background(value: String, flutter: FlutterBuilder): String? {
+        if (value.isEmpty()) return ""
         if (value.startsWith("#")) {
             return getColor(value)
         }
-        return ""
+        //linear-gradient(90deg, #FDE068 0%, #FED55B 35%, #F6C35B 100%)
+        if (value.startsWith("linear-gradient")) {
+            val deg = value.regexOne(RegexText.degConstValueRegex)?.toIntOrNull()
+            val colors = value.regexAll(RegexText.colorConstValue)
+            val ints = value.regexAll(RegexText.colorConstOpacity)
+
+            val builder = StringBuilder("LinearGradient(")
+            if (deg == 90) {
+                builder.append("begin: Alignment.topLeft,\n")
+                builder.append("end: Alignment.bottomRight,\n")
+            }
+            builder.append("colors:[")
+            for (color in colors) {
+                val colorValue = getColor(color)
+                val colorName = flutter.colorMap[colorValue]
+                if (colorName != null) {
+                    builder.append("Colours.$colorName${flutter.crTail()},\n")
+                } else {
+                    builder.append("const Color($colorValue),\n")
+                }
+            }
+            builder.append("],")
+            val lists = arrayListOf<String>()
+            for (num in ints) {
+                var value = num.toDoubleOrNull()
+                if (value != null) {
+                    value /= 100
+                    val valueText = BigDecimal(value).setScale(2, RoundingMode.HALF_EVEN).toString()
+                    lists.add(valueText)
+                }
+            }
+            builder.append("stops: [${lists.joinToString(",")}]")
+            return builder.append(",)").toString()
+        }
+
+        return null
     }
 
     fun borderRadius(value: String?): String? {
@@ -140,5 +180,9 @@ object FlutterHelper {
         return content
     }
 
-
+    fun removeUselessChainRadius(text: String): String {
+        var content = text
+        text.regex(",[ 0.r]+(?=\\))") { content = content.replace(it, "") }
+        return content
+    }
 }

@@ -21,4 +21,20 @@ object RegexText {
 
     //匹配出Color(0xff000000)中的0xff000000
     const val colorConstValueRegex = "(?<=Color\\().*?(?=\\))"
+
+    /**
+     * 匹配出偏转的角度
+     **/
+    const val degConstValueRegex = "[0-9]+(?=deg)"
+
+    /**
+     * 匹配出颜色值
+     **/
+    const val colorConstValue = "(?<=\\#)[A-Fa-f0-9]+"
+
+    /**
+     *匹配出属性值，数字
+     **/
+    const val colorConstOpacity = "[0-9.]+(?=%)"
+    //linear-gradient(90deg, #FDE068 0%, #FED55B 35%, #F6C35B 100%)
 }

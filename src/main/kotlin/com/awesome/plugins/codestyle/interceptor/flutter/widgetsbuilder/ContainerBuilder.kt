@@ -17,7 +17,7 @@ class ContainerBuilder(val style: FlutterBuilder, val isChain: Boolean) : BaseWi
             builder.append("height: ${style.height}.h,")
         }
         ///如果没有，就认定为普通的Container
-        val bg = FlutterHelper.background(style.background!!)
+        val bg = FlutterHelper.background(style.background!!, style) ?: ""
         if (style.border == null && style.borderRadius == null && bg.startsWith("0x")) {
             builder.append(style.colorProp(FlutterHelper.getColor(style.background ?: "")))
             builder.append(")")
@@ -33,18 +33,34 @@ class ContainerBuilder(val style: FlutterBuilder, val isChain: Boolean) : BaseWi
 
     private fun buildDecoration(): String {
         val builder = StringBuilder("BoxDecoration(")
-        builder.append(style.colorProp(FlutterHelper.getColor(style.background ?: "")))
+        //解析borderRadius的属性
         FlutterHelper.borderRadius(style.borderRadius)?.apply {
-            builder.append("borderRadius: ${FlutterHelper.removeUselessRadius(this)}")
+            builder.append("borderRadius: ${FlutterHelper.removeUselessRadius(this)},")
+        }
+        //解析Background的属性
+        FlutterHelper.background(style.background ?: "", style)?.apply {
+            if (this.startsWith("0x")) {
+                builder.append(style.colorProp(this))
+            } else {
+                builder.append("gradient: $this,")
+            }
         }
         return builder.append("),").toString()
     }
 
     private fun buildChainDecoration(): String {
-        val builder = StringBuilder("bd.")
-        builder.append(style.colorChainProp(FlutterHelper.getColor(style.background ?: "")))
-        FlutterHelper.borderRadius(style.borderRadius)?.apply { builder.append("borderRadius: $this") }
-        return builder.append("),").toString()
+        val builder = StringBuilder("bd")
+        FlutterHelper.borderRadiusChain(style.borderRadius)?.apply {
+            builder.append(FlutterHelper.removeUselessChainRadius(this))
+        }
+        FlutterHelper.background(style.background ?: "", style)?.apply {
+            if (this.startsWith("0x")) {
+                builder.append(style.colorChainProp(this))
+            } else {
+                builder.append(".gradient($this)")
+            }
+        }
+        return builder.append(".mk").toString()
     }
 
 }
