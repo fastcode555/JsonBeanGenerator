@@ -85,7 +85,7 @@ class FlutterAssetGenerator(
                 builder.append(
                     "  static const String ${
                         it.virtualFile.nameWithoutExtension.clearSymbol().toCamel()
-                    } = '$currentDirVariableName${File.separator}${it.virtualFile.nameWithoutExtension}';\n"
+                    } = '${it.virtualFile.nameWithoutExtension}';\n"
                 )
             } else {
                 builder.append(
