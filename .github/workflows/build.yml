@@ -45,7 +45,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ env.package_name }}-${{ env.build_time }
+          tag_name: v${{ env.package_name }}-${{ env.build_time }}
           release_name: ${{ env.package_name }}-${{ env.build_time }}
           body: |
             Release notes and changelog go here.
