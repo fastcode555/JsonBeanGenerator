@@ -9,8 +9,9 @@ object StringHelper {
             val r = results[0].trim().toInt().toString(16)
             val g = results[1].trim().toInt().toString(16)
             val b = results[2].trim().toInt().toString(16)
-            val a = (results[3].trim().toDouble() * 255).toInt().toString(16)
-            return if (a == "ff") "#$r$g$b".uppercase() else "#$r$g$b$a".uppercase()
+            var a = (results[3].trim().toDouble() * 255).toInt().toString(16)
+            a = if (a.length <= 1) "0$a" else a
+            return if (a == "ff") "#$r$g$b".uppercase() else "#$a$r$g$b".uppercase()
         } else if (results.size == 3) {
             val r = results[0].trim().toInt().toString(16)
             val g = results[1].trim().toInt().toString(16)

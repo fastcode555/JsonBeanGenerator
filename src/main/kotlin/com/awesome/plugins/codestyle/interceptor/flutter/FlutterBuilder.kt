@@ -80,6 +80,9 @@ class FlutterBuilder(val colorMap: HashMap<String, String>, private val needThem
      **/
     fun colorChainProp(color: String?): String {
         if (color != null) {
+            if (!color.startsWith("0x")) {
+                return ".$color"
+            }
             val colorName = colorMap[color]
             return if (colorName != null) ".$colorName" else ".Color(${color})"
         }

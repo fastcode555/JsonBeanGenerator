@@ -1,6 +1,7 @@
 package com.awesome.plugins.codestyle.interceptor
 
 import com.awesome.plugins.codestyle.base.BaseProcessor
+import com.awesome.plugins.codestyle.interceptor.common.RgbInterceptor
 import com.awesome.plugins.codestyle.interceptor.tailwind.ColorInterceptor
 import com.awesome.plugins.codestyle.interceptor.tailwind.ModifyInterceptor
 import com.awesome.plugins.codestyle.interceptor.tailwind.TailConfigInterceptor
@@ -16,6 +17,7 @@ class TailWindProcessor(private val editor: Editor) : BaseProcessor(editor) {
         interceptors.add(TailWindInterceptor(editor))
         interceptors.add(ModifyInterceptor(editor))
         interceptors.add(TailConfigInterceptor(editor))
+        interceptors.add(RgbInterceptor(editor))
         interceptors.add(ColorInterceptor(editor))
     }
 

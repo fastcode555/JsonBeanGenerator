@@ -10,11 +10,17 @@ class ContainerBuilder(val style: FlutterBuilder, val isChain: Boolean) : BaseWi
     override fun build(): String {
         val builder = StringBuilder("Container(")
         if (style.width == style.height) {
-            builder.append("width: ${style.width}.r,")
-            builder.append("height: ${style.height}.r,")
+            if (style.width != null) {
+                builder.append("width: ${style.width}.r,")
+                builder.append("height: ${style.height}.r,")
+            }
         } else {
-            builder.append("width: ${style.width}.w,")
-            builder.append("height: ${style.height}.h,")
+            if (style.width != null) {
+                builder.append("width: ${style.width}.w,")
+            }
+            if (style.height != null) {
+                builder.append("height: ${style.height}.h,")
+            }
         }
         ///如果没有，就认定为普通的Container
         val bg = FlutterHelper.background(style.background ?: "", style) ?: ""

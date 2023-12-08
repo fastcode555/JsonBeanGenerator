@@ -2,6 +2,8 @@ package com.awesome.plugins.codestyle.interceptor
 
 import com.awesome.common.PluginProps
 import com.awesome.plugins.codestyle.base.BaseProcessor
+import com.awesome.plugins.codestyle.interceptor.common.RgbInterceptor
+import com.awesome.plugins.codestyle.interceptor.flutter.FlutterColorInterceptor
 import com.awesome.plugins.codestyle.interceptor.flutter.FlutterInterceptor
 import com.awesome.utils.*
 import com.intellij.openapi.editor.Editor
@@ -47,6 +49,8 @@ class FlutterProcessor(private val editor: Editor, private val psiFile: PsiFile)
         }
 
         val isChain = "true" == properties.getProperty(PluginProps.flutterChain)
+        interceptors.add(RgbInterceptor(editor))
+        interceptors.add(FlutterColorInterceptor(editor))
         interceptors.add(FlutterInterceptor(editor, isChain, colorMap, needThemeMode))
     }
 

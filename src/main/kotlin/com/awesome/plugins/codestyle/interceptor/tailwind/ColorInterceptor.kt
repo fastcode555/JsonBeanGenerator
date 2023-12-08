@@ -12,9 +12,6 @@ import com.intellij.openapi.editor.Editor
 class ColorInterceptor(private val editor: Editor) : BaseInterceptor(editor) {
     override fun process(text: String): String {
         var content = text
-        text.regex("rgb(a){0,1}\\(.*?\\)") {
-            content = content.replace(it, StringHelper.toHexColor(it))
-        }
         val newText = content
         newText.regex("\\[\\#.*?\\]") {
             val color = it.substring(1, it.length - 1).trim().lowercase()
