@@ -30,6 +30,7 @@ jobs:
         run: |
           cd build/distributions/
           echo "package_name=$(find *.zip)" >> $GITHUB_ENV
+          echo "version_name=$(echo $(find *.zip) | sed 's/JsonBeanGenerator-//')" >> $GITHUB_ENV
           echo "build_time=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
           cd ../../
 
@@ -45,8 +46,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: v${{ env.package_name }}
-          release_name: ${{ env.package_name }}
+          tag_name: v${{ env.version_name }}
+          release_name: ${{ env.version_name }}
           body: |
             Release notes and changelog go here.
 
