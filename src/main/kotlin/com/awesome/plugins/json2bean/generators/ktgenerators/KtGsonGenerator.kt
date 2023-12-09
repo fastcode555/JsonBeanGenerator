@@ -124,13 +124,11 @@ class KtGsonGenerator(
     }
 
     private fun getType(element: Any): String {
-        return when (element) {
-            (element is String) -> "String"
-            (element is Int) -> "Int"
-            (element is Double || element is BigDecimal) -> "Double"
-            (element is Float) -> "Float"
-            (element is Boolean) -> "Boolean"
-            else -> "String"
-        }
+        if (element is String) return "String"
+        if (element is Int) return "Int"
+        if (element is Double || element is BigDecimal) return "Double"
+        if (element is Float) return "Float"
+        if (element is Boolean) return "Boolean"
+        return "String"
     }
 }

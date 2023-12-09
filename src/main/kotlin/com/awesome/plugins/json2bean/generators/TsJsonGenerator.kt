@@ -87,11 +87,9 @@ class TsJsonGenerator(
     }
 
     private fun getType(element: Any): String {
-        return when (element) {
-            (element is String) -> "string"
-            (element is Int || element is Double || element is Float) -> "number"
-            (element is Boolean) -> "boolean"
-            else -> "string"
-        }
+        if (element is String) return "string"
+        if (element is Int || element is Double || element is Float) return "number"
+        if (element is Boolean) return "boolean"
+        return "string"
     }
 }
