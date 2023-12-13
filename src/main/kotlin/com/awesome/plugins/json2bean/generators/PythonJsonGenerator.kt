@@ -24,7 +24,7 @@ class PythonJsonGenerator(
         val classBuilder = parseJson(json, fileName.toUpperCamel(), classes)
         classes.forEach { classBuilder.append("\n\n").append(it) }
         classBuilder.insert(0, "import json\n\n\n")
-        return classBuilder.toString().trim()
+        return classBuilder.toString().trim().replace("\t", "  ")
     }
 
     private fun parseJson(
@@ -106,6 +106,7 @@ class PythonJsonGenerator(
         toJsonMethod.insert(0, "\n\tdef toJson(self):\n${toJsonHeaderMethod.toString()}\t\treturn {\n")
         toJsonMethod.append("\t\t}\n")
         builder.append(toJsonMethod)
+        builder.append("\n\tdef toString(self):\n\t\treturn json.dumps(self.toJson(), indent=2, ensure_ascii=False)")
         return builder
     }
 
