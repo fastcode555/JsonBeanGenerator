@@ -111,6 +111,6 @@ class FlutterAssetGenerator(
 
     //判断文件夹下是否有文件
     private fun isContainFile(mDirectory: PsiDirectory): Boolean {
-        return mDirectory.files.isNotEmpty()
+        return mDirectory.files.isNotEmpty() || mDirectory.subdirectories.isNotEmpty()
     }
 }
