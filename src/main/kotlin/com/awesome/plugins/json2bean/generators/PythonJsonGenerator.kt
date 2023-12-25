@@ -59,10 +59,9 @@ class PythonJsonGenerator(
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
                     val result = element[0]
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
-                        fromJsonMethod.append("\t\t\tself.${key.toCamel()} = []\n")
                         fromJsonMethod.append("\t\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
-                        fromJsonMethod.append("\t\t\t\tfor element in _dict['$key']:\n")
-                        fromJsonMethod.append("\t\t\t\t\tself.${key.toCamel()}.append(element)\n")
+                        fromJsonMethod.append("\t\t\t\tself.${key.toCamel()} = [element for element in _dict['$key'] if element]\n")
+
                         fromJsonTurpleMethod.append("\t\t\tself.${key.toCamel()} = json.loads(_dict[$count]) if len(_dict) > ${count} else None\n")
                     } else {//对象类型
                         fromJson(
@@ -91,7 +90,7 @@ class PythonJsonGenerator(
             } else {
                 fromJsonMethod.append("\t\t\tself.${key.toCamel()} = _dict['$key'] if _dict.__contains__('$key') else None\n")
                 fromJsonTurpleMethod.append("\t\t\tself.${key.toCamel()} = _dict[$count] if len(_dict) > ${count} else None\n")
-                toJsonMethod.append("\t\t\t'${key}': self.${key.toCamel()},\n")
+                toJsonMethod.append("\t\t\t'${key}': self.${key.toCamel()} if hasattr(self,'$key') and self.${key.toCamel()} else None,\n")
             }
             count += 1
         }
@@ -121,20 +120,16 @@ class PythonJsonGenerator(
         result: Any?,
         count: Int
     ) {
-        fromJsonMethod.append("\t\t\tself.${key.toCamel()} = []\n")
         fromJsonMethod.append("\t\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
-        fromJsonMethod.append("\t\t\t\tfor element in _dict['$key']:\n")
-        fromJsonMethod.append("\t\t\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
+        fromJsonMethod.append("\t\t\t\tself.${key.toCamel()} = [${key.toUpperCamel()}(element) for element in _dict['$key'] if element]\n")
 
-        fromJsonTurpleMethod.append("\t\t\tself.${key.toCamel()} = []\n")
         fromJsonTurpleMethod.append("\t\t\tif len(_dict) > ${count} and _dict[$count] is not None and isinstance(_dict[$count], str):\n")
-        fromJsonTurpleMethod.append("\t\t\t\tfor element in json.loads(_dict[$count]):\n")
-        fromJsonTurpleMethod.append("\t\t\t\t\tself.${key.toCamel()}.append(${key.toUpperCamel()}(element))\n")
-
+        fromJsonTurpleMethod.append("\t\t\t\tself.${key.toCamel()} = [${key.toUpperCamel()}(element) for element in json.loads(_dict[$count]) if element]\n")
 
         toJsonHeaderMethod.append("\t\t_${key.toCamel()} = []\n")
-        toJsonHeaderMethod.append("\t\tfor element in self.${key.toCamel()}:\n")
-        toJsonHeaderMethod.append("\t\t\t_${key.toCamel()}.append(element.toJson())\n")
+        toJsonHeaderMethod.append("\t\tif hasattr(self, '$key') and self.${key.toCamel()}:\n")
+        toJsonHeaderMethod.append("\t\t\t_${key.toCamel()} = [element.toJson() for element in self.${key.toCamel()} if element]\n")
+
         toJsonMethod.append("\t\t\t'${key}': _${key.toCamel()},\n")
         classes.add(parseJson(result, key.toUpperCamel(), classes))
     }
