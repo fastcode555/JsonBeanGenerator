@@ -2,6 +2,7 @@ package com.awesome.plugins.json2bean.generators
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
+import mergeKeys
 import toCamel
 import toUpperCamel
 
@@ -45,7 +46,7 @@ class PythonJsonGenerator(
         if (obj is JSONObject) {
             parseObj = obj
         } else if (obj is JSONArray) {
-            parseObj = obj[0] as JSONObject
+            parseObj = obj.mergeKeys() as JSONObject
         }
         builder.append(generateClassHeader(uniqueClassName))
         var count = 1
@@ -57,7 +58,7 @@ class PythonJsonGenerator(
                 classes.add(parseJson(element, key.toUpperCamel(), classes))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
-                    val result = element[0]
+                    val result = element.mergeKeys()
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         fromJsonMethod.append("\t\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
                         fromJsonMethod.append("\t\t\t\tself.${key.toCamel()} = [element for element in _dict['$key'] if element]\n")

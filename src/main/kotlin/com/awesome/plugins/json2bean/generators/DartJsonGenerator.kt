@@ -2,6 +2,7 @@ package com.awesome.plugins.json2bean.generators
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
+import mergeKeys
 import toCamel
 import toUpperCamel
 
@@ -52,7 +53,7 @@ class DartJsonGenerator(
         if (obj is JSONObject) {
             parseObj = obj
         } else if (obj is JSONArray) {
-            parseObj = obj[0] as JSONObject
+            parseObj = obj.mergeKeys() as JSONObject
         }
         builder.append(generateClassHeader(uniqueClassName, sqliteEnable))
         for ((key, element) in parseObj!!.innerMap) {
@@ -65,7 +66,7 @@ class DartJsonGenerator(
                 classes.add(parseJson(element, key.toUpperCamel(), classes))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
-                    val result = element[0]
+                    val result = element.mergeKeys()
                     construtorMethod.append("this.${key.toCamel()},")
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         builder.append("\tList<${getType(result)}>? ${key.toCamel()};\n")
@@ -74,7 +75,7 @@ class DartJsonGenerator(
                         cloneMethod.append("        ${key.toCamel()}: List<${getType(result)}>.from(${key.toCamel()}??[]),\n")
                     } else if (result is JSONArray) {
                         //二维数组类型
-                        val item = result[0]
+                        val item = result.mergeKeys()
                         if (item is String || item is Int || item is Double || item is Boolean || item is Float) {
                             val listType = "${getType(item)}"
                             builder.append("\tList<List<${listType}>>? ${key.toCamel()};\n")

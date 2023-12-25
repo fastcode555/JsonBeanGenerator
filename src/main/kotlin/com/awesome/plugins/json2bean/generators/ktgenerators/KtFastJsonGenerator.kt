@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.awesome.plugins.json2bean.generators.BaseGenerator
 import com.intellij.psi.PsiDirectory
+import mergeKeys
 import toCamel
 import toUpperCamel
 import java.io.File
@@ -74,7 +75,7 @@ class KtFastJsonGenerator(
         if (obj is JSONObject) {
             parseObj = obj
         } else if (obj is JSONArray) {
-            parseObj = obj[0] as JSONObject
+            parseObj = obj.mergeKeys() as JSONObject
         }
         builder.append(generateClassHeader(uniqueClassName))
         for ((key, element) in parseObj!!.innerMap) {
@@ -83,7 +84,7 @@ class KtFastJsonGenerator(
                 classes[key.toUpperCamel()] = parseJson(element, key.toUpperCamel(), classes)
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) {
-                    val result = element[0]
+                    val result = element.mergeKeys()
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         builder.append("${key.prefix()}List<${getType(result)}>?,\n")
                     } else {//对象类型

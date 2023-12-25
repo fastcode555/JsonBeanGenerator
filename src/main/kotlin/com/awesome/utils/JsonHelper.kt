@@ -3,6 +3,7 @@ import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import com.awesome.utils.regex
 import com.google.common.base.CaseFormat
+import com.google.gson.JsonElement
 
 //dart中的关键词需要转换成普通词
 var KEYS: Array<String> = arrayOf("num", "int", "String", "double", "bool")
@@ -68,4 +69,22 @@ fun String?.formatJson(): String? {
 
 fun String.toJSON(): JSON? {
     return (if (startsWith("{")) JSONObject.parseObject(this) else JSONArray.parse(this)) as JSON?
+}
+
+fun JSONArray.mergeKeys(): Any {
+    val result = this[0]
+    if (result is String || result is Int || result is Double || result is Boolean || result is Float || result is JSONArray) {
+        return result
+    }
+    val obj = JSONObject()
+    for (jsonObject in this) {
+        if (jsonObject is JSONObject) {
+            for (key in jsonObject.keys) {
+                if (!obj.containsKey(key)) {
+                    obj[key] = jsonObject[key]
+                }
+            }
+        }
+    }
+    return obj
 }

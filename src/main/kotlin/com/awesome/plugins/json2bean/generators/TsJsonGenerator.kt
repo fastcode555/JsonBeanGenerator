@@ -2,6 +2,7 @@ package com.awesome.plugins.json2bean.generators
 
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
+import mergeKeys
 import toUpperCamel
 
 /**
@@ -41,7 +42,7 @@ class TsJsonGenerator(
         if (obj is JSONObject) {
             parseObj = obj
         } else if (obj is JSONArray) {
-            parseObj = obj[0] as JSONObject
+            parseObj = obj.mergeKeys() as JSONObject
         }
         builder.append(generateClassHeader(uniqueClassName))
         for ((key, element) in parseObj!!.innerMap) {
@@ -50,7 +51,7 @@ class TsJsonGenerator(
                 classes.add(parseJson(element, key.toUpperCamel(), classes))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) {
-                    val result = element[0]
+                    val result = element.mergeKeys()
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         builder.append("  ${key}?: ${getType(result)}[]\n")
                     } else {//对象类型
