@@ -51,13 +51,13 @@ class PythonJsonGenerator(
             parseObj = obj.mergeKeys() as JSONObject
         }
         builder.append(generateClassHeader(uniqueClassName))
-        var count = 1
+        var count = 0
         for ((key, element) in parseObj!!.innerMap) {
             initMethod.append("\t\tself.${key.toLowerUnderScore()} = ${key.toLowerUnderScore()}\n")
             if (element is JSONObject) {
                 initHeaderMethod.append("${key.toLowerUnderScore()} = None,")
-                fromJsonMethod.append("\t\t\tcls.${key.toLowerUnderScore()} = ${key.toUpperCamel()}.fromJson(_dict['$key']) if _dict.__contains__('$key') else None\n")
-                fromJsonTurpleMethod.append("\t\t\tcls.${key.toLowerUnderScore()} = ${key.toUpperCamel()}.fromJson(json.loads(_dict[$count])) if len(_dict) > $count and isinstance(_dict[$count], str) and len(_dict[$count]) > 0 else None\n")
+                fromJsonMethod.append("\t\t\t\t${key.toLowerUnderScore()} = ${key.toUpperCamel()}.fromJson(_dict['$key']) if _dict.__contains__('$key') else None,\n")
+                fromJsonTurpleMethod.append("\t\t\t\t${key.toLowerUnderScore()} = ${key.toUpperCamel()}.fromJson(json.loads(_dict[$count])) if len(_dict) > $count and isinstance(_dict[$count], str) and len(_dict[$count]) > 0 else None,\n")
                 toJsonMethod.append("\t\t\t'${key}': self.${key.toLowerUnderScore()}.toJson() if self.${key.toLowerUnderScore()} is not None else None,\n")
                 classes.add(parseJson(element, key.toUpperCamel(), classes))
             } else if (element is JSONArray) {
@@ -65,10 +65,9 @@ class PythonJsonGenerator(
                     val result = element.mergeKeys()
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         initHeaderMethod.append("${key.toLowerUnderScore()}: List[${getParseType(result)}] = None,")
-                        fromJsonMethod.append("\t\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
-                        fromJsonMethod.append("\t\t\t\tcls.${key.toLowerUnderScore()} = [element for element in _dict['$key'] if element]\n")
+                        fromJsonMethod.append("\t\t\t\t${key.toLowerUnderScore()} = [element for element in _dict['$key'] if element],\n")
 
-                        fromJsonTurpleMethod.append("\t\t\tcls.${key.toLowerUnderScore()} = json.loads(_dict[$count]) if len(_dict) > ${count} else None\n")
+                        fromJsonTurpleMethod.append("\t\t\t\t${key.toLowerUnderScore()} = json.loads(_dict[$count]) if len(_dict) > $count else None,\n")
                     } else {//对象类型
                         initHeaderMethod.append("${key.toLowerUnderScore()}: list = None,")
                         fromJson(
@@ -97,23 +96,22 @@ class PythonJsonGenerator(
                 }
             } else {
                 initHeaderMethod.append("${key.toLowerUnderScore()}: ${getParseType(element)} = None,")
-                fromJsonMethod.append("\t\t\tcls.${key.toLowerUnderScore()} = _dict['$key'] if _dict.__contains__('$key') else None\n")
-                fromJsonTurpleMethod.append("\t\t\tcls.${key.toLowerUnderScore()} = _dict[$count] if len(_dict) > $count else None\n")
+                fromJsonMethod.append("\t\t\t\t${key.toLowerUnderScore()} = _dict.get('$key'),\n")
+                fromJsonTurpleMethod.append("\t\t\t\t${key.toLowerUnderScore()} = _dict[$count] if len(_dict) > $count else None,\n")
                 toJsonMethod.append("\t\t\t'${key}': self.${key.toLowerUnderScore()},\n")
             }
             count += 1
         }
         fromJsonTurpleMethod.insert(
             0,
-            "\t@classmethod\n\tdef fromJson(cls, *args):\n\t\tif len(args) == 0:\n\t\t\treturn\n\t\t_dict = json.loads(args[0]) if isinstance(args[0], str) else args[0]\n\t\tif isinstance(_dict, tuple):\n\t\t\tcls.id = _dict[0] if len(_dict) > 0 else None\n"
+            "\t@classmethod\n\tdef fromJson(cls, *args):\n\t\tif len(args) == 0:\n\t\t\treturn\n\t\t_dict = json.loads(args[0]) if isinstance(args[0], str) else args[0]\n\t\tif isinstance(_dict, tuple):\n\t\t\treturn cls(\n"
         )
 
         builder.append(initHeaderMethod.substring(0, initHeaderMethod.length - 1)).append("):\n")
         builder.append(initMethod).append("\n")
-        builder.append(fromJsonTurpleMethod)
+        builder.append(fromJsonTurpleMethod).append("\t\t\t)\n")
         builder.append("\t\telse:\n")
-        builder.append(fromJsonMethod)
-        builder.append("\t\treturn cls")
+        builder.append("\t\t\treturn cls(\n").append(fromJsonMethod).append("\t\t\t)\n")
 
         toJsonMethod.insert(0, "\n\tdef toJson(self):\n${toJsonHeaderMethod.toString()}\t\treturn {\n")
         toJsonMethod.append("\t\t}\n")
@@ -148,12 +146,8 @@ class PythonJsonGenerator(
         result: Any?,
         count: Int
     ) {
-        fromJsonMethod.append("\t\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
-        fromJsonMethod.append("\t\t\t\tcls.${key.toLowerUnderScore()} = [${key.toUpperCamel()}.fromJson(element) for element in _dict['$key'] if element]\n")
-
-        fromJsonTurpleMethod.append("\t\t\tif len(_dict) > ${count} and _dict[$count] is not None and isinstance(_dict[$count], str):\n")
-        fromJsonTurpleMethod.append("\t\t\t\tcls.${key.toLowerUnderScore()} = [${key.toUpperCamel()}.fromJson(element) for element in json.loads(_dict[$count]) if element]\n")
-
+        fromJsonMethod.append("\t\t\t\t${key.toLowerUnderScore()} = [${key.toUpperCamel()}.fromJson(element) for element in _dict.get('$key',[]) if element],\n")
+        fromJsonTurpleMethod.append("\t\t\t\t${key.toLowerUnderScore()} = [${key.toUpperCamel()}.fromJson(element) for element in json.loads(_dict[$count]) if element]\n\t\t\t\t if len(_dict) > ${count} and _dict[$count] and isinstance(_dict[$count], str) else [],\n")
         toJsonMethod.append("\t\t\t'${key}': [element.toJson() for element in self.${key.toLowerUnderScore()} if element],\n")
         classes.add(parseJson(result, key.toUpperCamel(), classes))
     }
