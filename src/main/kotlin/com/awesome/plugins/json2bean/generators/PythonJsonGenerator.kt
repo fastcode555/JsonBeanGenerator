@@ -3,7 +3,7 @@ package com.awesome.plugins.json2bean.generators
 import com.alibaba.fastjson.JSONArray
 import com.alibaba.fastjson.JSONObject
 import mergeKeys
-import toCamel
+import toLowerUnderScore
 import toUpperCamel
 
 /**
@@ -37,6 +37,8 @@ class PythonJsonGenerator(
         val uniqueClassName = generateUniqueClassName(className)
 
         val builder = StringBuilder()
+        val initHeaderMethod = StringBuilder("\tdef __init__(self,")
+        val initMethod = StringBuilder()
         val fromJsonMethod = StringBuilder()
         val fromJsonTurpleMethod = StringBuilder()
         val toJsonMethod = StringBuilder()
@@ -51,20 +53,24 @@ class PythonJsonGenerator(
         builder.append(generateClassHeader(uniqueClassName))
         var count = 1
         for ((key, element) in parseObj!!.innerMap) {
+            initMethod.append("\t\tself.${key.toLowerUnderScore()} = ${key.toLowerUnderScore()}\n")
             if (element is JSONObject) {
-                fromJsonMethod.append("\t\t\tcls.${key.toCamel()} = ${key.toUpperCamel()}(_dict['$key']) if _dict.__contains__('$key') else None\n")
-                fromJsonTurpleMethod.append("\t\t\tcls.${key.toCamel()} = ${key.toUpperCamel()}(json.loads(_dict[$count])) if len(_dict) > $count and isinstance(_dict[$count], str) and len(_dict[$count]) > 0 else None\n")
-                toJsonMethod.append("\t\t\t'${key}': self.${key.toCamel()}.toJson() if self.${key.toCamel()} is not None else None,\n")
+                initHeaderMethod.append("${key.toLowerUnderScore()} = None,")
+                fromJsonMethod.append("\t\t\tcls.${key.toLowerUnderScore()} = ${key.toUpperCamel()}.fromJson(_dict['$key']) if _dict.__contains__('$key') else None\n")
+                fromJsonTurpleMethod.append("\t\t\tcls.${key.toLowerUnderScore()} = ${key.toUpperCamel()}.fromJson(json.loads(_dict[$count])) if len(_dict) > $count and isinstance(_dict[$count], str) and len(_dict[$count]) > 0 else None\n")
+                toJsonMethod.append("\t\t\t'${key}': self.${key.toLowerUnderScore()}.toJson() if self.${key.toLowerUnderScore()} is not None else None,\n")
                 classes.add(parseJson(element, key.toUpperCamel(), classes))
             } else if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
                     val result = element.mergeKeys()
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
+                        initHeaderMethod.append("${key.toLowerUnderScore()}: List[${getParseType(result)}] = None,")
                         fromJsonMethod.append("\t\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
-                        fromJsonMethod.append("\t\t\t\tcls.${key.toCamel()} = [element for element in _dict['$key'] if element]\n")
+                        fromJsonMethod.append("\t\t\t\tcls.${key.toLowerUnderScore()} = [element for element in _dict['$key'] if element]\n")
 
-                        fromJsonTurpleMethod.append("\t\t\tcls.${key.toCamel()} = json.loads(_dict[$count]) if len(_dict) > ${count} else None\n")
+                        fromJsonTurpleMethod.append("\t\t\tcls.${key.toLowerUnderScore()} = json.loads(_dict[$count]) if len(_dict) > ${count} else None\n")
                     } else {//对象类型
+                        initHeaderMethod.append("${key.toLowerUnderScore()}: list = None,")
                         fromJson(
                             fromJsonMethod,
                             fromJsonTurpleMethod,
@@ -77,6 +83,7 @@ class PythonJsonGenerator(
                         )
                     }
                 } else {//不明类型
+                    initHeaderMethod.append("${key.toLowerUnderScore()} = None,")
                     fromJson(
                         fromJsonMethod,
                         fromJsonTurpleMethod,
@@ -89,9 +96,10 @@ class PythonJsonGenerator(
                     )
                 }
             } else {
-                fromJsonMethod.append("\t\t\tcls.${key.toCamel()} = _dict['$key'] if _dict.__contains__('$key') else None\n")
-                fromJsonTurpleMethod.append("\t\t\tcls.${key.toCamel()} = _dict[$count] if len(_dict) > ${count} else None\n")
-                toJsonMethod.append("\t\t\t'${key}': self.${key.toCamel()} if hasattr(self,'${key.toCamel()}') and self.${key.toCamel()} else None,\n")
+                initHeaderMethod.append("${key.toLowerUnderScore()}: ${getParseType(element)} = None,")
+                fromJsonMethod.append("\t\t\tcls.${key.toLowerUnderScore()} = _dict['$key'] if _dict.__contains__('$key') else None\n")
+                fromJsonTurpleMethod.append("\t\t\tcls.${key.toLowerUnderScore()} = _dict[$count] if len(_dict) > $count else None\n")
+                toJsonMethod.append("\t\t\t'${key}': self.${key.toLowerUnderScore()},\n")
             }
             count += 1
         }
@@ -99,6 +107,9 @@ class PythonJsonGenerator(
             0,
             "\t@classmethod\n\tdef fromJson(cls, *args):\n\t\tif len(args) == 0:\n\t\t\treturn\n\t\t_dict = json.loads(args[0]) if isinstance(args[0], str) else args[0]\n\t\tif isinstance(_dict, tuple):\n\t\t\tcls.id = _dict[0] if len(_dict) > 0 else None\n"
         )
+
+        builder.append(initHeaderMethod.substring(0, initHeaderMethod.length - 1)).append("):\n")
+        builder.append(initMethod).append("\n")
         builder.append(fromJsonTurpleMethod)
         builder.append("\t\telse:\n")
         builder.append(fromJsonMethod)
@@ -109,6 +120,21 @@ class PythonJsonGenerator(
         builder.append(toJsonMethod)
         builder.append("\n\tdef toString(self):\n\t\treturn json.dumps(self.toJson(), indent=2, ensure_ascii=False)")
         return builder
+    }
+
+    private fun getParseType(result: Any): String {
+        if (result is String) {
+            return "str"
+        } else if (result is Int) {
+            return "int"
+        } else if (result is Boolean) {
+            return "bool"
+        } else if (result is Double || result is Float) {
+            return "float"
+        } else if (result is JSONArray || result is List<*>) {
+            return "list"
+        }
+        return "str"
     }
 
 
@@ -123,16 +149,12 @@ class PythonJsonGenerator(
         count: Int
     ) {
         fromJsonMethod.append("\t\t\tif _dict.__contains__('$key') and isinstance(_dict['$key'], list):\n")
-        fromJsonMethod.append("\t\t\t\tcls.${key.toCamel()} = [${key.toUpperCamel()}(element) for element in _dict['$key'] if element]\n")
+        fromJsonMethod.append("\t\t\t\tcls.${key.toLowerUnderScore()} = [${key.toUpperCamel()}.fromJson(element) for element in _dict['$key'] if element]\n")
 
         fromJsonTurpleMethod.append("\t\t\tif len(_dict) > ${count} and _dict[$count] is not None and isinstance(_dict[$count], str):\n")
-        fromJsonTurpleMethod.append("\t\t\t\tcls.${key.toCamel()} = [${key.toUpperCamel()}(element) for element in json.loads(_dict[$count]) if element]\n")
+        fromJsonTurpleMethod.append("\t\t\t\tcls.${key.toLowerUnderScore()} = [${key.toUpperCamel()}.fromJson(element) for element in json.loads(_dict[$count]) if element]\n")
 
-        toJsonHeaderMethod.append("\t\t_${key.toCamel()} = []\n")
-        toJsonHeaderMethod.append("\t\tif hasattr(self, '${key.toCamel()}') and self.${key.toCamel()}:\n")
-        toJsonHeaderMethod.append("\t\t\t_${key.toCamel()} = [element.toJson() for element in self.${key.toCamel()} if element]\n")
-
-        toJsonMethod.append("\t\t\t'${key}': _${key.toCamel()},\n")
+        toJsonMethod.append("\t\t\t'${key}': [element.toJson() for element in self.${key.toLowerUnderScore()} if element],\n")
         classes.add(parseJson(result, key.toUpperCamel(), classes))
     }
 
