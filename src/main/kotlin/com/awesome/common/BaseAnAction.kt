@@ -10,7 +10,7 @@ abstract class BaseAnAction : AnAction() {
         val psiFile = e.getData(CommonDataKeys.PSI_FILE)
         val types = fileType()
         if (types.isEmpty()) return
-        e.presentation.setEnabledAndVisible(psiFile != null && types.contains(psiFile.virtualFile.extension))
+        e.presentation.isEnabledAndVisible = psiFile != null && types.contains(psiFile.virtualFile.extension)
     }
 
     abstract fun fileType(): ArrayList<String>

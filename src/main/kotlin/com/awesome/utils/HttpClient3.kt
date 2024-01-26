@@ -37,6 +37,7 @@ object HttpClient3 {
             }
         } catch (e: IOException) {
             e.printStackTrace()
+            NotifyUtil.showTipDialog("${e.toString()}", title = "Error Msg")
         } finally {
             // 释放连接
             getMethod.releaseConnection()

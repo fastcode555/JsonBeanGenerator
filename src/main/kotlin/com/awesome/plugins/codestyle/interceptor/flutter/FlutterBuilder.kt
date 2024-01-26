@@ -3,6 +3,7 @@ package com.awesome.plugins.codestyle.interceptor.flutter
 import com.awesome.plugins.codestyle.interceptor.flutter.widgetsbuilder.ContainerBuilder
 import com.awesome.plugins.codestyle.interceptor.flutter.widgetsbuilder.TextBuilder
 import com.awesome.utils.RegexText
+import firstUpperCamel
 import kotlin.math.roundToInt
 
 class FlutterBuilder(val colorMap: HashMap<String, String>, private val needThemeMode: Boolean) {
@@ -68,6 +69,18 @@ class FlutterBuilder(val colorMap: HashMap<String, String>, private val needThem
             val colorName = colorMap[color]
             if (colorName != null) {
                 return "Colours.$colorName${crTail()}"
+            } else {
+                return "const Color(${color})"
+            }
+        }
+        return ""
+    }
+
+    fun getBorderColorName(color: String?): String {
+        if (color != null) {
+            val colorName = colorMap[color]
+            if (colorName != null) {
+                return "border${colorName.firstUpperCamel()}"
             } else {
                 return "const Color(${color})"
             }

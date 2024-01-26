@@ -224,18 +224,23 @@ object FlutterHelper {
         if (results.size == 3) {
             val borderWidth = RegexText.getNum(results[0]) ?: 0.0
             var color = results[2]
-            if (color.startsWith("#")) {
-                color = style.getColorName(getColor(color))
-            } else {
-                color = "Colors.$color"
-            }
-            val builder = StringBuilder(".border($color")
             if (borderWidth > 1.0) {
+                if (color.startsWith("#")) {
+                    color = style.getColorName(getColor(color))
+                } else {
+                    color = "Colors.$color"
+                }
+                val builder = StringBuilder(".border($color")
                 builder.append(",$borderWidth.r)")
-            } else {
                 builder.append(")")
+                return builder.toString()
+            } else {
+                color = style.getBorderColorName(getColor(color))
+                if (color.startsWith("const Color")) {
+                    return ".border($color)"
+                }
+                return ".$color"
             }
-            return builder.toString()
         }
         return null
     }

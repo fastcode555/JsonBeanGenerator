@@ -43,7 +43,7 @@ class FlutterProcessor(private val editor: Editor, private val psiFile: PsiFile)
                 println("$key,$value")
                 needThemeMode = false
                 if (key != null && value != null) {
-                    colorMap.put(key, value)
+                    colorMap[key] = value
                 }
             }
         }
