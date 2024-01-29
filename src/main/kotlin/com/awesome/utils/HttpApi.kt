@@ -1,5 +1,6 @@
 package com.awesome.utils
 
+import ImageUtil
 import com.alibaba.fastjson.JSONObject
 import toJSON
 import java.net.URLEncoder
@@ -63,6 +64,15 @@ object HttpApi {
             }
         }
         return null
+    }
+
+
+    /**
+     *https://docs.tenapi.cn/random/yiyan.html#%E6%8E%A5%E5%8F%A3%E5%9C%B0%E5%9D%80
+     * 获取随机的一句话，来自一个免费的api接口
+     **/
+    fun randomString(): String {
+        return HttpClient3.doGet("https://tenapi.cn/v2/yiyan") ?: "There has an error"
     }
 
 }

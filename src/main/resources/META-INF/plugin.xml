@@ -116,6 +116,13 @@
             <add-to-group group-id="GenerateGroup" anchor="first"/>
         </action>
 
+        <action id="com.awesome.plugins.random.RandomStringAction"
+                class="com.awesome.plugins.random.RandomStringAction"
+                text="Insert Image Link"
+                icon="/plugin_icon.png" description="Just Insert Random Image Link">
+            <add-to-group group-id="GenerateGroup" anchor="first"/>
+        </action>
+
 
         <!--        <action id="TestAction" class="com.awesome.plugins.testaction.TestAction"
                         text="TestAction"
