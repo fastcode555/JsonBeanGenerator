@@ -14,6 +14,13 @@ import com.intellij.psi.PsiFile
 
 class RandomStringAction : AnAction() {
 
+    override fun update(e: AnActionEvent) {
+        super.update(e)
+        val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
+        val text = editor?.selectionModel?.selectedText
+        e.presentation.isEnabledAndVisible = text!!.isEmpty()
+    }
+
     override fun actionPerformed(e: AnActionEvent) {
         val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
         val psiFile: PsiFile? = e.getData(CommonDataKeys.PSI_FILE)

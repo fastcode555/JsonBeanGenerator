@@ -32,7 +32,7 @@ class AssetGenerateAction : AnAction() {
                 } else if (isWeb(fileContent, mDirectory)) {
                     WebAssetGenerator(mDirectory, ignoreDirs, targetDir).generate()
                 } else {
-
+                    FlutterAssetGenerator(mDirectory, ignoreDirs, targetDir).generate()
                 }
             }
         }

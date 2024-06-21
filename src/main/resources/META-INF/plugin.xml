@@ -103,6 +103,12 @@
                 icon="/plugin_icon.png" description="Generate map field for the typescript.">
             <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
+        <action id="com.awesome.plugins.random.RandomStringAction"
+                class="com.awesome.plugins.random.RandomStringAction"
+                text="Insert Image Link"
+                icon="/plugin_icon.png" description="Just Insert Random Image Link">
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
+        </action>
         <action id="com.awesome.plugins.codestyle.CodeStyleGeneratorAction"
                 class="com.awesome.plugins.codestyle.CodeStyleGeneratorAction"
                 text="To Code"
@@ -113,14 +119,7 @@
                 class="com.awesome.plugins.stringassociate.StringAssociateAction"
                 text="String Association"
                 icon="/plugin_icon.png" description="Convert the string to normal may be will use">
-            <add-to-group group-id="GenerateGroup" anchor="first"/>
-        </action>
-
-        <action id="com.awesome.plugins.random.RandomStringAction"
-                class="com.awesome.plugins.random.RandomStringAction"
-                text="Insert Image Link"
-                icon="/plugin_icon.png" description="Just Insert Random Image Link">
-            <add-to-group group-id="GenerateGroup" anchor="first"/>
+            <add-to-group group-id="GenerateGroup" anchor="last"/>
         </action>
 
 
