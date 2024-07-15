@@ -227,7 +227,7 @@ class DartJsonGenerator(
         if (element is Int) return "asInt"
         if (element is Double || element is Float) return "asDouble"
         if (element is Boolean) return "asBool"
-        return "String"
+        return "asString"
     }
 
     private fun getType(element: Any): String {
