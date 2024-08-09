@@ -2,6 +2,7 @@ package com.awesome.plugins.language
 
 import clearSymbol
 import com.alibaba.fastjson.JSONObject
+import com.awesome.common.MultiBase
 import com.awesome.common.PluginProps
 import com.awesome.utils.*
 import com.intellij.openapi.editor.Editor
@@ -38,7 +39,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
     var btnExportJson: JButton? = null
 
     var tvSuffix: JTextField? = null
-    var count = 0
+    var count = "0"
 
     /**
      * 开始对数据进行混淆,intellij 这个方法是有效的
@@ -51,8 +52,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
         content.regex("[\\n ]*[\\'\\\"]{1}.*?[\\'\\\"]{1}(?=;)") {
             try {
                 val index = editor.document.text.indexOf(it)
-                val hex = Integer.toHexString(count).uppercase()
-                val key = if (tvSuffix!!.text!!.isEmpty()) "$hex" else "${tvSuffix!!.text}#$hex"
+                val key = if (tvSuffix!!.text!!.isEmpty()) "$count" else "${tvSuffix!!.text}#$count"
                 editor.document.replaceString(index, index + it.length, " '$key'")
                 var rawKey = it.trim()
                 rawKey = rawKey.substring(1, rawKey.length - 1)
@@ -60,9 +60,9 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
                 if (rawKey != key) {
                     keyLists[rawKey] = key
                 }
-                count++
+                count = MultiBase.addOne(count)
             } catch (e: Exception) {
-                count++
+                count = MultiBase.addOne(count)
             }
         }
         val properties = PropertiesHelper(psiFile)
@@ -70,7 +70,11 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
         var dir = psiFile.findExistsDirectory(value) ?: return
         if (dir.exists()) {
             dir.listFiles().forEach {
-                val json = it.readText().toJSON() as JSONObject
+                val json = try {
+                    it.readText().toJSON() as JSONObject
+                } catch (e: Exception) {
+                    return@forEach
+                }
                 val removeKeys = arrayListOf<String>()
                 for ((key, _) in json.innerMap) {
                     if (!allKeys.contains(key)) {
@@ -140,7 +144,11 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
         var dir = psiFile.findExistsDirectory(value) ?: return
         if (dir.exists()) {
             dir.listFiles().forEach {
-                val json = it.readText().toJSON() as JSONObject
+                val json = try {
+                    it.readText().toJSON() as JSONObject
+                } catch (e: Exception) {
+                    return@forEach
+                }
                 val removeKeys = arrayListOf<String>()
                 for ((key, _) in json.innerMap) {
                     if (!allKeys.contains(key)) {

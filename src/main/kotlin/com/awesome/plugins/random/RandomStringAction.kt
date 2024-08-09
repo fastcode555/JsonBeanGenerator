@@ -1,10 +1,8 @@
 package com.awesome.plugins.random
 
 import ImageUtil
-import com.awesome.common.BaseAnAction
 import com.awesome.plugins.codestyle.CodeStyleGeneratorDialog
 import com.awesome.plugins.codestyle.interceptor.StrategyManager
-import com.awesome.utils.HttpApi
 import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
@@ -18,7 +16,11 @@ class RandomStringAction : AnAction() {
         super.update(e)
         val editor: Editor? = e.getData(CommonDataKeys.EDITOR)
         val text = editor?.selectionModel?.selectedText
-        e.presentation.isEnabledAndVisible = text!!.isEmpty()
+        try {
+            e.presentation.isEnabledAndVisible = text!!.isEmpty()
+        } catch (e: Exception) {
+            println(e)
+        }
     }
 
     override fun actionPerformed(e: AnActionEvent) {
