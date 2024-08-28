@@ -13,7 +13,7 @@ import java.io.File
 /**
  * 根据Colours这个文件，创建出扩展
  **/
-class ColorExtAction : AnAction() {
+class FlutterTailWindAction : AnAction() {
 
     override fun update(e: AnActionEvent) {
         super.update(e)
@@ -31,16 +31,23 @@ class ColorExtAction : AnAction() {
     override fun actionPerformed(e: AnActionEvent) {
         val psiFile = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)
         if (psiFile != null && psiFile is PsiFile) {
+            //创建tailwind_ext.g.dart 的文件
             val text = psiFile.text.regexOne(RegexText.variableConstStringRegex)
             val color = psiFile.text.regexOne(RegexText.colorConstRegex)
-            val builder = StringBuilder("import 'colours.dart';\nimport 'package:infinity_core/core.dart';\n\n")
+            val builder = StringBuilder("part of 'tailwind_ext.dart';\n\n")
             if (text != null) {
                 builder.append(parseColorText(psiFile.text))
             } else if (color != null) {
                 builder.append(parseColor(psiFile.text))
             }
-            val file = File(psiFile.parent?.virtualFile?.path, "tailwind_ext.dart")
+            val file = File(psiFile.parent?.virtualFile?.path, "tailwind_ext.g.dart")
             file.writeText(builder.toString())
+
+            //创建tailwind_ext.dart
+            val tailFile = File(psiFile.parent?.virtualFile?.path, "tailwind_ext.dart")
+            if (!tailFile.exists()) {
+                tailFile.writeText(FlutterTailwind.fluterTailWindConst)
+            }
         }
     }
 
@@ -50,8 +57,9 @@ class ColorExtAction : AnAction() {
     private fun parseColor(text: String): StringBuilder {
         return parseText(
             text,
-            "  T get %s => this..color = Colours.%s;\n",
+            "  T get %s => this..color(Colours.%s);\n",
             "  T get border%s => this..border(Colours.%s);\n",
+            "  T get text%s => this..textColor(Colours.%s);\n",
             RegexText.colorConstNameRegex
         )
     }
@@ -62,31 +70,48 @@ class ColorExtAction : AnAction() {
     private fun parseColorText(text: String): StringBuilder {
         return parseText(
             text,
-            "  T get %s => this..color = Colours.%s.cr;\n",
+            "  T get %s => this..color(Colours.%s.cr);\n",
             "  T get border%s => this..border(Colours.%s.cr);\n",
+            "  T get border%s => this..textColor(Colours.%s.cr);\n",
             RegexText.variableConstNameRegex
         )
     }
 
-    private fun parseText(text: String, string1: String, string2: String, regex: String): StringBuilder {
-        val firstClass = StringBuilder()
-        val secondClass = StringBuilder()
+    private fun getFilterName(name: String): String {
+        if (FlutterTailwind.colors.contains(name)) {
+            return "${name}x"
+        }
+        return name
+    }
+
+    private fun parseText(
+        text: String, string1: String, string2: String, string3: String, regex: String
+    ): StringBuilder {
+        val colorExt = StringBuilder()
+        val borderColorExt = StringBuilder()
+        val textColorExt = StringBuilder()
         val filedNames = text.regexAll(regex)
 
         for (i in filedNames.indices) {
             val filedName = filedNames[i]
-            firstClass.append(string1.format(filedName, filedName))
-            secondClass.append(string2.format(filedName.firstUpperCamel(), filedName))
+            val colorName = getFilterName(filedName)
+            colorExt.append(string1.format(colorName, filedName))
+            borderColorExt.append(string2.format(colorName.firstUpperCamel(), filedName))
+            textColorExt.append(string3.format(colorName.firstUpperCamel(), filedName))
             if (i != filedNames.indices.length - 1) {
-                firstClass.append("\n")
-                secondClass.append("\n")
+                colorExt.append("\n")
+                borderColorExt.append("\n")
+                textColorExt.append("\n")
             }
         }
-        val builder = StringBuilder("extension TailWindExt<T extends ColorBuilder> on T {\n")
-        builder.append(firstClass).append("}\n\n")
-        builder.append("extension TailWindBD<T extends BoxDecorationBuilder> on T {\n")
-        builder.append(secondClass).append("}")
-        println(builder)
+        val builder = StringBuilder("extension ColorExt<T extends ColorBuilder> on T {\n")
+        builder.append(colorExt).append("}\n\n")
+
+        builder.append("extension BorderColorExt<T extends BorderColorBuilder> on T {\n")
+        builder.append(borderColorExt).append("}\n\n")
+
+        builder.append("extension TextColorExt<T extends TextColorBuilder> on T {\n")
+        builder.append(textColorExt).append("}")
         return builder
     }
 }

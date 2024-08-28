@@ -50,8 +50,8 @@
         </action>
 
         <action id="Generate the Tailwind extension"
-                class="com.awesome.plugins.colorext.ColorExtAction"
-                text="Colors Extension Tailwind"
+                class="com.awesome.plugins.colorext.FlutterTailWindAction"
+                text="Flutter Tailwind"
                 icon="/plugin_icon.png" description="generate the color extension tailwind.">
             <add-to-group group-id="NewGroup" anchor="first"/>
         </action>

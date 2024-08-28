@@ -36,8 +36,3 @@ fun PsiElement.showNotify(title: String, content: String, type: NotificationType
 fun Project.showNotify(title: String, content: String, type: NotificationType = NotificationType.INFORMATION) {
     Notifications.Bus.notify(Notification("Print", title, content, type), this)
 }
-
-object IdeaTool {
-
-
-}
