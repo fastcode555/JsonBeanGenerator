@@ -46,8 +46,8 @@ class DartJsonGenerator(
         val builder = StringBuilder()
         val fromJsonMethod = StringBuilder()
         val cloneMethod = StringBuilder()
-        val construtorMethod = StringBuilder()
-        var toJsonMethod = StringBuilder()
+        val constructorMethod = StringBuilder()
+        val toJsonMethod = StringBuilder()
 
         var parseObj: JSONObject? = null
         if (obj is JSONObject) {
@@ -59,25 +59,29 @@ class DartJsonGenerator(
         for ((key, element) in parseObj!!.innerMap) {
             if (element is JSONObject) {
                 builder.append("  ${key.toUpperCamel()}? ${key.toCamel()};\n")
-                construtorMethod.append("    this.${key.toCamel()},\n")
+                constructorMethod.append("    this.${key.toCamel()},\n")
                 toJsonMethod.append("        '$key': ${key.toCamel()}?.toJson(),\n")
-                fromJsonMethod.append("      ${key.toCamel()}: json.asBean('$key', (v) => ${key.toUpperCamel()}.fromJson(v)),\n")
+                fromJsonMethod.append("      ${key.toCamel()}: json.asBean('$key', ${key.toUpperCamel()}.fromJson),\n")
                 cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()}?.clone(),\n")
                 classes.add(parseJson(element, key.toUpperCamel(), classes))
-            } else if (element is JSONArray) {
+                continue
+            }
+            if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
                     val result = element.mergeKeys()
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
-                        construtorMethod.append("    required this.${key.toCamel()},\n")
+                        constructorMethod.append("    required this.${key.toCamel()},\n")
                         builder.append("  List<${getType(result)}>? ${key.toCamel()};\n")
                         toJsonMethod.append("        '$key': ${key.toCamel()},\n")
                         fromJsonMethod.append("      ${key.toCamel()}: json.asList<${getType(result)}>('$key'),\n")
                         cloneMethod.append("        ${key.toCamel()}: List<${getType(result)}>.from(${key.toCamel()}??[]),\n")
-                    } else if (result is JSONArray) {
+                        continue
+                    }
+                    if (result is JSONArray) {
                         //二维数组类型
                         val item = result.mergeKeys()
                         if (item is String || item is Int || item is Double || item is Boolean || item is Float) {
-                            construtorMethod.append("    required this.${key.toCamel()},\n")
+                            constructorMethod.append("    required this.${key.toCamel()},\n")
                             val listType = "${getType(item)}"
                             builder.append("  List<List<${listType}>>? ${key.toCamel()};\n")
                             toJsonMethod.append("        '$key': ${key.toCamel()},\n")
@@ -86,45 +90,46 @@ class DartJsonGenerator(
                                 "        ${key.toCamel()}: ${key.toCamel()}?.map((e) => List<${getType(item)}>.from(e)).toList(),\n"
                             )
                         } else {
-                            construtorMethod.append("    this.${key.toCamel()},\n")
+                            constructorMethod.append("    this.${key.toCamel()},\n")
                             val listType = "${key.toUpperCamel()}"
                             builder.append("  List<List<$listType>>? ${key.toCamel()};\n")
                             toJsonMethod.append("        '$key': ${key.toCamel()}?.map((v) => v.map((e) => e.toJson()).toList()).toList(),\n")
-                            fromJsonMethod.append("      ${key.toCamel()}: json.asArray2d<${listType}>('$key', (v) => ${key.toUpperCamel()}.fromJson(v)),\n")
+                            fromJsonMethod.append("      ${key.toCamel()}: json.asArray2d<${listType}>('$key', ${key.toUpperCamel()}.fromJson),\n")
                             classes.add(parseJson(item, key.toUpperCamel(), classes))
                             cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()}?.map((v) => v.map((e) => e.clone()).toList()).toList(),\n")
                         }
-                    } else {//对象类型
-                        construtorMethod.append("    this.${key.toCamel()},\n")
-                        builder.append("  List<${key.toUpperCamel()}>? ${key.toCamel()};\n")
-                        toJsonMethod.append("        '$key': ${key.toCamel()}?.map((v) => v.toJson()).toList(),\n")
-                        fromJsonMethod.append("      ${key.toCamel()}: json.asList<${key.toUpperCamel()}>('$key', (v) => ${key.toUpperCamel()}.fromJson(v)),\n")
-                        classes.add(parseJson(result, key.toUpperCamel(), classes))
-                        cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()}?.map((v) => v.clone()).toList(),\n")
+                        continue
                     }
-                } else {//不明类型
-                    construtorMethod.append("    this.${key.toCamel()},\n")
+                    //对象类型
+                    constructorMethod.append("    this.${key.toCamel()},\n")
                     builder.append("  List<${key.toUpperCamel()}>? ${key.toCamel()};\n")
                     toJsonMethod.append("        '$key': ${key.toCamel()}?.map((v) => v.toJson()).toList(),\n")
-                    fromJsonMethod.append("      ${key.toCamel()}: json.asList<${key.toUpperCamel()}>('$key', (v) => ${key.toUpperCamel()}.fromJson(v)),\n")
+                    fromJsonMethod.append("      ${key.toCamel()}: json.asList<${key.toUpperCamel()}>('$key', ${key.toUpperCamel()}.fromJson),\n")
+                    classes.add(parseJson(result, key.toUpperCamel(), classes))
+                    cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()}?.map((v) => v.clone()).toList(),\n")
+                } else {//不明类型
+                    constructorMethod.append("    this.${key.toCamel()},\n")
+                    builder.append("  List<${key.toUpperCamel()}>? ${key.toCamel()};\n")
+                    toJsonMethod.append("        '$key': ${key.toCamel()}?.map((v) => v.toJson()).toList(),\n")
+                    fromJsonMethod.append("      ${key.toCamel()}: json.asList<${key.toUpperCamel()}>('$key', ${key.toUpperCamel()}.fromJson),\n")
                     classes.add(parseJson(JSONObject(), key.toUpperCamel(), classes))
                     cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()}?.map((v) => v.clone()).toList(),\n")
                 }
-            } else {
-                construtorMethod.append("    required this.${key.toCamel()},\n")
-                builder.append("  ${getType(element, true)} ${key.toCamel()};\n")
-                toJsonMethod.append("        '$key': ${key.toCamel()},\n")
-                fromJsonMethod.append("      ${key.toCamel()}: json.${getParseType(element)}('$key'),\n")
-                cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()},\n")
+                continue
             }
+            constructorMethod.append("    required this.${key.toCamel()},\n")
+            builder.append("  ${getType(element, true)} ${key.toCamel()};\n")
+            toJsonMethod.append("        '$key': ${key.toCamel()},\n")
+            fromJsonMethod.append("      ${key.toCamel()}: json.${getParseType(element)}('$key'),\n")
+            cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()},\n")
         }
 
-        val isNeed2AddPrimayKey = !construtorMethod.contains(primaryKey)
+        val isNeed2AddPrimayKey = !constructorMethod.contains(primaryKey)
         if (sqliteEnable && isNeed2AddPrimayKey) {
             builder.append("  int? ${primaryKey.toCamel()};\n")
         }
 
-        builder.append(construtorMethod(construtorMethod, uniqueClassName, sqliteEnable))
+        builder.append(construtorMethod(constructorMethod, uniqueClassName, sqliteEnable))
 
         builder.append(cloneMethod(cloneMethod, uniqueClassName, sqliteEnable))
 
@@ -149,10 +154,13 @@ class DartJsonGenerator(
         if (sqliteEnable && isNeed2AddPrimayKey) {
             fromJsonMethod.append("     ${primaryKey.toCamel()} : json.asInt('$primaryKey'),\n")
         }
-        if(fromJsonMethod.isNotEmpty()){
-            fromJsonMethod.insert(0,"\n  factory ${uniqueClassName}.fromJson(Map json) {\n    return ${uniqueClassName}(\n")
+        if (fromJsonMethod.isNotEmpty()) {
+            fromJsonMethod.insert(
+                0,
+                "\n  factory ${uniqueClassName}.fromJson(Map json) {\n    return ${uniqueClassName}(\n"
+            )
             builder.append(fromJsonMethod.append("    );\n  }\n"))
-        }else{
+        } else {
             fromJsonMethod.append("\n  factory ${uniqueClassName}.fromJson(Map json) {\n    return ${uniqueClassName}();\n  }\n")
             builder.append(fromJsonMethod)
         }

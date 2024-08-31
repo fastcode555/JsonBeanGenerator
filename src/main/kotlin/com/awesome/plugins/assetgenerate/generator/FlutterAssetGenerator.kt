@@ -29,9 +29,9 @@ class FlutterAssetGenerator(
         val dirName = mDirectory.virtualFile.name
         val rootVariableName = "_${dirName.clearSymbol().toCamel()}"
         if (isChildProject) {
-            builder.append("  static const String $rootVariableName = \"packages/${mDirectory.moduleName()}/$dirName\";\n")
+            builder.append("  static const String $rootVariableName = 'packages/${mDirectory.moduleName()}/$dirName';\n")
         } else {
-            builder.append("  static const String $rootVariableName = \"$dirName\";\n")
+            builder.append("  static const String $rootVariableName = '$dirName';\n")
         }
         generateAssetDartFile(
             mDirectory,
