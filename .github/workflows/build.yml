@@ -49,11 +49,13 @@ jobs:
           tag_name: v${{ env.version_name }}
           release_name: v${{ env.version_name }}
           body: |
-            1.修复bugs
-            2.增加flutter tailwind 生成默认配置
+            新版功能生成dart model
+            1.避免了unnecessary_lambdas的提示
+            2.避免了always_put_required_named_parameters_first
             
-            1.Fix bugs
-            2.Add the default configuration for flutter tailwind 
+            New version function generates dart model
+            1. Avoid unnecessary_lambdas prompts
+            2.Avoid always_put_required_named_parameters_first
 
       - name: Upload Release Asset
         id: upload-release-asset

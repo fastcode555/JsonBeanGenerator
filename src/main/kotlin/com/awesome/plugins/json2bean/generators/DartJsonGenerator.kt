@@ -46,6 +46,7 @@ class DartJsonGenerator(
         val builder = StringBuilder()
         val fromJsonMethod = StringBuilder()
         val cloneMethod = StringBuilder()
+        val requiredConstructorMethod = StringBuilder()
         val constructorMethod = StringBuilder()
         val toJsonMethod = StringBuilder()
 
@@ -70,7 +71,7 @@ class DartJsonGenerator(
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
                     val result = element.mergeKeys()
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
-                        constructorMethod.append("    required this.${key.toCamel()},\n")
+                        requiredConstructorMethod.append("    required this.${key.toCamel()},\n")
                         builder.append("  List<${getType(result)}>? ${key.toCamel()};\n")
                         toJsonMethod.append("        '$key': ${key.toCamel()},\n")
                         fromJsonMethod.append("      ${key.toCamel()}: json.asList<${getType(result)}>('$key'),\n")
@@ -81,7 +82,7 @@ class DartJsonGenerator(
                         //二维数组类型
                         val item = result.mergeKeys()
                         if (item is String || item is Int || item is Double || item is Boolean || item is Float) {
-                            constructorMethod.append("    required this.${key.toCamel()},\n")
+                            requiredConstructorMethod.append("    required this.${key.toCamel()},\n")
                             val listType = "${getType(item)}"
                             builder.append("  List<List<${listType}>>? ${key.toCamel()};\n")
                             toJsonMethod.append("        '$key': ${key.toCamel()},\n")
@@ -117,19 +118,20 @@ class DartJsonGenerator(
                 }
                 continue
             }
-            constructorMethod.append("    required this.${key.toCamel()},\n")
+            requiredConstructorMethod.append("    required this.${key.toCamel()},\n")
             builder.append("  ${getType(element, true)} ${key.toCamel()};\n")
             toJsonMethod.append("        '$key': ${key.toCamel()},\n")
             fromJsonMethod.append("      ${key.toCamel()}: json.${getParseType(element)}('$key'),\n")
             cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()},\n")
         }
 
-        val isNeed2AddPrimayKey = !constructorMethod.contains(primaryKey)
+        requiredConstructorMethod.append(constructorMethod)
+        val isNeed2AddPrimayKey = !requiredConstructorMethod.contains(primaryKey)
         if (sqliteEnable && isNeed2AddPrimayKey) {
             builder.append("  int? ${primaryKey.toCamel()};\n")
         }
 
-        builder.append(construtorMethod(constructorMethod, uniqueClassName, sqliteEnable))
+        builder.append(construtorMethod(requiredConstructorMethod, uniqueClassName, sqliteEnable))
 
         builder.append(cloneMethod(cloneMethod, uniqueClassName, sqliteEnable))
 
