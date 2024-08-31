@@ -12,7 +12,7 @@ var UPPER_KEYS: Array<String> = arrayOf("List", "Map")
 const val REGEX_SYMBOL = "[~'`!@#\$%^&*()_\\-+=<>?:\"{}|,./;’\\[\\]·！@#￥%……&*（）——\\-+=\\{\\}|《》？：“”【】；‘’，。、]*";
 
 fun String?.toCamel(): String {
-    var result = this.clearSymbol()
+    var result = this.clearSymbol()?.trim()
     if (this == result && !result!!.contains("_")) {
         //这里增加，强制将单词的第一个字母变为小写
         val firstWord = result.substring(0, 1)
@@ -58,7 +58,16 @@ fun String?.clearSymbol(): String? {
         if (it.trim().isEmpty()) return@regex
         finalKey = finalKey.replace(it, "_")
     }
-    return finalKey.replace("\n", "").replace("\\", "")
+    return finalKey.replace("\n", "").replace("\\", "").removeStartSymbol()
+}
+
+fun String.removeStartSymbol(): String {
+    var value = this
+    if (this.startsWith("_")) {
+        value = value.substring(1, value.length)
+        return value.removeStartSymbol()
+    }
+    return this
 }
 
 fun String?.formatJson(): String? {
