@@ -56,11 +56,11 @@ object FlutterTailwind {
             "\n" +
             "/// define the custom size here\n" +
             "extension SizeExt<T extends SizeBuilder> on T {\n" +
-            "  T get h200 => this..height = 200.h;\n" +
+            "  T get h210 => this..height = 210.h;\n" +
             "\n" +
-            "  T get w200 => this..width = 200.w;\n" +
+            "  T get w210 => this..width = 210.w;\n" +
             "\n" +
-            "  T get s200 => this..size = 200.r;\n" +
+            "  T get s210 => this..size = 210.r;\n" +
             "}\n" +
             "\n" +
             "/// define the custom text feature here\n" +
@@ -92,8 +92,7 @@ object FlutterTailwind {
             "      BoxShadow(\n" +
             "        color: Color(0x78000000),\n" +
             "        offset: Offset(0, 4),\n" +
-            "        blurRadius: 4.0,\n" +
-            "        spreadRadius: 0.0,\n" +
+            "        blurRadius: 4,\n" +
             "      )\n" +
             "    ];\n" +
             "}\n" +
@@ -113,8 +112,73 @@ object FlutterTailwind {
             "          BoxShadow(\n" +
             "            color: Color(0x78000000),\n" +
             "            offset: Offset(0, 4),\n" +
-            "            blurRadius: 4.0,\n" +
-            "            spreadRadius: 0.0,\n" +
+            "            blurRadius: 4,\n" +
+            "          ),\n" +
+            "        ]);\n" +
+            "}"
+
+    val fluterTailWindConstWithoutColor = "import 'package:flutter/material.dart';\n" +
+            "import 'package:flutter_tailwind/tailwind.dart';\n" +
+            "\n" +
+            "/// define the custom size here\n" +
+            "extension SizeExt<T extends SizeBuilder> on T {\n" +
+            "  T get h210 => this..height = 210.h;\n" +
+            "\n" +
+            "  T get w210 => this..width = 210.w;\n" +
+            "\n" +
+            "  T get s210 => this..size = 210.r;\n" +
+            "}\n" +
+            "\n" +
+            "/// define the custom text feature here\n" +
+            "extension TextFeatureExt<T extends TextFeature> on T {\n" +
+            "  T get fontExample => this..fontFamily = 'font family,just define family here';\n" +
+            "}\n" +
+            "\n" +
+            "/// define the custom text style here,text feature just single feature,but style is completed style,can directly use it\n" +
+            "extension TextStyleExt<T extends CompletedTextStyleBuilder> on T {\n" +
+            "  T get styleMain => this..style = ts.redAccent.f16.bold.underline.mk;\n" +
+            "\n" +
+            "  /// use flutter tailwind style\n" +
+            "  T get styleAccent => this..style = ts.greenAccent.f20.bold.underline.mk;\n" +
+            "\n" +
+            "  /// use flutter normal style to describe text style\n" +
+            "  T get styleTradition => this\n" +
+            "    ..style = TextStyle(\n" +
+            "      color: Colors.greenAccent,\n" +
+            "      fontSize: 20.sp,\n" +
+            "      fontWeight: FontWeight.bold,\n" +
+            "      decoration: TextDecoration.underline,\n" +
+            "    );\n" +
+            "}\n" +
+            "\n" +
+            "/// define the shadow\n" +
+            "extension ShadowExt<T extends ShadowBuilder> on T {\n" +
+            "  T get customShadow => this\n" +
+            "    ..boxShadow = const [\n" +
+            "      BoxShadow(\n" +
+            "        color: Color(0x78000000),\n" +
+            "        offset: Offset(0, 4),\n" +
+            "        blurRadius: 4,\n" +
+            "      )\n" +
+            "    ];\n" +
+            "}\n" +
+            "\n" +
+            "/// You can define the default style which just explain you how to define the style with flutter tailwind\n" +
+            "extension DecorationExt<T extends CompleteDecoration> on T {\n" +
+            "  /// use flutter tailwind BoxDecoration\n" +
+            "  T get decorMain => this..decoration = bd.greenAccent.circle.borderBrown.rounded8.customShadow.border5.mk;\n" +
+            "\n" +
+            "  /// Use flutter normal style to describe BoxDecoration\n" +
+            "  T get decorTradition => this\n" +
+            "    ..decoration = BoxDecoration(\n" +
+            "        color: Colors.greenAccent,\n" +
+            "        border: Border.all(color: Colors.brown, width: 5.r),\n" +
+            "        borderRadius: BorderRadius.circular(8.r),\n" +
+            "        boxShadow: const [\n" +
+            "          BoxShadow(\n" +
+            "            color: Color(0x78000000),\n" +
+            "            offset: Offset(0, 4),\n" +
+            "            blurRadius: 4,\n" +
             "          ),\n" +
             "        ]);\n" +
             "}"

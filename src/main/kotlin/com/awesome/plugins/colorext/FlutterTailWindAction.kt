@@ -5,6 +5,7 @@ import com.awesome.utils.*
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
 import firstUpperCamel
@@ -23,9 +24,17 @@ class FlutterTailWindAction : AnAction() {
             val text = psiFile.text.regexOne(RegexText.variableConstStringRegex)
             val color = psiFile.text.regexOne(RegexText.colorConstRegex)
             e.presentation.isEnabledAndVisible = isDartFile && (text != null || color != null)
-        } else {
-            e.presentation.isEnabledAndVisible = false
+            return
         }
+
+        if (psiFile is PsiDirectory) {
+            val tailFile = File(psiFile.virtualFile.path, "tailwind_ext.dart")
+            if (!tailFile.exists()) {
+                tailFile.writeText(FlutterTailwind.fluterTailWindConstWithoutColor)
+            }
+            return
+        }
+        e.presentation.isEnabledAndVisible = false
     }
 
     override fun actionPerformed(e: AnActionEvent) {
