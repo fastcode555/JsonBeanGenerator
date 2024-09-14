@@ -48,7 +48,7 @@ object FlutterTailwind {
     )
 
     val fluterTailWindConst = "import 'package:flutter/material.dart';\n" +
-            "import 'package:flutter_tailwind/tailwind.dart';\n" +
+            "import 'package:flutter_tailwind/flutter_tailwind.dart';\n" +
             "\n" +
             "import 'colours.dart';\n" +
             "\n" +
@@ -65,16 +65,23 @@ object FlutterTailwind {
             "\n" +
             "/// define the custom text feature here\n" +
             "extension TextFeatureExt<T extends TextFeature> on T {\n" +
-            "  T get fontExample => this..fontFamily = 'font family,just define family here';\n" +
-            "}\n" +
-            "\n" +
+            "  ///T get fontExample => this..fontFamily = 'font family,just define family here';\n" +
+            "}\n\n" +
+            "/// define the custom text size here\n" +
+            "extension FontSizeExt<T extends FontSizeBuilder> on T {\n" +
+            "  ///T get f120 => this..font(120.csp);\n" +
+            "}\n\n" +
+            "/// define the custom icon here\n" +
+            "extension IconExt<T extends IconBuilder> on T {\n" +
+            "  ///T get icDefAvatar => this..icon(R.icDefAvatar);\n" +
+            "}\n\n" +
             "/// define the custom text style here,text feature just single feature,but style is completed style,can directly use it\n" +
             "extension TextStyleExt<T extends CompletedTextStyleBuilder> on T {\n" +
             "  T get styleMain => this..style = ts.redAccent.f16.bold.underline.mk;\n" +
-            "\n" +
+            "\n\n" +
             "  /// use flutter tailwind style\n" +
             "  T get styleAccent => this..style = ts.greenAccent.f20.bold.underline.mk;\n" +
-            "\n" +
+            "\n\n" +
             "  /// use flutter normal style to describe text style\n" +
             "  T get styleTradition => this\n" +
             "    ..style = TextStyle(\n" +
@@ -118,7 +125,7 @@ object FlutterTailwind {
             "}"
 
     val fluterTailWindConstWithoutColor = "import 'package:flutter/material.dart';\n" +
-            "import 'package:flutter_tailwind/tailwind.dart';\n" +
+            "import 'package:flutter_tailwind/flutter_tailwind.dart';\n" +
             "\n" +
             "/// define the custom size here\n" +
             "extension SizeExt<T extends SizeBuilder> on T {\n" +
@@ -131,9 +138,16 @@ object FlutterTailwind {
             "\n" +
             "/// define the custom text feature here\n" +
             "extension TextFeatureExt<T extends TextFeature> on T {\n" +
-            "  T get fontExample => this..fontFamily = 'font family,just define family here';\n" +
-            "}\n" +
-            "\n" +
+            "  ///T get fontExample => this..fontFamily = 'font family,just define family here';\n" +
+            "}\n\n" +
+            "/// define the custom text size here\n" +
+            "extension FontSizeExt<T extends FontSizeBuilder> on T {\n" +
+            "  ///T get f120 => this..font(120.csp);\n" +
+            "}\n\n" +
+            "/// define the custom icon here\n" +
+            "extension IconExt<T extends IconBuilder> on T {\n" +
+            "  ///T get icDefAvatar => this..icon(R.icDefAvatar);\n" +
+            "}\n\n" +
             "/// define the custom text style here,text feature just single feature,but style is completed style,can directly use it\n" +
             "extension TextStyleExt<T extends CompletedTextStyleBuilder> on T {\n" +
             "  T get styleMain => this..style = ts.redAccent.f16.bold.underline.mk;\n" +
