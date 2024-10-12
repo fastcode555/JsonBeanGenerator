@@ -13,7 +13,8 @@ class LanguageDartWriter(
     private val dirPath: String,
     private val psiElement: PsiElement,
     private val rawText: String,
-    private val selectionModel: SelectionModel?
+    private val selectionModel: SelectionModel?,
+    private val translationSuffix: String
 ) {
     private var moduleName = ""
 
@@ -115,7 +116,7 @@ class LanguageDartWriter(
                 selectionModel.editor.document.replaceString(
                     selectionModel.selectionStart,
                     selectionModel.selectionEnd,
-                    "Ids.${idKey}.tr"
+                    "Ids.${idKey}.${translationSuffix}"
                 )
                 //判断当前文件夹是否导包，如果没有，需要进行导包
                 val text = selectionModel.editor.document.text
@@ -125,10 +126,10 @@ class LanguageDartWriter(
             } else {
                 var text = psiElement.text
                 if (text.contains("'$rawText'")) {
-                    text = text.replace("'$rawText'", "Ids.${idKey}.tr")
+                    text = text.replace("'$rawText'", "Ids.${idKey}.${translationSuffix}")
                 }
                 if (text.contains("\"$rawText\"")) {
-                    text = text.replace("\"$rawText\"", "Ids.${idKey}.tr")
+                    text = text.replace("\"$rawText\"", "Ids.${idKey}.${translationSuffix}")
                 }
                 File(psiElement.virtualFile.path).writeText(text)
             }

@@ -75,6 +75,8 @@ class LanguageResDialog(
 
     var dirPath = ""
 
+    var translationSuffix = "tr"
+
     //点击翻译了，就会将翻译的写入文件中
     private fun onTranslate() {
         builder.clear()
@@ -124,7 +126,15 @@ class LanguageResDialog(
             if (isContainJson()) {
                 handleWrite2JsonFile()
             } else {
-                LanguageDartWriter(mapValues, tvKey!!.text, dirPath, psiElement, textValue, selectionModel).startWrite()
+                LanguageDartWriter(
+                    mapValues,
+                    tvKey!!.text,
+                    dirPath,
+                    psiElement,
+                    textValue,
+                    selectionModel,
+                    translationSuffix
+                ).startWrite()
             }
             //psiElement.reload()
             dispose()
@@ -173,6 +183,10 @@ class LanguageResDialog(
             properties = PropertiesHelper(psiElement)
         } catch (e: Exception) {
             print(e)
+        }
+        translationSuffix = properties!!.getProperty(PluginProps.translationKey) ?: "tr"
+        if (translationSuffix.isEmpty()) {
+            translationSuffix = "tr"
         }
         if (psiElement is PsiDirectory) {
             dirPath = psiElement.virtualFile.path

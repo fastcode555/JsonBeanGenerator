@@ -36,4 +36,7 @@ object PluginProps {
 
     ///配置是否生成的代码为链式代码
     const val flutterChain = "plugin.flutterChain"
+
+    ///配置生成的数据的key
+    const val translationKey = "plugin.translationKey"
 }

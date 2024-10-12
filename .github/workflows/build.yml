@@ -50,12 +50,7 @@ jobs:
           release_name: v${{ env.version_name }}
           body: |
             新版功能生成dart model
-            1.避免了unnecessary_lambdas的提示
-            2.避免了always_put_required_named_parameters_first
-            
-            New version function generates dart model
-            1. Avoid unnecessary_lambdas prompts
-            2.Avoid always_put_required_named_parameters_first
+            1.add the plugin.translationKey=trn,after generate the translation will end width 'trn'
 
       - name: Upload Release Asset
         id: upload-release-asset
