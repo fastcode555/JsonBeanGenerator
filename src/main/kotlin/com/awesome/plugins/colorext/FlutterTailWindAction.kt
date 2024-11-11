@@ -27,7 +27,7 @@ class FlutterTailWindAction : AnAction() {
             return
         }
 
-        if (psiFile is PsiDirectory) {
+        if (psiFile is PsiDirectory && psiFile.name == "res") {
             val tailFile = File(psiFile.virtualFile.path, "tailwind_ext.dart")
             if (!tailFile.exists()) {
                 tailFile.writeText(FlutterTailwind.fluterTailWindConstWithoutColor)
