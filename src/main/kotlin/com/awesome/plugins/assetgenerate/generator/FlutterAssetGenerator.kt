@@ -20,7 +20,14 @@ class FlutterAssetGenerator(
     private val targetDir: String?
 ) :
     BaseAssetGenerator(mDirectory, ignoreDirs, targetDir) {
+
+    // 存储已定义的资源映射关系
+    private val existingAssetMap = mutableMapOf<String, String>()
+
     override fun generate() {
+        // 读取现有的资源定义
+        loadExistingAssets()
+        
         val builder = StringBuilder()
         val basePath = mDirectory.basePath()
         val isChildProject = basePath != mDirectory.project.basePath
@@ -81,6 +88,8 @@ class FlutterAssetGenerator(
 
         mDirectory.files.map {
             val assetName = it.virtualFile.name
+            val assetPath = "$currentDirVariableName${File.separator}$assetName"
+            
             if (isFont(it)) {
                 builder.append(
                     "  static const String ${
@@ -88,10 +97,12 @@ class FlutterAssetGenerator(
                     } = '${it.virtualFile.nameWithoutExtension}';\n"
                 )
             } else {
+                // 使用已存在的名称或生成新的名称
+                val variableName = existingAssetMap[assetPath] 
+                    ?: it.virtualFile.nameWithoutExtension.clearSymbol().toCamel()
+                
                 builder.append(
-                    "  static const String ${
-                        it.virtualFile.nameWithoutExtension.clearSymbol().toCamel()
-                    } = '$currentDirVariableName${File.separator}$assetName';\n"
+                    "  static const String $variableName = '$assetPath';\n"
                 )
             }
         }
@@ -112,5 +123,31 @@ class FlutterAssetGenerator(
     //判断文件夹下是否有文件
     private fun isContainFile(mDirectory: PsiDirectory): Boolean {
         return mDirectory.files.isNotEmpty() || mDirectory.subdirectories.isNotEmpty()
+    }
+
+    private fun loadExistingAssets() {
+        val rDartFile = File(getRDartFilePath())
+        if (!rDartFile.exists()) return
+
+        // 匹配资源定义语句
+        val pattern = "static const String ([a-zA-Z0-9_]+) = '(.*?)'"
+        val regex = Regex(pattern)
+        
+        rDartFile.readText().lines().forEach { line ->
+            regex.find(line)?.let { result ->
+                val name = result.groupValues[1]
+                val path = result.groupValues[2]
+                existingAssetMap[path] = name
+            }
+        }
+    }
+
+    private fun getRDartFilePath(): String {
+        val newTargetDir = if (!targetDir.isNullOrEmpty()) {
+            targetDir 
+        } else {
+            "${File.separator}lib${File.separator}res"
+        }
+        return "${mDirectory.parent?.virtualFile?.path}$newTargetDir${File.separator}r.dart"
     }
 }

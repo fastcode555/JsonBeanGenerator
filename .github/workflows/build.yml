@@ -49,8 +49,8 @@ jobs:
           tag_name: v${{ env.version_name }}
           release_name: v${{ env.version_name }}
           body: |
-            新版功能生成dart model
-            1.add the plugin.translationKey=trn,after generate the translation will end width 'trn'
+            r.dart文件生成优化，如果已经有定义了另外的名字了，保持这个名字，而不再自动生成新的名字
+            r.dart file generation optimization, if another name has been defined, retain this name instead of automatically generating a new name
 
       - name: Upload Release Asset
         id: upload-release-asset
