@@ -87,16 +87,19 @@ class FlutterAssetGenerator(
         }
 
         mDirectory.files.map {
-            val assetName = it.virtualFile.name
-            val assetPath = "$currentDirVariableName${File.separator}$assetName"
-            
             if (isFont(it)) {
+                // 字体文件使用已存在的名称或生成新的名称
+                val fontName = it.virtualFile.nameWithoutExtension
+                val variableName = existingAssetMap[fontName] 
+                    ?: fontName.clearSymbol().toCamel()
+                
                 builder.append(
-                    "  static const String ${
-                        it.virtualFile.nameWithoutExtension.clearSymbol().toCamel()
-                    } = '${it.virtualFile.nameWithoutExtension}';\n"
+                    "  static const String $variableName = '$fontName';\n"
                 )
             } else {
+                val assetName = it.virtualFile.name
+                val assetPath = "$currentDirVariableName${File.separator}$assetName"
+                
                 // 使用已存在的名称或生成新的名称
                 val variableName = existingAssetMap[assetPath] 
                     ?: it.virtualFile.nameWithoutExtension.clearSymbol().toCamel()
@@ -112,12 +115,9 @@ class FlutterAssetGenerator(
     }
 
     private fun isFont(it: PsiFile): Boolean {
-        for (type in FONT_TYPES) {
-            if (it.virtualFile.name.endsWith(type)) {
-                return true;
-            }
+        return FONT_TYPES.any { type ->
+            it.virtualFile.name.endsWith(type, ignoreCase = true)
         }
-        return false
     }
 
     //判断文件夹下是否有文件
@@ -137,6 +137,11 @@ class FlutterAssetGenerator(
             regex.find(line)?.let { result ->
                 val name = result.groupValues[1]
                 val path = result.groupValues[2]
+                
+                // 如果值不包含路径分隔符,说明可能是字体文件
+                if (!path.contains(File.separator)) {
+                    existingAssetMap[path] = name
+                }
                 existingAssetMap[path] = name
             }
         }
