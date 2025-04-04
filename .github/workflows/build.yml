@@ -49,8 +49,8 @@ jobs:
           tag_name: v${{ env.version_name }}
           release_name: v${{ env.version_name }}
           body: |
-            r.dart文件生成优化，如果已经有定义了另外的名字了，保持这个名字，而不再自动生成新的名字
-            r.dart file generation optimization, if another name has been defined, retain this name instead of automatically generating a new name
+            update to support the latest Android Studio version 2024.3.1
+            更新支持最新Android Studio版本2024.3.1
 
       - name: Upload Release Asset
         id: upload-release-asset

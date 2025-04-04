@@ -5,6 +5,7 @@ import com.awesome.utils.RegexText
 import com.awesome.utils.regex
 import com.awesome.utils.regexOne
 import com.awesome.utils.runWriteCmd
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -16,6 +17,11 @@ import java.io.File
 private const val FILED_REGEX = "[a-zA-Z0-9\\?\\<\\>\\,_]+ [0-9a-zA-Z_]*(?=;)"
 
 class ToJsonGenerateAction : AnAction() {
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
+    }
+
     override fun update(e: AnActionEvent) {
         super.update(e)
         val psiFile = e.getData(CommonDataKeys.PSI_FILE)

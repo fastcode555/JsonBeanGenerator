@@ -5,6 +5,7 @@ import com.awesome.plugins.assetgenerate.generator.FlutterAssetGenerator
 import com.awesome.plugins.assetgenerate.generator.WebAssetGenerator
 import com.awesome.utils.PropertiesHelper
 import com.awesome.utils.runWriteCmd
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -13,6 +14,11 @@ import com.intellij.psi.PsiElement
 import java.io.File
 
 class AssetGenerateAction : AnAction() {
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
+    }
+
     override fun update(e: AnActionEvent) {
         super.update(e)
         val mDirectory = e.getData<PsiElement>(CommonDataKeys.PSI_ELEMENT)

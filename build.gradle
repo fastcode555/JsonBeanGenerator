@@ -1,15 +1,21 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.9.0'
-    id 'org.jetbrains.intellij' version '1.15.0'
-
+    id 'org.jetbrains.kotlin.jvm' version '2.1.10'
+    id 'org.jetbrains.intellij.platform' version '2.2.0'
 }
 
 group 'org.example'
-version '1.9.2-SNAPSHOT'
+version '1.9.3-SNAPSHOT'
 
 
 repositories {
     mavenCentral()
+
+    maven { url "https://www.jetbrains.com/intellij-repository/releases" }  // 关键仓库
+    maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
+
+    intellijPlatform {
+        defaultRepositories()
+    }
 }
 
 dependencies {
@@ -18,11 +24,13 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib"
 }
 
-// See https://github.com/JetBrains/gradle-intellij-plugin/
-intellij {
-    version = '2022.3.1'
-    updateSinceUntilBuild = false
+
+dependencies {
+    intellijPlatform {
+        intellijIdeaCommunity("2024.3")
+    }
 }
+
 patchPluginXml {
     changeNotes = """
       Add change notes here.<br>

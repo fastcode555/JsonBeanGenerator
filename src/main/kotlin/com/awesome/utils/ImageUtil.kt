@@ -1,4 +1,3 @@
-import com.twelvemonkeys.lang.DateUtil
 import java.util.*
 
 object ImageUtil {

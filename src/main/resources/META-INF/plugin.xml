@@ -1,7 +1,8 @@
 <idea-plugin require-restart="true">
+    <!-- 基础配置优化 -->
     <id>org.awesome.JsonBeanGenerator</id>
     <name>Json2Dart-Null-Safety</name>
-    <version>1.0.8</version>
+    <version>1.9.3</version>
     <vendor email="939301889@qq.com" url="https://github.com/fastcode555/JsonBeanGenerator">Barry</vendor>
     <description><![CDATA[
     <br>Support Null_Safety attribute, mainly to solve the problem of json to dart, null pointer or type conversion exception, friends who have used gson should be clear, such as a double field, conversion exception, will give the default value of 0.0 <br/>
@@ -25,28 +26,29 @@
        <br>1. Support Null safety feature</br>
     ]]>
     </change-notes>
-
-    <idea-version since-build="145.0"/>
-    <!-- please see https://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
-         on how to target different products -->
-    <depends>com.intellij.modules.lang</depends>
-
+    <idea-version since-build="233.1403.10"/>
+    <!-- 关键依赖补充 -->
+    <depends>com.intellij.modules.platform</depends>
     <extensions defaultExtensionNs="com.intellij">
-        <!-- Add your extensions here -->
     </extensions>
 
     <actions>
-        <!-- dart 代码支持 -->
-        <action id="json2dart_null_safety" class="com.awesome.plugins.json2bean.JsonBeanGeneratorAction"
+        <!-- Dart 代码生成入口 -->
+        <action id="json2dart_null_safety"
+                class="com.awesome.plugins.json2bean.JsonBeanGeneratorAction"
                 text="Json2Dart-Null-Safety"
-                icon="/plugin_icon.png" description="Generated dart bean class.">
-            <add-to-group group-id="NewGroup" anchor="last"/>
+                icon="/plugin_icon.png"
+                description="Generated dart bean class with null-safety."> <!-- 图标路径规范 -->
+            <add-to-group group-id="NewGroup" anchor="last"/>  <!-- 官方推荐菜单组 -->
         </action>
 
-        <action id="AssetGenerateAction" class="com.awesome.plugins.assetgenerate.AssetGenerateAction"
-                text="AssetGenerate"
-                icon="/plugin_icon.png" description="Generate resource r.dart.">
-            <add-to-group group-id="NewGroup" anchor="last"/>
+        <!-- 资源生成入口 -->
+        <action id="AssetGenerateAction"
+                class="com.awesome.plugins.assetgenerate.AssetGenerateAction"
+                text="Generate R.dart"
+                icon="/plugin_icon.png"
+                description="Generate resource mapping file (r.dart).">
+            <add-to-group group-id="NewGroup" anchor="before" relative-to-action="json2dart_null_safety"/>
         </action>
 
         <action id="Generate the Tailwind extension"
@@ -140,5 +142,4 @@
             <add-to-group group-id="RefactoringMenu" anchor="first"/>
         </action>
     </actions>
-
 </idea-plugin>

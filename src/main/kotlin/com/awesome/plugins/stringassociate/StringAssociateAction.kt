@@ -3,6 +3,7 @@ package com.awesome.plugins.stringassociate
 import com.awesome.plugins.stringassociate.processor.StringHelper
 import com.awesome.utils.replaceSelect
 import com.awesome.utils.runWriteCmd
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -14,6 +15,9 @@ import com.intellij.openapi.editor.Editor
 private val colorRegex = Regex("rgb(a){0,1}\\(.*?\\)")
 
 class StringAssociateAction : AnAction() {
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
+    }
 
     override fun update(e: AnActionEvent) {
         super.update(e)

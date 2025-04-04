@@ -2,6 +2,7 @@ package com.awesome.plugins.colorext
 
 import ai.grazie.nlp.utils.length
 import com.awesome.utils.*
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -15,6 +16,10 @@ import java.io.File
  * 根据Colours这个文件，创建出扩展
  **/
 class FlutterTailWindAction : AnAction() {
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
+    }
 
     override fun update(e: AnActionEvent) {
         super.update(e)

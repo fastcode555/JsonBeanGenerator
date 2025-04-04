@@ -1,6 +1,7 @@
 package com.awesome.plugins.json2bean
 
 import com.awesome.JsonBeanDialog
+import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
@@ -8,6 +9,10 @@ import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 
 class JsonBeanGeneratorAction : AnAction() {
+
+    override fun getActionUpdateThread(): ActionUpdateThread {
+        return ActionUpdateThread.BGT
+    }
 
     override fun update(e: AnActionEvent) {
         super.update(e)
