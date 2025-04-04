@@ -2,42 +2,46 @@ name: Build Plugin(打包)
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v4  # 使用最新 checkout 版本
+        uses: actions/checkout@v4
 
-      - name: Cache Gradle
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('​**​/*.gradle*') }}
-
-      - name: Set up JDK 17  # 建议升级到 LTS 版本
+      - name: Set up JDK 14
         uses: actions/setup-java@v3
         with:
-          distribution: 'temurin'
-          java-version: '17'
+          distribution: 'adopt'
+          java-version: '14'
 
-      - name: Build Plugin
-        run: ./gradlew buildPlugin --no-daemon
+      - name: Build and Package
+        run: |
+          ./gradlew buildPlugin
 
-      - name: Verify Output
-        run: test -f build/distributions/*.zip || exit 1
+      - name: Check is Success
+        run: |
+          ls build/distributions/
+
+      - name: Find Plugin Zip
+        run: |
+          cd build/distributions/
+          echo "package_name=$(find *.zip)" >> $GITHUB_ENV
+          echo "version_name=$(echo $(find *.zip) | sed 's/JsonBeanGenerator-//')" >> $GITHUB_ENV
+          echo "build_time=$(date +"%Y-%m-%d")" >> $GITHUB_ENV
+          cd ../../
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.package_name }}
-          path: build/distributions/
+          path: build/distributions/${{ env.package_name }}
 
       - name: Create Release
+        id: create_release
         uses: actions/create-release@v1.1.4
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -45,14 +49,16 @@ jobs:
           tag_name: v${{ env.version_name }}
           release_name: v${{ env.version_name }}
           body: |
-            update to support the latest Android Studio version 2024.3.1
-            更新支持最新Android Studio版本2024.3.1
+            r.dart文件生成优化，如果已经有定义了另外的名字了，保持这个名字，而不再自动生成新的名字
+            r.dart file generation optimization, if another name has been defined, retain this name instead of automatically generating a new name
 
       - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1.1.0
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: build/distributions/${{ env.package_name }}
           asset_name: "${{ env.package_name }}"
+          asset_content_type: application/octet-stream
