@@ -76,8 +76,22 @@ fun String?.formatJson(): String? {
     return JSON.toJSONString(json, true)
 }
 
+
 fun String.toJSON(): JSON? {
-    return (if (startsWith("{")) JSONObject.parseObject(this) else JSONArray.parse(this)) as JSON?
+    return when {
+        startsWith("{") -> {
+            // 先用 LinkedHashMap 保顺序，再手动转成 JSONObject
+            val map = JSONObject.parseObject(this, LinkedHashMap::class.java) as LinkedHashMap<String, *>
+            JSONObject(map)
+        }
+
+        startsWith("[") -> {
+            // JSONArray 本身是 List，有序的，直接 parse 就行
+            JSONArray.parseArray(this)
+        }
+
+        else -> null
+    }
 }
 
 fun JSONArray.mergeKeys(): Any {

@@ -47,6 +47,11 @@ class LanguageResDialog(
     //带翻译的内容
     var tvChinese: JTextField? = null
 
+    //如果是arb（Applicatio Resource Bundle）需要支持设置描述词
+    var tvDescription: JTextField? = null
+
+    var textDescription: JLabel? = null
+
     //选择的语言内容
     var tvLanguages: JTextField? = null
 
@@ -61,6 +66,8 @@ class LanguageResDialog(
 
     //语言码跟翻译后的文本
     val mapValues = HashMap<String, String?>()
+
+    val descriptionValues = HashMap<String, String?>()
 
     //通过读取properties读取初始化语种和需要翻译的语种
     private var properties: PropertiesHelper? = null
@@ -81,6 +88,7 @@ class LanguageResDialog(
     private fun onTranslate() {
         builder.clear()
         mapValues.clear()
+        descriptionValues.clear()
         psiElement.runWriteCmd(::runTranslate)
     }
 
@@ -92,12 +100,28 @@ class LanguageResDialog(
         } else {
             for (languageCode in languages!!) {
                 val value = HttpApi.translate(tvChinese!!.text, languageCode)
+                var description = tvDescription?.text
+                if (!TextUtils.isEmpty(description)) {
+                    description = HttpApi.translate(description!!, languageCode)?.trim()
+                }
+
                 if (languageCode == "en") {
                     mapValues.put(languageCode, value?.firstUpperCamel())
+                    if (!TextUtils.isEmpty(description)) {
+                        descriptionValues.put(languageCode, description?.firstUpperCamel())
+                    }
                 } else {
                     mapValues.put(languageCode, value)
+                    if (!TextUtils.isEmpty(description)) {
+                        descriptionValues.put(languageCode, description)
+                    }
                 }
-                builder.append(languageCode).append("\n").append(mapValues[languageCode]).append("\n\n")
+                builder.append(languageCode)
+                    .append("\n")
+                    .append(mapValues[languageCode])
+                    .append("\n")
+                    .append(description)
+                    .append("\n")
                 if (languageCode == "en") {
                     tvKey?.text = value?.replace(" ", "_")?.trim().clearSymbol().toCamel()
                 }
@@ -123,7 +147,7 @@ class LanguageResDialog(
                 }
             }
 
-            if (isContainJson()) {
+            if (isJsonOrArb()) {
                 handleWrite2JsonFile()
             } else {
                 LanguageDartWriter(
@@ -148,13 +172,19 @@ class LanguageResDialog(
         for (psiElement in psiElement.children) {
             if (psiElement is PsiFile) {
                 val file = psiElement.virtualFile
+
                 try {
-                    if (file.name.endsWith(".json")) {
-                        val name = file.nameWithoutExtension
+                    if (file.name.endsWith(".json") || file.name.endsWith(".arb")) {
+                        val name = file.nameWithoutExtension.replace("app_", "")
                         val jsonFile = File(file.path)
                         val json = jsonFile.readText().toJSON() as JSONObject
                         val value = mapValues[name]
                         json.put(tvKey!!.text, value)
+
+                        val description = descriptionValues[name]
+                        if (!TextUtils.isEmpty(description)) {
+                            json.put("@${tvKey!!.text}", JSONObject(mapOf(Pair("description", description))))
+                        }
                         jsonFile.writeText(json.toJSONString())
                     }
                 } catch (e: Exception) {
@@ -168,10 +198,20 @@ class LanguageResDialog(
     /**
      * 是否包含json文件
      **/
-    private fun isContainJson(): Boolean {
+    private fun isJsonOrArb(): Boolean {
         for (psiElement in psiElement.children) {
             if (psiElement is PsiFile) {
-                return psiElement.virtualFile.name.endsWith(".json")
+                val name = psiElement.virtualFile.name
+                return name.endsWith(".json") || name.endsWith(".arb")
+            }
+        }
+        return false
+    }
+
+    private fun isArb(): Boolean {
+        for (psiElement in psiElement.children) {
+            if (psiElement is PsiFile) {
+                return psiElement.virtualFile.name.endsWith(".arb")
             }
         }
         return false
@@ -234,12 +274,17 @@ class LanguageResDialog(
         val languageString = properties?.getProperty(PluginProps.languages) ?: defaultLanguage
         rawLanguage = properties?.getProperty(PluginProps.rawLanguage) ?: rawLanguage
         needTranslate = "true" == properties?.getProperty(PluginProps.needTranslate)
-        if (isContainJson()) {
+
+        val isArb = isArb();
+        tvDescription!!.isVisible = isArb
+        textDescription!!.isVisible = isArb
+
+        if (isJsonOrArb()) {
             languages = arrayListOf()
             val arrays = languages as ArrayList<String>
             for (psi in psiElement.children) {
                 if (psi is PsiFile) {
-                    arrays.add(psi.virtualFile.nameWithoutExtension)
+                    arrays.add(psi.virtualFile.nameWithoutExtension.replace("app_", ""))
                 }
             }
             tvLanguages?.text = arrays.joinToString(separator = ",")
