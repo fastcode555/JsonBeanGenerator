@@ -1,6 +1,6 @@
-import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.JSONArray
-import com.alibaba.fastjson.JSONObject
+import com.alibaba.fastjson2.JSON
+import com.alibaba.fastjson2.JSONArray
+import com.alibaba.fastjson2.JSONObject
 import com.awesome.utils.regex
 import com.google.common.base.CaseFormat
 import com.google.gson.JsonElement
@@ -72,12 +72,12 @@ fun String.removeStartSymbol(): String {
 
 fun String?.formatJson(): String? {
     if (this.isNullOrEmpty()) return this
-    val json = if (this.startsWith("{")) JSONObject.parseObject(this) else JSONArray.parse(this)
-    return JSON.toJSONString(json, true)
+    val json = if (this.startsWith("{")) JSONObject.parseObject(this) else JSONArray.parseArray(this)
+    return JSON.toJSONString(json)
 }
 
 
-fun String.toJSON(): JSON? {
+fun String.toJSON(): Any? {
     return when {
         startsWith("{") -> {
             // 先用 LinkedHashMap 保顺序，再手动转成 JSONObject

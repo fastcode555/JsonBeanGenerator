@@ -1,8 +1,8 @@
 package com.awesome.plugins.ts.tomapfield
 
-import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.JSONArray
-import com.alibaba.fastjson.JSONObject
+import com.alibaba.fastjson2.JSON
+import com.alibaba.fastjson2.JSONArray
+import com.alibaba.fastjson2.JSONObject
 import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.editor.Editor
 import toJSON
@@ -51,7 +51,7 @@ class TopMapFieldDialog(private val editor: Editor?) : JDialog() {
         }
     }
 
-    private fun parseJson(json: JSON?, deep: Int = 0, separator: String = "  ", key: String = ""): StringBuilder {
+    private fun parseJson(json: Any?, deep: Int = 0, separator: String = "  ", key: String = ""): StringBuilder {
         val builder = StringBuilder()
         val start = separators(separator, deep)
         val lineStart = "$start$separator"
@@ -61,12 +61,12 @@ class TopMapFieldDialog(private val editor: Editor?) : JDialog() {
             } else {
                 builder.append("$ {\n")
             }
-            for ((key, element) in json.innerMap) {
+            for ((key, element) in json) {
                 if (element is String) {
                     builder.append("$lineStart$key: '$element',\n")
                 } else if (element is Double || element is Int || element is BigDecimal || element is Float || element is Boolean) {
                     builder.append("$lineStart$key: $element,\n")
-                } else if (element is JSON) {
+                } else if (element is JSONObject || element is JSONArray) {
                     builder.append("$lineStart$key:${parseJson(element, deep + 1, separator, key)}")
                     builder.append(",\n")
                 }

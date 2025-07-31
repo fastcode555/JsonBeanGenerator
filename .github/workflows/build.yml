@@ -49,8 +49,7 @@ jobs:
           tag_name: v${{ env.version_name }}
           release_name: v${{ env.version_name }}
           body: |
-            增加arb的支持，如果是arb翻译文件，会显示description，方便用户添加注释
-            Add support for arb. If it is an arb translation file, a description will be displayed to facilitate users to add comments.
+            支持Android Studio 2025.1.1
 
       - name: Upload Release Asset
         id: upload-release-asset

@@ -1,8 +1,8 @@
 package com.awesome
 
-import com.alibaba.fastjson.JSON
-import com.alibaba.fastjson.JSONArray
-import com.alibaba.fastjson.JSONObject
+import com.alibaba.fastjson2.JSON
+import com.alibaba.fastjson2.JSONArray
+import com.alibaba.fastjson2.JSONObject
 import com.awesome.plugins.json2bean.generators.PythonSqlGenerator
 import com.awesome.utils.DataBaseUtils
 import com.intellij.openapi.project.Project
@@ -78,7 +78,7 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
     private fun onGenerate(generate: Boolean) {
         onSelectedType()//确定哪一种类型
         val content = tvArea?.text
-        val result: JSON? = content?.toJSON()
+        val result: Any? = content?.toJSON()
         var json: JSONObject? = null
         if (result is JSONObject) {
             json = result
@@ -105,7 +105,7 @@ class SqlDialog(val project: Project?, val directory: PsiDirectory) : JDialog() 
         val listValues: MutableList<Any> = mutableListOf()
 
         tvErrorTip!!.text = ""
-        for ((key, element) in json!!.innerMap) {
+        for ((key, element) in json!!) {
             if (DataBaseUtils.SENSORKEYS.contains(key)) {
                 tvErrorTip!!.text = "含有数据库敏感字段${key}"
                 return

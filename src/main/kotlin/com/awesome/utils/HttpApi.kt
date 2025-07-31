@@ -1,7 +1,7 @@
 package com.awesome.utils
 
 import ImageUtil
-import com.alibaba.fastjson.JSONObject
+import com.alibaba.fastjson2.JSONObject
 import toJSON
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets

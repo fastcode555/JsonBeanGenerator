@@ -1,7 +1,7 @@
 package com.awesome.plugins.json2bean.database
 
-import com.alibaba.fastjson.JSONArray
-import com.alibaba.fastjson.JSONObject
+import com.alibaba.fastjson2.JSONArray
+import com.alibaba.fastjson2.JSONObject
 import com.awesome.plugins.json2bean.generators.BaseGenerator
 import com.intellij.psi.PsiDirectory
 import toCamel
@@ -55,7 +55,7 @@ class DartDataBaseGenerator(
         } else if (obj is JSONArray) {
             parseObj = obj[0] as JSONObject
         }
-        for ((key, element) in parseObj!!.innerMap) {
+        for ((key, element) in parseObj!!) {
             if (element is JSONObject || element is JSONArray) {
                 builder.append("      `$key` TEXT,\n")
             } else {

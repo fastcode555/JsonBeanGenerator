@@ -1,7 +1,7 @@
 package com.awesome.plugins.json2bean.generators
 
-import com.alibaba.fastjson.JSONArray
-import com.alibaba.fastjson.JSONObject
+import com.alibaba.fastjson2.JSONArray
+import com.alibaba.fastjson2.JSONObject
 import mergeKeys
 import toCamel
 import toUpperCamel
@@ -57,7 +57,7 @@ class DartJsonGenerator(
             parseObj = obj.mergeKeys() as JSONObject
         }
         builder.append(generateClassHeader(uniqueClassName, sqliteEnable))
-        for ((key, element) in parseObj!!.innerMap) {
+        for ((key, element) in parseObj!!) {
             if (element is JSONObject) {
                 builder.append("  ${key.toUpperCamel()}? ${key.toCamel()};\n")
                 constructorMethod.append("    this.${key.toCamel()},\n")

@@ -1,7 +1,7 @@
 package com.awesome.plugins.json2bean.generators.ktgenerators
 
-import com.alibaba.fastjson.JSONArray
-import com.alibaba.fastjson.JSONObject
+import com.alibaba.fastjson2.JSONArray
+import com.alibaba.fastjson2.JSONObject
 import com.awesome.plugins.json2bean.generators.BaseGenerator
 import com.intellij.psi.PsiDirectory
 import mergeKeys
@@ -78,7 +78,7 @@ class KtGsonGenerator(
             parseObj = obj.mergeKeys() as JSONObject
         }
         builder.append(generateClassHeader(uniqueClassName))
-        for ((key, element) in parseObj!!.innerMap) {
+        for ((key, element) in parseObj!!) {
             if (element is JSONObject) {
                 builder.append("${key.prefix()}${key.toUpperCamel()}?,\n")
                 classes[key.toUpperCamel()] = parseJson(element, key.toUpperCamel(), classes)

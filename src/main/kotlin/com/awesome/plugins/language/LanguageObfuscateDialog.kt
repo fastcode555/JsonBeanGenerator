@@ -1,7 +1,7 @@
 package com.awesome.plugins.language
 
 import clearSymbol
-import com.alibaba.fastjson.JSONObject
+import com.alibaba.fastjson2.JSONObject
 import com.awesome.common.MultiBase
 import com.awesome.common.PluginProps
 import com.awesome.utils.*
@@ -76,7 +76,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
                     return@forEach
                 }
                 val removeKeys = arrayListOf<String>()
-                for ((key, _) in json.innerMap) {
+                for ((key, _) in json) {
                     if (!allKeys.contains(key)) {
                         removeKeys.add(key)
                     }
@@ -89,7 +89,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
                 for ((key, newKey) in keyLists) {
                     newJson.put(newKey, json.remove(key))
                 }
-                for ((key, ele) in json.innerMap) {
+                for ((key, ele) in json) {
                     newJson.put(key, ele)
                 }
                 it.writeText(newJson.toJSONString())
@@ -150,7 +150,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
                     return@forEach
                 }
                 val removeKeys = arrayListOf<String>()
-                for ((key, _) in json.innerMap) {
+                for ((key, _) in json) {
                     if (!allKeys.contains(key)) {
                         removeKeys.add(key)
                     }
@@ -160,7 +160,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
                     json.remove(key)
                 }
                 val newJson = JSONObject()
-                for ((key, ele) in json.innerMap) {
+                for ((key, ele) in json) {
                     newJson.put(restoreKeys[key], ele)
                 }
                 it.writeText(newJson.toJSONString().trimJson())
@@ -255,7 +255,7 @@ class LanguageObfuscateDialog(val editor: Editor?, val psiFile: PsiFile) : JDial
             editor ?: return
             val json = file.readText().toJSON() as JSONObject
             val editorContent = editor.document.text
-            for ((key, element) in json.innerMap) {
+            for ((key, element) in json) {
                 val idKey = key?.newIdKey(editorContent)
                 if (editorContent.contains("\"${element}\"") || editorContent.contains("'${element}'")) {
                     continue
