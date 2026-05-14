@@ -81,6 +81,9 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
     //是否支持Clone的方法
     var rbClone: JRadioButton? = null
 
+    //是否生成 .g.dart 拆分文件
+    var cbSplitGFile: JCheckBox? = null
+
     //属性帮助类
     private var properties: PropertiesHelper? = null
 
@@ -134,30 +137,46 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         if (isEmpty(tvClassField?.text)) {
             tvClassField!!.text = "auto_root"
         }
-        val file = File(mDirectory.virtualFile.path, tvClassField?.text + fileType)
-        if (!file.exists()) {
-            try {
-                mDirectory.run {
-                    file.writeText(json2Bean())
-                    //生成数据库基类跟dao类
-                    println("isSelected:${cbSqlite!!.isSelected}  $fileType")
-                    if (cbSqlite!!.isSelected && fileType == ".dart" && !TextUtils.isEmpty(tvPrimaryKeyListener.getText())) {
-                        println("进入DartDataBaseGenerator")
-                        DartDataBaseGenerator(
-                            tvField!!.text,
-                            tvClassField!!.text,
-                            mDirectory,
-                            tvPrimaryKeyListener.getText(),
-                        ).startWrite()
-                    }
-                    dispose()
-                }
-            } catch (e: Exception) {
-                tvError?.text = "JSON Error!!"
-                println(e)
-            }
-        } else {
+        val mainFile = File(mDirectory.virtualFile.path, tvClassField?.text + fileType)
+        if (mainFile.exists()) {
             dispose()
+            return
+        }
+        try {
+            if (fileType == ".dart") {
+                val output = GeneratorHelper.dartGenerate(
+                    tvField!!.text,
+                    tvClassField!!.text,
+                    tvExtends!!.text,
+                    tvImplements!!.text,
+                    isSqliteEnable(),
+                    tvPrimaryKeyListener.getText(),
+                    rbClone!!.isSelected,
+                    cbSplitGFile?.isSelected == true,
+                )
+                mainFile.writeText(output.mainContent)
+                if (output.partContent != null && output.partFileName != null) {
+                    File(mDirectory.virtualFile.path, output.partFileName).writeText(output.partContent)
+                }
+                // sqlite DAO 写入逻辑保持不变
+                println("isSelected:${cbSqlite!!.isSelected}  $fileType")
+                if (cbSqlite!!.isSelected && !TextUtils.isEmpty(tvPrimaryKeyListener.getText())) {
+                    println("进入DartDataBaseGenerator")
+                    DartDataBaseGenerator(
+                        tvField!!.text,
+                        tvClassField!!.text,
+                        mDirectory,
+                        tvPrimaryKeyListener.getText(),
+                    ).startWrite()
+                }
+            } else {
+                // 非 Dart 维持原有单文件写
+                mainFile.writeText(json2Bean())
+            }
+            dispose()
+        } catch (e: Exception) {
+            tvError?.text = "JSON Error!!"
+            println(e)
         }
     }
 
@@ -182,6 +201,7 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             depType,
             mDirectory,
             rbClone!!.isSelected,
+            cbSplitGFile?.isSelected == true,
         )
     }
 
@@ -274,6 +294,10 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         rbClone!!.isSelected = properties?.getProperty(PluginProps.clone) == "true"
         rbClone!!.addActionListener {
             properties!!.setProperty(PluginProps.clone, "${rbClone!!.isSelected}")
+        }
+        cbSplitGFile!!.isSelected = properties?.getProperty(PluginProps.splitGFile) == "true"
+        cbSplitGFile!!.addActionListener {
+            properties!!.setProperty(PluginProps.splitGFile, "${cbSplitGFile!!.isSelected}")
         }
         cbSqlite!!.isVisible = fileType == ".dart"
         tvPrimaryKey!!.isVisible = cbSqlite!!.isVisible
