@@ -16,22 +16,87 @@ class DartJsonGenerator(
     private val implementClass: String,
     private val sqliteSupport: Boolean,
     private val primaryKey: String,
-    private val needClone: Boolean,//是否需要生成clone的方法
+    private val needClone: Boolean,
+    private val splitGFile: Boolean = false,
 ) :
     BaseGenerator(
         content
     ) {
     val classNames = ArrayList<String>()
 
-    override fun toString(): String {
+    /**
+     * 双文件生成结果。partContent / partFileName 在 splitGFile=false 时为 null。
+     */
+    data class Output(
+        val mainContent: String,
+        val partContent: String?,
+        val mainFileName: String,
+        val partFileName: String?,
+    )
+
+    /**
+     * 拆分模式下，部件方法体内引用字段需要加 "i." 前缀；非拆分模式留空。
+     */
+    private val selfRef: String = if (splitGFile) "i." else ""
+
+    /**
+     * Part 文件的累积内容（仅在 splitGFile=true 时填充）。
+     */
+    private val partBuilder = StringBuilder()
+
+    fun generate(): Output {
         val classes = ArrayList<java.lang.StringBuilder>()
         val classBuilder = parseJson(json, fileName.toUpperCamel(), classes, sqliteSupport)
         classes.forEach { classBuilder.append("\n").append(it) }
+
+        // 头部 import
         if (sqliteSupport) {
             classBuilder.insert(0, "import 'package:json2dart_db/json2dart_db.dart';\n")
         }
         classBuilder.insert(0, "import 'dart:convert';\n\nimport 'package:json2dart_safe/json2dart.dart';\n")
-        return classBuilder.toString()
+
+        val mainFileName = "$fileName.dart"
+        if (!splitGFile) {
+            return Output(
+                mainContent = classBuilder.toString(),
+                partContent = null,
+                mainFileName = mainFileName,
+                partFileName = null,
+            )
+        }
+
+        // 拆分模式：在 import 之后、首个 class 之前插入 part 指令。
+        val classMarker = "\nclass "
+        val classStart = classBuilder.indexOf(classMarker)
+        val partDirective = "\npart '$fileName.g.dart';\n"
+        if (classStart >= 0) {
+            classBuilder.insert(classStart, partDirective)
+        } else {
+            classBuilder.append(partDirective)
+        }
+
+        val partFileName = "$fileName.g.dart"
+        val partFull = StringBuilder()
+        partFull.append("part of '$fileName.dart';\n")
+        partFull.append(partBuilder)
+
+        return Output(
+            mainContent = classBuilder.toString(),
+            partContent = partFull.toString(),
+            mainFileName = mainFileName,
+            partFileName = partFileName,
+        )
+    }
+
+    override fun toString(): String {
+        val out = generate()
+        if (out.partContent == null) return out.mainContent
+        return buildString {
+            append("// ===== ${out.mainFileName} =====\n")
+            append(out.mainContent)
+            append("\n\n// ===== ${out.partFileName} =====\n")
+            append(out.partContent)
+        }
     }
 
     private fun parseJson(
@@ -58,71 +123,73 @@ class DartJsonGenerator(
         }
         builder.append(generateClassHeader(uniqueClassName, sqliteEnable))
         for ((key, element) in parseObj!!) {
+            val camel = key.toCamel()
+            val upper = key.toUpperCamel()
             if (element is JSONObject) {
-                builder.append("  ${key.toUpperCamel()}? ${key.toCamel()};\n")
-                constructorMethod.append("    this.${key.toCamel()},\n")
-                toJsonMethod.append("        '$key': ${key.toCamel()}?.toJson(),\n")
-                fromJsonMethod.append("      ${key.toCamel()}: json.asBean('$key', ${key.toUpperCamel()}.fromJson),\n")
-                cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()}?.clone(),\n")
-                classes.add(parseJson(element, key.toUpperCamel(), classes))
+                builder.append("  $upper? $camel;\n")
+                constructorMethod.append("    this.$camel,\n")
+                toJsonMethod.append("        '$key': $selfRef$camel?.toJson(),\n")
+                fromJsonMethod.append("      $camel: json.asBean('$key', $upper.fromJson),\n")
+                cloneMethod.append("        $camel: $selfRef$camel?.clone(),\n")
+                classes.add(parseJson(element, upper, classes))
                 continue
             }
             if (element is JSONArray) {
                 if (element.isNotEmpty()) { //简单类型 List<String>.from(json['operations'])
                     val result = element.mergeKeys()
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
-                        requiredConstructorMethod.append("    required this.${key.toCamel()},\n")
-                        builder.append("  List<${getType(result)}>? ${key.toCamel()};\n")
-                        toJsonMethod.append("        '$key': ${key.toCamel()},\n")
-                        fromJsonMethod.append("      ${key.toCamel()}: json.asList<${getType(result)}>('$key'),\n")
-                        cloneMethod.append("        ${key.toCamel()}: List<${getType(result)}>.from(${key.toCamel()}??[]),\n")
+                        requiredConstructorMethod.append("    required this.$camel,\n")
+                        builder.append("  List<${getType(result)}>? $camel;\n")
+                        toJsonMethod.append("        '$key': $selfRef$camel,\n")
+                        fromJsonMethod.append("      $camel: json.asList<${getType(result)}>('$key'),\n")
+                        cloneMethod.append("        $camel: List<${getType(result)}>.from($selfRef$camel??[]),\n")
                         continue
                     }
                     if (result is JSONArray) {
                         //二维数组类型
                         val item = result.mergeKeys()
                         if (item is String || item is Int || item is Double || item is Boolean || item is Float) {
-                            requiredConstructorMethod.append("    required this.${key.toCamel()},\n")
+                            requiredConstructorMethod.append("    required this.$camel,\n")
                             val listType = "${getType(item)}"
-                            builder.append("  List<List<${listType}>>? ${key.toCamel()};\n")
-                            toJsonMethod.append("        '$key': ${key.toCamel()},\n")
-                            fromJsonMethod.append("      ${key.toCamel()}: json.asArray2d<${listType}>('$key'),\n")
+                            builder.append("  List<List<${listType}>>? $camel;\n")
+                            toJsonMethod.append("        '$key': $selfRef$camel,\n")
+                            fromJsonMethod.append("      $camel: json.asArray2d<${listType}>('$key'),\n")
                             cloneMethod.append(
-                                "        ${key.toCamel()}: ${key.toCamel()}?.map((e) => List<${getType(item)}>.from(e)).toList(),\n"
+                                "        $camel: $selfRef$camel?.map((e) => List<${getType(item)}>.from(e)).toList(),\n"
                             )
                         } else {
-                            constructorMethod.append("    this.${key.toCamel()},\n")
-                            val listType = "${key.toUpperCamel()}"
-                            builder.append("  List<List<$listType>>? ${key.toCamel()};\n")
-                            toJsonMethod.append("        '$key': ${key.toCamel()}?.map((v) => v.map((e) => e.toJson()).toList()).toList(),\n")
-                            fromJsonMethod.append("      ${key.toCamel()}: json.asArray2d<${listType}>('$key', ${key.toUpperCamel()}.fromJson),\n")
-                            classes.add(parseJson(item, key.toUpperCamel(), classes))
-                            cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()}?.map((v) => v.map((e) => e.clone()).toList()).toList(),\n")
+                            constructorMethod.append("    this.$camel,\n")
+                            val listType = upper
+                            builder.append("  List<List<$listType>>? $camel;\n")
+                            toJsonMethod.append("        '$key': $selfRef$camel?.map((v) => v.map((e) => e.toJson()).toList()).toList(),\n")
+                            fromJsonMethod.append("      $camel: json.asArray2d<${listType}>('$key', $upper.fromJson),\n")
+                            classes.add(parseJson(item, upper, classes))
+                            cloneMethod.append("        $camel: $selfRef$camel?.map((v) => v.map((e) => e.clone()).toList()).toList(),\n")
                         }
                         continue
                     }
                     //对象类型
-                    constructorMethod.append("    this.${key.toCamel()},\n")
-                    builder.append("  List<${key.toUpperCamel()}>? ${key.toCamel()};\n")
-                    toJsonMethod.append("        '$key': ${key.toCamel()}?.map((v) => v.toJson()).toList(),\n")
-                    fromJsonMethod.append("      ${key.toCamel()}: json.asList<${key.toUpperCamel()}>('$key', ${key.toUpperCamel()}.fromJson),\n")
-                    classes.add(parseJson(result, key.toUpperCamel(), classes))
-                    cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()}?.map((v) => v.clone()).toList(),\n")
+                    constructorMethod.append("    this.$camel,\n")
+                    builder.append("  List<$upper>? $camel;\n")
+                    toJsonMethod.append("        '$key': $selfRef$camel?.map((v) => v.toJson()).toList(),\n")
+                    fromJsonMethod.append("      $camel: json.asList<$upper>('$key', $upper.fromJson),\n")
+                    classes.add(parseJson(result, upper, classes))
+                    cloneMethod.append("        $camel: $selfRef$camel?.map((v) => v.clone()).toList(),\n")
                 } else {//不明类型
-                    constructorMethod.append("    this.${key.toCamel()},\n")
-                    builder.append("  List<${key.toUpperCamel()}>? ${key.toCamel()};\n")
-                    toJsonMethod.append("        '$key': ${key.toCamel()}?.map((v) => v.toJson()).toList(),\n")
-                    fromJsonMethod.append("      ${key.toCamel()}: json.asList<${key.toUpperCamel()}>('$key', ${key.toUpperCamel()}.fromJson),\n")
-                    classes.add(parseJson(JSONObject(), key.toUpperCamel(), classes))
-                    cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()}?.map((v) => v.clone()).toList(),\n")
+                    constructorMethod.append("    this.$camel,\n")
+                    builder.append("  List<$upper>? $camel;\n")
+                    toJsonMethod.append("        '$key': $selfRef$camel?.map((v) => v.toJson()).toList(),\n")
+                    fromJsonMethod.append("      $camel: json.asList<$upper>('$key', $upper.fromJson),\n")
+                    classes.add(parseJson(JSONObject(), upper, classes))
+                    cloneMethod.append("        $camel: $selfRef$camel?.map((v) => v.clone()).toList(),\n")
                 }
                 continue
             }
-            requiredConstructorMethod.append("    required this.${key.toCamel()},\n")
-            builder.append("  ${getType(element, true)} ${key.toCamel()};\n")
-            toJsonMethod.append("        '$key': ${key.toCamel()},\n")
-            fromJsonMethod.append("      ${key.toCamel()}: json.${getParseType(element)}('$key'),\n")
-            cloneMethod.append("        ${key.toCamel()}: ${key.toCamel()},\n")
+            requiredConstructorMethod.append("    required this.$camel,\n")
+            builder.append("  ${getType(element, true)} $camel;\n")
+            toJsonMethod.append("        '$key': $selfRef$camel,\n")
+            fromJsonMethod.append("      $camel: json.${getParseType(element)}('$key'),\n")
+            cloneMethod.append("        $camel: $selfRef$camel,\n")
         }
 
         requiredConstructorMethod.append(constructorMethod)
@@ -133,40 +200,16 @@ class DartJsonGenerator(
 
         builder.append(construtorMethod(requiredConstructorMethod, uniqueClassName, sqliteEnable))
 
-        builder.append(cloneMethod(cloneMethod, uniqueClassName, sqliteEnable))
+        // clone — 拆分模式下，主类放瘦委托，方法体进 partBuilder
+        appendCloneSection(builder, cloneMethod, uniqueClassName, sqliteEnable)
 
-        val isToJsonNotEmpty = toJsonMethod.isNotEmpty()
+        // toJson — 拆分模式下，主类放瘦委托，方法体进 partBuilder
+        appendToJsonSection(builder, toJsonMethod, uniqueClassName, sqliteEnable, isNeed2AddPrimayKey)
 
-        if (isToJsonNotEmpty) {
-            if (sqliteEnable && isNeed2AddPrimayKey) {
-                toJsonMethod.insert(
-                    0,
-                    "\n  @override\n  Map<String, dynamic> toJson() => {\n"
-                )
-                toJsonMethod.append("        '$primaryKey': ${primaryKey.toCamel()}\n")
-            } else {
-                toJsonMethod.insert(0, "\n  Map<String, dynamic> toJson() => {\n")
-            }
-            builder.append(toJsonMethod).append("      };\n")
-        } else {
-            toJsonMethod.insert(0, "\n  Map<String, dynamic> toJson() => {};\n")
-            builder.append(toJsonMethod)
-        }
+        // fromJson — 拆分模式下，主类只保留 factory 委托，方法体进 partBuilder
+        appendFromJsonSection(builder, fromJsonMethod, uniqueClassName, sqliteEnable, isNeed2AddPrimayKey)
 
-        if (sqliteEnable && isNeed2AddPrimayKey) {
-            fromJsonMethod.append("     ${primaryKey.toCamel()} : json.asInt('$primaryKey'),\n")
-        }
-        if (fromJsonMethod.isNotEmpty()) {
-            fromJsonMethod.insert(
-                0,
-                "\n  factory ${uniqueClassName}.fromJson(Map json) {\n    return ${uniqueClassName}(\n"
-            )
-            builder.append(fromJsonMethod.append("    );\n  }\n"))
-        } else {
-            fromJsonMethod.append("\n  factory ${uniqueClassName}.fromJson(Map json) {\n    return ${uniqueClassName}();\n  }\n")
-            builder.append(fromJsonMethod)
-        }
-
+        // sqlite 类绑定成员永远留在主类（part 文件无法添加类成员）
         if (sqliteEnable) {
             val dataPrimaryKey = primaryKey.toCamel()
             builder.append("\n @override\n Map<String, dynamic> primaryKeyAndValue() => {\"${primaryKey}\": $dataPrimaryKey};\n\n")
@@ -176,6 +219,138 @@ class DartJsonGenerator(
         builder.append("\n  @override\n  String toString() => jsonEncode(toJson());\n")
         builder.append("}")
         return builder
+    }
+
+    /**
+     * 输出 clone 段：
+     * - 拆分关闭：行为与改造前一致（方法体内联主类）。
+     * - 拆分开启：主类只放 `Foo clone() => _$FooClone(this);`，方法体走 partBuilder。
+     */
+    private fun appendCloneSection(
+        builder: StringBuilder,
+        cloneBody: StringBuilder,
+        uniqueClassName: String,
+        sqliteEnable: Boolean,
+    ) {
+        if (!needClone) return
+
+        // sqlite 主键字段补齐（参照原行 206-208 的位置和判定）
+        if (sqliteEnable && !cloneBody.contains(primaryKey.toCamel())) {
+            cloneBody.append("        ${primaryKey.toCamel()}: $selfRef${primaryKey.toCamel()},\n")
+        }
+
+        if (!splitGFile) {
+            // 与改造前一致：方法体内联
+            if (cloneBody.isNotEmpty()) {
+                cloneBody.insert(0, "\n $uniqueClassName clone() => $uniqueClassName(\n")
+                cloneBody.append("      );\n\n")
+            } else {
+                cloneBody.append("\n $uniqueClassName clone() => $uniqueClassName();\n\n")
+            }
+            builder.append(cloneBody)
+            return
+        }
+
+        // 拆分模式：主类瘦委托
+        builder.append("\n $uniqueClassName clone() => _\$${uniqueClassName}Clone(this);\n\n")
+
+        // part 文件:顶层函数
+        if (cloneBody.isNotEmpty()) {
+            partBuilder.append("\n$uniqueClassName _\$${uniqueClassName}Clone($uniqueClassName i) => $uniqueClassName(\n")
+            partBuilder.append(cloneBody)
+            partBuilder.append("    );\n")
+        } else {
+            partBuilder.append("\n$uniqueClassName _\$${uniqueClassName}Clone($uniqueClassName i) => $uniqueClassName();\n")
+        }
+    }
+
+    /**
+     * 输出 toJson 段。
+     */
+    private fun appendToJsonSection(
+        builder: StringBuilder,
+        toJsonBody: StringBuilder,
+        uniqueClassName: String,
+        sqliteEnable: Boolean,
+        isNeed2AddPrimayKey: Boolean,
+    ) {
+        val isBodyNotEmpty = toJsonBody.isNotEmpty()
+        val needsOverride = sqliteEnable && isNeed2AddPrimayKey
+
+        if (!splitGFile) {
+            // 与改造前一致：方法体内联
+            if (isBodyNotEmpty) {
+                if (needsOverride) {
+                    toJsonBody.insert(0, "\n  @override\n  Map<String, dynamic> toJson() => {\n")
+                    toJsonBody.append("        '$primaryKey': ${primaryKey.toCamel()}\n")
+                } else {
+                    toJsonBody.insert(0, "\n  Map<String, dynamic> toJson() => {\n")
+                }
+                builder.append(toJsonBody).append("      };\n")
+            } else {
+                toJsonBody.insert(0, "\n  Map<String, dynamic> toJson() => {};\n")
+                builder.append(toJsonBody)
+            }
+            return
+        }
+
+        // 拆分模式：主类瘦委托
+        val overridePrefix = if (needsOverride) "  @override\n" else ""
+        builder.append("\n${overridePrefix}  Map<String, dynamic> toJson() => _\$${uniqueClassName}ToJson(this);\n")
+
+        // part 文件：顶层函数，体内引用通过 selfRef ("i.") 取字段值
+        if (isBodyNotEmpty) {
+            partBuilder.append("\nMap<String, dynamic> _\$${uniqueClassName}ToJson($uniqueClassName i) => {\n")
+            partBuilder.append(toJsonBody)
+            if (needsOverride) {
+                partBuilder.append("        '$primaryKey': i.${primaryKey.toCamel()}\n")
+            }
+            partBuilder.append("    };\n")
+        } else {
+            partBuilder.append("\nMap<String, dynamic> _\$${uniqueClassName}ToJson($uniqueClassName i) => {};\n")
+        }
+    }
+
+    /**
+     * 输出 fromJson 段。
+     */
+    private fun appendFromJsonSection(
+        builder: StringBuilder,
+        fromJsonBody: StringBuilder,
+        uniqueClassName: String,
+        sqliteEnable: Boolean,
+        isNeed2AddPrimayKey: Boolean,
+    ) {
+        if (sqliteEnable && isNeed2AddPrimayKey) {
+            fromJsonBody.append("     ${primaryKey.toCamel()} : json.asInt('$primaryKey'),\n")
+        }
+
+        if (!splitGFile) {
+            // 与改造前一致：factory 内联完整方法体
+            if (fromJsonBody.isNotEmpty()) {
+                fromJsonBody.insert(
+                    0,
+                    "\n  factory ${uniqueClassName}.fromJson(Map json) {\n    return ${uniqueClassName}(\n"
+                )
+                builder.append(fromJsonBody.append("    );\n  }\n"))
+            } else {
+                fromJsonBody.append("\n  factory ${uniqueClassName}.fromJson(Map json) {\n    return ${uniqueClassName}();\n  }\n")
+                builder.append(fromJsonBody)
+            }
+            return
+        }
+
+        // 拆分模式：主类瘦 factory 委托
+        builder.append("\n  factory ${uniqueClassName}.fromJson(Map json) => _\$${uniqueClassName}FromJson(json);\n")
+
+        // part 文件：顶层 factory 函数
+        if (fromJsonBody.isNotEmpty()) {
+            partBuilder.append("\n$uniqueClassName _\$${uniqueClassName}FromJson(Map json) => $uniqueClassName(\n")
+            partBuilder.append(fromJsonBody)
+            partBuilder.append("    );\n")
+        } else {
+            partBuilder.append("\n$uniqueClassName _\$${uniqueClassName}FromJson(Map json) => $uniqueClassName();\n")
+        }
     }
 
     /**
@@ -197,25 +372,6 @@ class DartJsonGenerator(
             construtorMethod.append(");\n")
         }
         return construtorMethod
-    }
-
-    /**
-     * 增加Clone的方法
-     **/
-    private fun cloneMethod(builder: StringBuilder, uniqueClassName: String, sqliteEnable: Boolean): StringBuilder {
-        if (sqliteEnable && !builder.contains(primaryKey.toCamel())) {
-            builder.append("        ${primaryKey.toCamel()}: ${primaryKey.toCamel()},\n")
-        }
-        if (needClone) {
-            if (builder.isNotEmpty()) {
-                builder.insert(0, "\n ${uniqueClassName} clone() => ${uniqueClassName}(\n")
-                builder.append("      );\n\n")
-            } else {
-                builder.append("\n ${uniqueClassName} clone() => ${uniqueClassName}();\n\n")
-            }
-            return builder
-        }
-        return java.lang.StringBuilder()
     }
 
     private fun generateClassHeader(className: String, sqliteEnable: Boolean): String {
