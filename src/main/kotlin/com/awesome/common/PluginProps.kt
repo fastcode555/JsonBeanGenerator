@@ -39,4 +39,7 @@ object PluginProps {
 
     ///配置生成的数据的key
     const val translationKey = "plugin.translationKey"
+
+    ///是否在生成 Dart 时拆分出 .g.dart part 文件
+    const val splitGFile = "plugin.splitGFile"
 }
