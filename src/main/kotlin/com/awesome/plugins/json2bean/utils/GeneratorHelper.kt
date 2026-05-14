@@ -11,7 +11,7 @@ import com.intellij.psi.PsiDirectory
 object GeneratorHelper {
 
     /**
-     * json转成bean的方法
+     * json转成bean的方法（预览或非 Dart 路径用，返回单个字符串）
      **/
     fun json2Bean(
         fileType: String, content: String,
@@ -23,6 +23,7 @@ object GeneratorHelper {
         depType: String,
         psiDirectory: PsiDirectory,
         needClone: Boolean,
+        splitGFile: Boolean = false,
     ): String {
         if (fileType == ".dart") {
             return DartJsonGenerator(
@@ -33,6 +34,7 @@ object GeneratorHelper {
                 isSqliteEnable,
                 primaryKey,
                 needClone,
+                splitGFile,
             ).toString()
         } else if (fileType == ".ts") {
             return TsJsonGenerator(
@@ -57,7 +59,33 @@ object GeneratorHelper {
             isSqliteEnable,
             primaryKey,
             needClone,
+            splitGFile,
         ).toString()
+    }
+
+    /**
+     * Dart 双文件生成入口：写文件路径用，返回主文件与可选 part 文件的内容。
+     */
+    fun dartGenerate(
+        content: String,
+        className: String,
+        extendName: String,
+        impName: String,
+        isSqliteEnable: Boolean,
+        primaryKey: String,
+        needClone: Boolean,
+        splitGFile: Boolean,
+    ): DartJsonGenerator.Output {
+        return DartJsonGenerator(
+            content,
+            className,
+            extendName,
+            impName,
+            isSqliteEnable,
+            primaryKey,
+            needClone,
+            splitGFile,
+        ).generate()
     }
 
     fun json2KtOrJava(
