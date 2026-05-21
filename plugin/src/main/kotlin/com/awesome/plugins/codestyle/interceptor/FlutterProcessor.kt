@@ -1,6 +1,6 @@
 package com.awesome.plugins.codestyle.interceptor
 
-import com.awesome.common.PluginProps
+import com.awesome.core.PluginProps
 import com.awesome.plugins.codestyle.base.BaseProcessor
 import com.awesome.plugins.codestyle.interceptor.common.RgbInterceptor
 import com.awesome.plugins.codestyle.interceptor.flutter.FlutterColorInterceptor

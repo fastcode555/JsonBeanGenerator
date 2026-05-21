@@ -1,26 +1,26 @@
-package com.awesome.plugins.json2bean.generators.ktgenerators
+package com.awesome.core.generators.kt
 
 import com.alibaba.fastjson2.JSONArray
 import com.alibaba.fastjson2.JSONObject
-import com.awesome.plugins.json2bean.generators.BaseGenerator
-import com.intellij.psi.PsiDirectory
+import com.awesome.core.generators.BaseGenerator
 import com.awesome.core.util.mergeKeys
+import com.awesome.core.util.toCamel
 import com.awesome.core.util.toUpperCamel
-import java.io.File
 import java.math.BigDecimal
 
 /**
- * 用于直接生成Map对象
+ * 使用FastJson解析生成的对象
  **/
-class MapKtJsonGenerator(
+class KtFastJsonGenerator(
     content: String,
     private val fileName: String,
     private val extendsClass: String,
     private val implementClass: String,
-    private val psiDir: PsiDirectory?
 ) :
-    BaseGenerator(content) {
-    private val classNames = ArrayList<String>()
+    BaseGenerator(
+        content
+    ) {
+    val classNames = ArrayList<String>()
 
     override fun toString(): String {
         val classes = HashMap<String, java.lang.StringBuilder>()
@@ -29,21 +29,6 @@ class MapKtJsonGenerator(
             classBuilder.append("\n\n").append(builder)
         }
         return classBuilder.toString().trim()
-    }
-
-    /**
-     * 生成对应的文件
-     **/
-    fun generate() {
-        val dir = psiDir ?: return // 写文件路径需要 psiDir；CLI/测试场景下走 toString() 而非 generate()
-        val classes = HashMap<String, java.lang.StringBuilder>()
-        val classBuilder = parseJson(json, fileName.toUpperCamel(), classes)
-        val file = File(dir.virtualFile.path, "${fileName.toUpperCamel()}.kt")
-        file.writeText(classBuilder.toString())
-        classes.forEach { (key, builder) ->
-            val newFile = File(dir.virtualFile.path, "${key}.kt")
-            newFile.writeText(builder.toString())
-        }
     }
 
     private fun parseJson(
@@ -102,11 +87,11 @@ class MapKtJsonGenerator(
     }
 
     private fun String.prefix(): String {
-        return "    val ${this}: "
+        return "    @JSONField(name = \"$this\") val ${this.toCamel()}: "
     }
 
     private fun generateClassHeader(className: String, isEmpty: Boolean = false): String {
-        val finalImplementClass = implementClass
+        var finalImplementClass = implementClass
         val extends = if (extendsClass.isNotEmpty()) " extends $extendsClass" else ""
         val implements =
             if (finalImplementClass.isNotEmpty()) " with $finalImplementClass" else ""

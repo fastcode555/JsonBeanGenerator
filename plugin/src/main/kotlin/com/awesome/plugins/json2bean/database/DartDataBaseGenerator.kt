@@ -2,7 +2,7 @@ package com.awesome.plugins.json2bean.database
 
 import com.alibaba.fastjson2.JSONArray
 import com.alibaba.fastjson2.JSONObject
-import com.awesome.plugins.json2bean.generators.BaseGenerator
+import com.awesome.core.generators.BaseGenerator
 import com.intellij.psi.PsiDirectory
 import com.awesome.core.util.toCamel
 import com.awesome.core.util.toUpperCamel

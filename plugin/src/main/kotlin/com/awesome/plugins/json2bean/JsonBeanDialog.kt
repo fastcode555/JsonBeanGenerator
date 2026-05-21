@@ -1,6 +1,6 @@
 package com.awesome
 
-import com.awesome.common.PluginProps
+import com.awesome.core.PluginProps
 import com.awesome.plugins.json2bean.database.DartDataBaseGenerator
 import com.awesome.plugins.json2bean.utils.GeneratorHelper
 import com.awesome.utils.JTextFieldHintListener
@@ -155,8 +155,10 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
                     cbSplitGFile?.isSelected == true,
                 )
                 mainFile.writeText(output.mainContent)
-                if (output.partContent != null && output.partFileName != null) {
-                    File(mDirectory.virtualFile.path, output.partFileName).writeText(output.partContent)
+                val partContent = output.partContent
+                val partFileName = output.partFileName
+                if (partContent != null && partFileName != null) {
+                    File(mDirectory.virtualFile.path, partFileName).writeText(partContent)
                 }
                 // sqlite DAO 写入逻辑保持不变
                 println("isSelected:${cbSqlite!!.isSelected}  $fileType")

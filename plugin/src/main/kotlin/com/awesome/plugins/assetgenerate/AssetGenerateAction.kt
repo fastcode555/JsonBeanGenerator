@@ -1,6 +1,6 @@
 package com.awesome.plugins.assetgenerate
 
-import com.awesome.common.PluginProps
+import com.awesome.core.PluginProps
 import com.awesome.plugins.assetgenerate.generator.FlutterAssetGenerator
 import com.awesome.plugins.assetgenerate.generator.WebAssetGenerator
 import com.awesome.utils.PropertiesHelper

@@ -1,6 +1,6 @@
 package com.awesome.utils
 
-import com.awesome.common.PluginProps
+import com.awesome.core.PluginProps
 import com.awesome.utils.PsiFileUtils
 import com.intellij.psi.PsiElement
 import org.apache.http.util.TextUtils

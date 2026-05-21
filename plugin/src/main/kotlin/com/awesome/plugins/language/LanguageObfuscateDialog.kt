@@ -3,7 +3,7 @@ package com.awesome.plugins.language
 import com.awesome.core.util.clearSymbol
 import com.alibaba.fastjson2.JSONObject
 import com.awesome.common.MultiBase
-import com.awesome.common.PluginProps
+import com.awesome.core.PluginProps
 import com.awesome.utils.*
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.NlsSafe

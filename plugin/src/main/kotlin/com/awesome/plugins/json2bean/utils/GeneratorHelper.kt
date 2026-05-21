@@ -1,11 +1,11 @@
 package com.awesome.plugins.json2bean.utils
 
-import com.awesome.plugins.json2bean.generators.DartJsonGenerator
-import com.awesome.plugins.json2bean.generators.PythonJsonGenerator
-import com.awesome.plugins.json2bean.generators.TsJsonGenerator
-import com.awesome.plugins.json2bean.generators.ktgenerators.KtFastJsonGenerator
-import com.awesome.plugins.json2bean.generators.ktgenerators.KtGsonGenerator
-import com.awesome.plugins.json2bean.generators.ktgenerators.MapKtJsonGenerator
+import com.awesome.core.generators.DartJsonGenerator
+import com.awesome.core.generators.PythonJsonGenerator
+import com.awesome.core.generators.TsJsonGenerator
+import com.awesome.core.generators.kt.KtFastJsonGenerator
+import com.awesome.core.generators.kt.KtGsonGenerator
+import com.awesome.core.generators.kt.MapKtJsonGenerator
 import com.intellij.psi.PsiDirectory
 
 object GeneratorHelper {

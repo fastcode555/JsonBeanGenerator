@@ -2,7 +2,7 @@ package com.awesome
 
 import com.awesome.core.util.clearSymbol
 import com.alibaba.fastjson2.JSONObject
-import com.awesome.common.PluginProps
+import com.awesome.core.PluginProps
 import com.awesome.plugins.language.LanguageDartWriter
 import com.awesome.utils.HttpApi
 import com.awesome.utils.PropertiesHelper

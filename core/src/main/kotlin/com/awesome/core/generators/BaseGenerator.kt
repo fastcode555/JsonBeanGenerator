@@ -1,4 +1,4 @@
-package com.awesome.plugins.json2bean.generators
+package com.awesome.core.generators
 
 import com.alibaba.fastjson2.JSON
 import com.awesome.core.util.toJSON

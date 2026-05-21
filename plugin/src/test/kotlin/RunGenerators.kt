@@ -1,20 +1,13 @@
-import com.awesome.plugins.json2bean.generators.DartJsonGenerator
-import com.awesome.plugins.json2bean.generators.PythonJsonGenerator
-import com.awesome.plugins.json2bean.generators.TsJsonGenerator
-import com.awesome.plugins.json2bean.generators.ktgenerators.KtFastJsonGenerator
-import com.awesome.plugins.json2bean.generators.ktgenerators.KtGsonGenerator
-import com.awesome.plugins.json2bean.generators.ktgenerators.MapKtJsonGenerator
-import com.intellij.psi.PsiDirectory
+import com.awesome.core.generators.DartJsonGenerator
+import com.awesome.core.generators.PythonJsonGenerator
+import com.awesome.core.generators.TsJsonGenerator
+import com.awesome.core.generators.kt.KtFastJsonGenerator
+import com.awesome.core.generators.kt.KtGsonGenerator
+import com.awesome.core.generators.kt.MapKtJsonGenerator
 
 /**
- * 调试用入口：把一个复杂 JSON 喂给 Dart / TS / Python 三个不依赖 PSI 的生成器，
- * 打印输出供 spec 文档采纳为 example。
- *
- * 不在这里调 Kt 三件套（MapKt / KtGson / KtFastJson），因为它们 generate() 依赖
- * PsiDirectory；但它们的 toString() 是无 PSI 依赖的，调用方式是
- *   KtGsonGenerator(json, "User", "", "", FAKE_PSI).toString()
- * —— 暂时通过 reflection 跳过 psiDir 不现实，下一步会在 RunKtGenerators 里
- * 把 toString() 路径单独跑（构造时传 null 强转，仅用于 toString()）。
+ * 调试用入口：把一个复杂 JSON 喂给所有生成器，打印输出供 spec 文档采纳为 example。
+ * 所有生成器已移入 :core，不再依赖 PSI。
  */
 const val FIXTURE_JSON = """
 {
@@ -102,19 +95,19 @@ fun main() {
         ).toString()
     )
 
-    // KT 三件套：psiDir 已改为可空，CLI/测试路径走 toString() 不解引用
+    // KT 三件套：psiDir 参数已移除，直接调用 toString()
     banner("Kotlin (Map)")
     println(
-        MapKtJsonGenerator(json, className, "", "", null).toString()
+        MapKtJsonGenerator(json, className, "", "").toString()
     )
 
     banner("Kotlin (Gson)")
     println(
-        KtGsonGenerator(json, className, "", "", null).toString()
+        KtGsonGenerator(json, className, "", "").toString()
     )
 
     banner("Kotlin (FastJson)")
     println(
-        KtFastJsonGenerator(json, className, "", "", null).toString()
+        KtFastJsonGenerator(json, className, "", "").toString()
     )
 }

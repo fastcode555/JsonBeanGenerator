@@ -1,13 +1,11 @@
-package com.awesome.plugins.json2bean.generators.ktgenerators
+package com.awesome.core.generators.kt
 
 import com.alibaba.fastjson2.JSONArray
 import com.alibaba.fastjson2.JSONObject
-import com.awesome.plugins.json2bean.generators.BaseGenerator
-import com.intellij.psi.PsiDirectory
+import com.awesome.core.generators.BaseGenerator
 import com.awesome.core.util.mergeKeys
 import com.awesome.core.util.toCamel
 import com.awesome.core.util.toUpperCamel
-import java.io.File
 import java.math.BigDecimal
 
 /**
@@ -18,7 +16,6 @@ class KtGsonGenerator(
     private val fileName: String,
     private val extendsClass: String,
     private val implementClass: String,
-    private val psiDir: PsiDirectory?
 ) :
     BaseGenerator(
         content
@@ -32,34 +29,6 @@ class KtGsonGenerator(
             classBuilder.append("\n\n").append(builder)
         }
         return classBuilder.toString().trim()
-    }
-
-    /**
-     * 生成对应的文件
-     **/
-    fun generate() {
-        val classes = HashMap<String, java.lang.StringBuilder>()
-        val classBuilder = parseJson(json, fileName.toUpperCamel(), classes)
-        write2File(classes.keys, fileName.toUpperCamel(), classBuilder)
-        //生成对应文件值
-        classes.forEach { (key, builder) ->
-            write2File(classes.keys, key, builder)
-        }
-    }
-
-    private fun write2File(keys: MutableSet<String>, key: String, builder: java.lang.StringBuilder) {
-        val dir = psiDir ?: return // 写文件路径需要 psiDir；CLI/测试场景下走 toString() 而非 generate()
-        val headerBuilder = StringBuilder()
-        headerBuilder.append("package ${dir.virtualFile.nameWithoutExtension}\n\n")
-        keys.forEach {
-            if ((builder.contains(" $it") || builder.contains("<$it")) && !builder.contains("class $it")) {
-                headerBuilder.append("import $it\n")
-            }
-        }
-        headerBuilder.append("import com.google.gson.annotations.SerializedName\n\n")
-        val file = File(dir.virtualFile.path, "${key}.kt")
-        builder.insert(0, headerBuilder)
-        file.writeText(builder.toString())
     }
 
     private fun parseJson(
