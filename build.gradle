@@ -38,3 +38,13 @@ patchPluginXml {
     sinceBuild = "241.14494.240"
     untilBuild = "261.*"
 }
+
+// 调试用：直接跑 src/test/kotlin/RunGenerators.kt 的 main()，
+// 把 Dart / TS / Python 三个生成器的输出打到 stdout。
+tasks.register('runGenerators', JavaExec) {
+    group = 'verification'
+    description = 'Run RunGeneratorsKt.main() to dump generator outputs.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'RunGeneratorsKt'
+    standardOutput = System.out
+}
