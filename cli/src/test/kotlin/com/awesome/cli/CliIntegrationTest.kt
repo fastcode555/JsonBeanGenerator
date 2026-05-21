@@ -123,4 +123,12 @@ class CliIntegrationTest {
         code shouldBe 1
         Files.exists(output) shouldBe false
     }
+
+    @Test
+    fun `--sqlite without --primary-key returns exit code 2`(@TempDir tmp: Path) {
+        val output = tmp.resolve("Foo.dart")
+        val code = exec("dart", "-j", """{"a":1}""", "-o", output.toString(), "--sqlite")
+        code shouldBe 2
+        Files.exists(output) shouldBe false
+    }
 }

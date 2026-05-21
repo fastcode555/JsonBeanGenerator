@@ -19,6 +19,14 @@ class DartCommand : BeanCommand() {
     @Option(names = ["--clone"], description = ["Emit clone() method"])
     var clone: Boolean = false
 
+    override fun call(): Int {
+        if (sqlite && primaryKey.isBlank()) {
+            System.err.println("error: --sqlite requires --primary-key")
+            return 2
+        }
+        return super.call()
+    }
+
     override fun language() = "dart"
 
     override fun extraOptions(): Map<String, Any?> = mapOf(
