@@ -169,3 +169,41 @@ plugin.languageDir=/lib/res
 ![Alt](pic/language_example_6.png)
 
 ### 这个工程就是一个基本的范例工程 [example](https://github.com/fastcode555/Json2Dart_Null_Safety/tree/develop_database/example)
+
+# Command-line tool (json2bean CLI)
+
+For users not on IntelliJ IDEA — same generator engine, run from the shell.
+
+## Install
+
+Download `json2bean-<version>-all.jar` from [Releases](https://github.com/fastcode555/JsonBeanGenerator/releases), then:
+
+```bash
+alias json2bean='java -jar /path/to/json2bean-1.10.0-all.jar'
+```
+
+Requires JDK 17+.
+
+## Usage
+
+```bash
+# Dart (default, non-split)
+json2bean dart -i user.json -o User.dart
+
+# Dart with .g.dart part file + clone()
+json2bean dart -i user.json -o User.dart --split-g --clone
+
+# Kotlin (default Gson; alternatives: fastjson | none)
+json2bean kt -i user.json -o User.kt --dep gson
+
+# TypeScript interface
+json2bean ts -i user.json -o User.ts
+
+# Java Gson POJO
+json2bean java -i user.json -o User.java
+
+# Inline JSON instead of a file
+json2bean ts -j '{"name":"x"}' -o X.ts
+```
+
+Run `json2bean <subcommand> --help` for the full option list.
