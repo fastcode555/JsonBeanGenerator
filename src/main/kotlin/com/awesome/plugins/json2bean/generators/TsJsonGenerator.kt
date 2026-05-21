@@ -4,6 +4,7 @@ import com.alibaba.fastjson2.JSONArray
 import com.alibaba.fastjson2.JSONObject
 import mergeKeys
 import toUpperCamel
+import java.math.BigDecimal
 
 /**
  * 用于生成TypeScript对象
@@ -54,6 +55,15 @@ class TsJsonGenerator(
                     val result = element.mergeKeys()
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         builder.append("  ${key}?: ${getType(result)}[]\n")
+                    } else if (result is JSONArray) {
+                        // 二维数组：与 DartJsonGenerator 对齐
+                        val item = result.mergeKeys()
+                        if (item is String || item is Int || item is Double || item is Boolean || item is Float) {
+                            builder.append("  ${key}?: ${getType(item)}[][]\n")
+                        } else {
+                            builder.append("  ${key}?: ${key.toUpperCamel()}[][]\n")
+                            classes.add(parseJson(item, key.toUpperCamel(), classes))
+                        }
                     } else {//对象类型
                         builder.append("  ${key}?: ${key.toUpperCamel()}[]\n")
                         classes.add(parseJson(result, key.toUpperCamel(), classes))
@@ -89,7 +99,7 @@ class TsJsonGenerator(
 
     private fun getType(element: Any): String {
         if (element is String) return "string"
-        if (element is Int || element is Double || element is Float) return "number"
+        if (element is Int || element is Long || element is Double || element is Float || element is BigDecimal) return "number"
         if (element is Boolean) return "boolean"
         return "string"
     }

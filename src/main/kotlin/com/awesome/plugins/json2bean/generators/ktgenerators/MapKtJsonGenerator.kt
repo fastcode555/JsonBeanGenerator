@@ -17,7 +17,7 @@ class MapKtJsonGenerator(
     private val fileName: String,
     private val extendsClass: String,
     private val implementClass: String,
-    private val psiDir: PsiDirectory
+    private val psiDir: PsiDirectory?
 ) :
     BaseGenerator(content) {
     private val classNames = ArrayList<String>()
@@ -35,12 +35,13 @@ class MapKtJsonGenerator(
      * 生成对应的文件
      **/
     fun generate() {
+        val dir = psiDir ?: return // 写文件路径需要 psiDir；CLI/测试场景下走 toString() 而非 generate()
         val classes = HashMap<String, java.lang.StringBuilder>()
         val classBuilder = parseJson(json, fileName.toUpperCamel(), classes)
-        val file = File(psiDir.virtualFile.path, "${fileName.toUpperCamel()}.kt")
+        val file = File(dir.virtualFile.path, "${fileName.toUpperCamel()}.kt")
         file.writeText(classBuilder.toString())
         classes.forEach { (key, builder) ->
-            val newFile = File(psiDir.virtualFile.path, "${key}.kt")
+            val newFile = File(dir.virtualFile.path, "${key}.kt")
             newFile.writeText(builder.toString())
         }
     }
@@ -61,8 +62,12 @@ class MapKtJsonGenerator(
         } else if (obj is JSONArray) {
             parseObj = obj.mergeKeys() as JSONObject
         }
+        if (parseObj!!.isEmpty()) {
+            builder.append(generateClassHeader(uniqueClassName, isEmpty = true))
+            return builder
+        }
         builder.append(generateClassHeader(uniqueClassName))
-        for ((key, element) in parseObj!!) {
+        for ((key, element) in parseObj) {
             if (element is JSONObject) {
                 builder.append("${key.prefix()}${key.toUpperCamel()}?,\n")
                 classes[key.toUpperCamel()] = parseJson(element, key.toUpperCamel(), classes)
@@ -71,6 +76,15 @@ class MapKtJsonGenerator(
                     val result = element.mergeKeys()
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         builder.append("${key.prefix()}List<${getType(result)}>?,\n")
+                    } else if (result is JSONArray) {
+                        // 二维数组：与 DartJsonGenerator 对齐
+                        val item = result.mergeKeys()
+                        if (item is String || item is Int || item is Double || item is Boolean || item is Float) {
+                            builder.append("${key.prefix()}List<List<${getType(item)}>>?,\n")
+                        } else {
+                            builder.append("${key.prefix()}List<List<${key.toUpperCamel()}>>?,\n")
+                            classes[key.toUpperCamel()] = parseJson(item, key.toUpperCamel(), classes)
+                        }
                     } else {//对象类型
                         builder.append("${key.prefix()}List<${key.toUpperCamel()}>?,\n")
                         classes[key.toUpperCamel()] = parseJson(result, key.toUpperCamel(), classes)
@@ -91,11 +105,13 @@ class MapKtJsonGenerator(
         return "    val ${this}: "
     }
 
-    private fun generateClassHeader(className: String): String {
+    private fun generateClassHeader(className: String, isEmpty: Boolean = false): String {
         val finalImplementClass = implementClass
         val extends = if (extendsClass.isNotEmpty()) " extends $extendsClass" else ""
         val implements =
             if (finalImplementClass.isNotEmpty()) " with $finalImplementClass" else ""
+        // 空字段的类不能用 data class（Kotlin 要求至少一个主构造参数）
+        if (isEmpty) return "class $className$extends$implements\n"
         return "data class $className$extends$implements (\n"
     }
 
@@ -111,6 +127,7 @@ class MapKtJsonGenerator(
     private fun getType(element: Any): String {
         if (element is String) return "String"
         if (element is Int) return "Int"
+        if (element is Long) return "Long"
         if (element is Double || element is BigDecimal) return "Double"
         if (element is Float) return "Float"
         if (element is Boolean) return "Boolean"

@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSONObject
 import mergeKeys
 import toLowerUnderScore
 import toUpperCamel
+import java.math.BigDecimal
 
 /**
  * 用于生成对应的Python对象
@@ -66,8 +67,14 @@ class PythonJsonGenerator(
                     if (result is String || result is Int || result is Double || result is Boolean || result is Float) {
                         initHeaderMethod.append("${key.toLowerUnderScore()}: List[${getParseType(result)}] = None,")
                         fromJsonMethod.append("\t\t\t\t${key.toLowerUnderScore()} = [element for element in _dict['$key'] if element],\n")
-
                         fromJsonTurpleMethod.append("\t\t\t\t${key.toLowerUnderScore()} = json.loads(_dict[$count]) if len(_dict) > $count else None,\n")
+                        toJsonMethod.append("\t\t\t'${key}': self.${key.toLowerUnderScore()},\n")
+                    } else if (result is JSONArray) {
+                        // 二维数组 — Python 是动态语言，统一按 list 处理，不再下钻类型
+                        initHeaderMethod.append("${key.toLowerUnderScore()}: list = None,")
+                        fromJsonMethod.append("\t\t\t\t${key.toLowerUnderScore()} = _dict.get('$key'),\n")
+                        fromJsonTurpleMethod.append("\t\t\t\t${key.toLowerUnderScore()} = json.loads(_dict[$count]) if len(_dict) > $count else None,\n")
+                        toJsonMethod.append("\t\t\t'${key}': self.${key.toLowerUnderScore()},\n")
                     } else {//对象类型
                         initHeaderMethod.append("${key.toLowerUnderScore()}: list = None,")
                         fromJson(
@@ -108,7 +115,13 @@ class PythonJsonGenerator(
         )
 
         builder.append(initHeaderMethod.substring(0, initHeaderMethod.length - 1)).append("):\n")
-        builder.append(initMethod).append("\n")
+        if (initMethod.isEmpty()) {
+            // 空字段类需要 pass 占位，否则 Python 报 IndentationError
+            builder.append("\t\tpass\n")
+        } else {
+            builder.append(initMethod)
+        }
+        builder.append("\n")
         builder.append(fromJsonTurpleMethod).append("\t\t\t)\n")
         builder.append("\t\telse:\n")
         builder.append("\t\t\treturn cls(\n").append(fromJsonMethod).append("\t\t\t)\n")
@@ -123,11 +136,11 @@ class PythonJsonGenerator(
     private fun getParseType(result: Any): String {
         if (result is String) {
             return "str"
-        } else if (result is Int) {
+        } else if (result is Int || result is Long) {
             return "int"
         } else if (result is Boolean) {
             return "bool"
-        } else if (result is Double || result is Float) {
+        } else if (result is Double || result is Float || result is BigDecimal) {
             return "float"
         } else if (result is JSONArray || result is List<*>) {
             return "list"

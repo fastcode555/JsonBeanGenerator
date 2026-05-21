@@ -5,6 +5,7 @@ import com.alibaba.fastjson2.JSONObject
 import mergeKeys
 import toCamel
 import toUpperCamel
+import java.math.BigDecimal
 
 /**
  * 用于生成对应的dart对象
@@ -396,16 +397,16 @@ class DartJsonGenerator(
 
     private fun getParseType(element: Any): String {
         if (element is String) return "asString"
-        if (element is Int) return "asInt"
-        if (element is Double || element is Float) return "asDouble"
+        if (element is Int || element is Long) return "asInt"
+        if (element is Double || element is Float || element is BigDecimal) return "asDouble"
         if (element is Boolean) return "asBool"
         return "asString"
     }
 
     private fun getType(element: Any, isFinal: Boolean = false): String {
         if (element is String) return if (isFinal) "final String" else "String"
-        if (element is Int) return if (isFinal) "final int" else "int"
-        if (element is Double || element is Float) return if (isFinal) "final double" else "double"
+        if (element is Int || element is Long) return if (isFinal) "final int" else "int"
+        if (element is Double || element is Float || element is BigDecimal) return if (isFinal) "final double" else "double"
         if (element is Boolean) return if (isFinal) "final bool" else "bool"
         return if (isFinal) "final String" else "String"
     }
