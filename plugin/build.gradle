@@ -7,10 +7,6 @@ base {
     archivesName = 'JsonBeanGenerator'
 }
 
-group 'org.example'
-version '1.10.0-SNAPSHOT'
-
-
 repositories {
     mavenCentral()
 

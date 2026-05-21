@@ -1,3 +1,5 @@
 // Root project — only shared metadata. Module configs live in core/, plugin/, cli/.
-group 'org.example'
-version '1.10.0-SNAPSHOT'
+allprojects {
+    group = 'org.example'
+    version = '1.10.0-SNAPSHOT'
+}
