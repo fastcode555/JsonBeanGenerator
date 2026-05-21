@@ -1,0 +1,36 @@
+data class User (
+    @JSONField(name = "user_id") val userId: Int?,
+    @JSONField(name = "user_name") val userName: String?,
+    @JSONField(name = "is_vip") val isVip: Boolean?,
+    @JSONField(name = "balance") val balance: Double?,
+    @JSONField(name = "tags") val tags: List<String>?,
+    @JSONField(name = "scores") val scores: List<List<Int>>?,
+    @JSONField(name = "empty_list") val emptyList: List<EmptyList>?,
+    @JSONField(name = "address") val address: Address?,
+    @JSONField(name = "orders") val orders: List<Orders>?,
+)
+
+class EmptyList
+
+
+data class Geo (
+    @JSONField(name = "lat") val lat: Double?,
+    @JSONField(name = "lng") val lng: Double?,
+)
+
+data class Orders (
+    @JSONField(name = "order_id") val orderId: String?,
+    @JSONField(name = "total") val total: Double?,
+    @JSONField(name = "items") val items: List<Items>?,
+)
+
+data class Address (
+    @JSONField(name = "city") val city: String?,
+    @JSONField(name = "zip_code") val zipCode: String?,
+    @JSONField(name = "geo") val geo: Geo?,
+)
+
+data class Items (
+    @JSONField(name = "sku") val sku: String?,
+    @JSONField(name = "qty") val qty: Int?,
+)

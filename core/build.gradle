@@ -28,3 +28,10 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
+
+tasks.register('captureFixtures', JavaExec) {
+    group = 'verification'
+    description = 'Recapture expected.* golden files from current generator output.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.awesome.core.generators.CaptureFixturesKt'
+}

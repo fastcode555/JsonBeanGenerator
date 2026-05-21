@@ -1,0 +1,36 @@
+data class User (
+    val user_id: Int?,
+    val user_name: String?,
+    val is_vip: Boolean?,
+    val balance: Double?,
+    val tags: List<String>?,
+    val scores: List<List<Int>>?,
+    val empty_list: List<EmptyList>?,
+    val address: Address?,
+    val orders: List<Orders>?,
+)
+
+class EmptyList
+
+
+data class Geo (
+    val lat: Double?,
+    val lng: Double?,
+)
+
+data class Orders (
+    val order_id: String?,
+    val total: Double?,
+    val items: List<Items>?,
+)
+
+data class Address (
+    val city: String?,
+    val zip_code: String?,
+    val geo: Geo?,
+)
+
+data class Items (
+    val sku: String?,
+    val qty: Int?,
+)

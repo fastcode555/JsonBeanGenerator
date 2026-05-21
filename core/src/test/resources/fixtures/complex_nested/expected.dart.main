@@ -1,0 +1,137 @@
+import 'dart:convert';
+
+import 'package:json2dart_safe/json2dart.dart';
+
+part 'User.g.dart';
+
+class User {
+  final int userId;
+  final String userName;
+  final bool isVip;
+  final double balance;
+  List<String>? tags;
+  List<List<int>>? scores;
+  List<EmptyList>? emptyList;
+  Address? address;
+  List<Orders>? orders;
+
+  User({
+    required this.userId,
+    required this.userName,
+    required this.isVip,
+    required this.balance,
+    required this.tags,
+    required this.scores,
+    this.emptyList,
+    this.address,
+    this.orders,
+  });
+
+ User clone() => _$UserClone(this);
+
+
+  Map<String, dynamic> toJson() => _$UserToJson(this);
+
+  factory User.fromJson(Map json) => _$UserFromJson(json);
+
+  @override
+  String toString() => jsonEncode(toJson());
+}
+
+class EmptyList {
+  EmptyList();
+
+ EmptyList clone() => _$EmptyListClone(this);
+
+
+  Map<String, dynamic> toJson() => _$EmptyListToJson(this);
+
+  factory EmptyList.fromJson(Map json) => _$EmptyListFromJson(json);
+
+  @override
+  String toString() => jsonEncode(toJson());
+}
+
+class Geo {
+  final double lat;
+  final double lng;
+
+  Geo({
+    required this.lat,
+    required this.lng,
+  });
+
+ Geo clone() => _$GeoClone(this);
+
+
+  Map<String, dynamic> toJson() => _$GeoToJson(this);
+
+  factory Geo.fromJson(Map json) => _$GeoFromJson(json);
+
+  @override
+  String toString() => jsonEncode(toJson());
+}
+
+class Address {
+  final String city;
+  final String zipCode;
+  Geo? geo;
+
+  Address({
+    required this.city,
+    required this.zipCode,
+    this.geo,
+  });
+
+ Address clone() => _$AddressClone(this);
+
+
+  Map<String, dynamic> toJson() => _$AddressToJson(this);
+
+  factory Address.fromJson(Map json) => _$AddressFromJson(json);
+
+  @override
+  String toString() => jsonEncode(toJson());
+}
+
+class Items {
+  final String sku;
+  final int qty;
+
+  Items({
+    required this.sku,
+    required this.qty,
+  });
+
+ Items clone() => _$ItemsClone(this);
+
+
+  Map<String, dynamic> toJson() => _$ItemsToJson(this);
+
+  factory Items.fromJson(Map json) => _$ItemsFromJson(json);
+
+  @override
+  String toString() => jsonEncode(toJson());
+}
+
+class Orders {
+  final String orderId;
+  final double total;
+  List<Items>? items;
+
+  Orders({
+    required this.orderId,
+    required this.total,
+    this.items,
+  });
+
+ Orders clone() => _$OrdersClone(this);
+
+
+  Map<String, dynamic> toJson() => _$OrdersToJson(this);
+
+  factory Orders.fromJson(Map json) => _$OrdersFromJson(json);
+
+  @override
+  String toString() => jsonEncode(toJson());
+}
