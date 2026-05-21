@@ -1,4 +1,36 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.1.10'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'application'
 }
-// Real config arrives in Task 15
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(':core')
+    implementation "info.picocli:picocli:4.7.6"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    testImplementation "io.kotest:kotest-assertions-core:5.9.0"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+application {
+    mainClass = 'com.awesome.cli.MainKt'
+}
+
+shadowJar {
+    archiveBaseName.set('json2bean')
+    archiveClassifier.set('all')
+    mergeServiceFiles()
+}
