@@ -1,4 +1,30 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '2.1.10'
 }
-// Real config arrives in Task 3
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api "com.alibaba.fastjson2:fastjson2:2.0.53"
+    api "com.google.guava:guava:33.3.1-jre"   // for CaseFormat (used by Naming.kt)
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    testImplementation "io.kotest:kotest-assertions-core:5.9.0"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
