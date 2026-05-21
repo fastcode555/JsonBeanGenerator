@@ -1,4 +1,4 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm'
+    id 'org.jetbrains.kotlin.jvm' version '2.1.10'
 }
 // Real config arrives in Task 3

@@ -1,0 +1,58 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '2.1.10'
+    id 'org.jetbrains.intellij.platform' version '2.2.0'
+}
+
+base {
+    archivesName = 'JsonBeanGenerator'
+}
+
+group 'org.example'
+version '1.10.0-SNAPSHOT'
+
+
+repositories {
+    mavenCentral()
+
+    maven { url "https://www.jetbrains.com/intellij-repository/releases" }  // 关键仓库
+    maven { url "https://cache-redirector.jetbrains.com/intellij-dependencies" }
+
+    intellijPlatform {
+        defaultRepositories()
+    }
+}
+
+dependencies {
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    implementation "com.alibaba.fastjson2:fastjson2:2.0.53"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+}
+
+
+dependencies {
+    intellijPlatform {
+        intellijIdeaCommunity("2024.3.1")
+    }
+}
+
+patchPluginXml {
+    changeNotes = """
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>"""
+    sinceBuild = "241.14494.240"
+    untilBuild = "261.*"
+}
+
+buildPlugin {
+    archiveBaseName = 'JsonBeanGenerator'
+}
+
+// 调试用：直接跑 src/test/kotlin/RunGenerators.kt 的 main()，
+// 把 Dart / TS / Python 三个生成器的输出打到 stdout。
+tasks.register('runGenerators', JavaExec) {
+    group = 'verification'
+    description = 'Run RunGeneratorsKt.main() to dump generator outputs.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'RunGeneratorsKt'
+    standardOutput = System.out
+}
