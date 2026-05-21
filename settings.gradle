@@ -1,2 +1,3 @@
 rootProject.name = 'JsonBeanGenerator'
 
+include 'core', 'plugin', 'cli'
