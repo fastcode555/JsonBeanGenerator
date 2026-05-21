@@ -9,7 +9,7 @@ import com.intellij.openapi.actionSystem.CommonDataKeys
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import firstUpperCamel
+import com.awesome.core.util.firstUpperCamel
 import java.io.File
 
 /**

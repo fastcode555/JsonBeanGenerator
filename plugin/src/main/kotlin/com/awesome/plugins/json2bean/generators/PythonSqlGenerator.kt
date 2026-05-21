@@ -2,7 +2,7 @@ package com.awesome.plugins.json2bean.generators
 
 import com.awesome.utils.runWriteCmd
 import com.intellij.psi.PsiDirectory
-import toUpperCamel
+import com.awesome.core.util.toUpperCamel
 import java.awt.Dialog
 import java.io.File
 

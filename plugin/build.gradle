@@ -23,6 +23,7 @@ repositories {
 }
 
 dependencies {
+    implementation project(':core')
     implementation 'org.apache.httpcomponents:httpclient:4.5.14'
     implementation "com.alibaba.fastjson2:fastjson2:2.0.53"
     implementation "org.jetbrains.kotlin:kotlin-stdlib"

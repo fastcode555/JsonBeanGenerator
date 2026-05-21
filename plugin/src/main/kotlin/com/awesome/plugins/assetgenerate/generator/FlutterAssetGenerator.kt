@@ -1,11 +1,11 @@
 package com.awesome.plugins.assetgenerate.generator
 
-import clearSymbol
+import com.awesome.core.util.clearSymbol
 import com.awesome.utils.basePath
 import com.awesome.utils.moduleName
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiFile
-import toCamel
+import com.awesome.core.util.toCamel
 import java.io.File
 import java.lang.StringBuilder
 

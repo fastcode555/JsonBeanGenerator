@@ -1,7 +1,7 @@
 package com.awesome.plugins.json2bean.generators
 
 import com.alibaba.fastjson2.JSON
-import toJSON
+import com.awesome.core.util.toJSON
 
 abstract class BaseGenerator(content: String) {
     protected var json: Any? = null

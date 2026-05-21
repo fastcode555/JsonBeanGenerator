@@ -5,7 +5,7 @@ import com.alibaba.fastjson2.JSONArray
 import com.alibaba.fastjson2.JSONObject
 import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.editor.Editor
-import toJSON
+import com.awesome.core.util.toJSON
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent

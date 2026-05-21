@@ -1,6 +1,6 @@
 package com.awesome.plugins.language
 
-import clearSymbol
+import com.awesome.core.util.clearSymbol
 import com.alibaba.fastjson2.JSONObject
 import com.awesome.common.MultiBase
 import com.awesome.common.PluginProps
@@ -9,9 +9,9 @@ import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.util.NlsSafe
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiFileSystemItem
-import toCamel
-import toJSON
-import toUpperCamel
+import com.awesome.core.util.toCamel
+import com.awesome.core.util.toJSON
+import com.awesome.core.util.toUpperCamel
 import java.awt.event.ActionEvent
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter

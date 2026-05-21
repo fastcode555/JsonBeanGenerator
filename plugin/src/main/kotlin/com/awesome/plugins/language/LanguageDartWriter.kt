@@ -4,7 +4,7 @@ import com.awesome.utils.moduleName
 import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import toCamel
+import com.awesome.core.util.toCamel
 import java.io.File
 
 class LanguageDartWriter(

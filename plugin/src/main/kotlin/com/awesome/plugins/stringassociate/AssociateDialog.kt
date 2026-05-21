@@ -1,12 +1,12 @@
 package com.awesome.plugins.stringassociate
 
-import clearSymbol
+import com.awesome.core.util.clearSymbol
 import com.awesome.utils.runWriteCmd
 import com.intellij.openapi.editor.Editor
-import toCamel
-import toLowerUnderScore
-import toUpperCamel
-import toUpperUnderScore
+import com.awesome.core.util.toCamel
+import com.awesome.core.util.toLowerUnderScore
+import com.awesome.core.util.toUpperCamel
+import com.awesome.core.util.toUpperUnderScore
 import java.awt.FlowLayout
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter

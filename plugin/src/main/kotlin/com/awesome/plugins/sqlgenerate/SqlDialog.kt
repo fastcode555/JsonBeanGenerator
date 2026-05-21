@@ -8,8 +8,8 @@ import com.awesome.utils.DataBaseUtils
 import com.intellij.openapi.project.Project
 import com.intellij.psi.PsiDirectory
 import org.apache.http.util.TextUtils
-import toCamel
-import toJSON
+import com.awesome.core.util.toCamel
+import com.awesome.core.util.toJSON
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent

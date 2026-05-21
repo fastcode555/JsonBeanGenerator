@@ -6,9 +6,9 @@ import com.awesome.plugins.json2bean.utils.GeneratorHelper
 import com.awesome.utils.JTextFieldHintListener
 import com.awesome.utils.PropertiesHelper
 import com.intellij.psi.PsiDirectory
-import formatJson
+import com.awesome.core.util.formatJson
 import org.apache.http.util.TextUtils
-import toUpperCamel
+import com.awesome.core.util.toUpperCamel
 import java.awt.event.KeyEvent
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent

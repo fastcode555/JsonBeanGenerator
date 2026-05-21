@@ -1,6 +1,6 @@
 package com.awesome
 
-import clearSymbol
+import com.awesome.core.util.clearSymbol
 import com.alibaba.fastjson2.JSONObject
 import com.awesome.common.PluginProps
 import com.awesome.plugins.language.LanguageDartWriter
@@ -12,10 +12,10 @@ import com.intellij.openapi.editor.SelectionModel
 import com.intellij.psi.PsiDirectory
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import firstUpperCamel
+import com.awesome.core.util.firstUpperCamel
 import org.apache.http.util.TextUtils
-import toCamel
-import toJSON
+import com.awesome.core.util.toCamel
+import com.awesome.core.util.toJSON
 import java.awt.Label
 import java.awt.event.WindowAdapter
 import java.awt.event.WindowEvent

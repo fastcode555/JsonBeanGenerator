@@ -1,7 +1,7 @@
 package com.awesome.utils
 
 import org.apache.http.util.TextUtils
-import toCamel
+import com.awesome.core.util.toCamel
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.util.regex.Matcher

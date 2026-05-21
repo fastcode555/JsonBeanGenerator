@@ -4,8 +4,8 @@ import com.alibaba.fastjson2.JSONArray
 import com.alibaba.fastjson2.JSONObject
 import com.awesome.plugins.json2bean.generators.BaseGenerator
 import com.intellij.psi.PsiDirectory
-import mergeKeys
-import toUpperCamel
+import com.awesome.core.util.mergeKeys
+import com.awesome.core.util.toUpperCamel
 import java.io.File
 import java.math.BigDecimal
 
