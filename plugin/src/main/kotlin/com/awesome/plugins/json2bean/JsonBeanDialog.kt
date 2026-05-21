@@ -109,26 +109,14 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             tvClassField!!.text = "auto_root"
         }
         val file = File(mDirectory.virtualFile.path, tvClassField?.text.toUpperCamel() + fileType)
-        if (!file.exists()) {
-            try {
-                mDirectory.run {
-                    GeneratorHelper.json2KtOrJava(
-                        fileType,
-                        tvClassField!!.text,
-                        tvField!!.text,
-                        tvExtends!!.text,
-                        tvImplements!!.text,
-                        depType,
-                        mDirectory,
-                    )
-                    dispose()
-                }
-            } catch (e: Exception) {
-                tvError?.text = "JSON Error!!"
-                println(e)
-            }
-        } else {
+        if (file.exists()) { dispose(); return }
+        try {
+            val req = buildRequest()
+            GeneratorHelper.generateAndWrite(fileType, req, mDirectory)
             dispose()
+        } catch (e: Exception) {
+            tvError?.text = "JSON Error!!"
+            println(e)
         }
     }
 
@@ -143,37 +131,16 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             return
         }
         try {
-            if (fileType == ".dart") {
-                val output = GeneratorHelper.dartGenerate(
+            val req = buildRequest()
+            GeneratorHelper.generateAndWrite(fileType, req, mDirectory)
+            // sqlite DAO write path is unchanged (plugin-only, not in :core)
+            if (cbSqlite!!.isSelected && !TextUtils.isEmpty(tvPrimaryKeyListener.getText())) {
+                DartDataBaseGenerator(
                     tvField!!.text,
                     tvClassField!!.text,
-                    tvExtends!!.text,
-                    tvImplements!!.text,
-                    isSqliteEnable(),
+                    mDirectory,
                     tvPrimaryKeyListener.getText(),
-                    rbClone!!.isSelected,
-                    cbSplitGFile?.isSelected == true,
-                )
-                mainFile.writeText(output.mainContent)
-                val partContent = output.partContent
-                val partFileName = output.partFileName
-                if (partContent != null && partFileName != null) {
-                    File(mDirectory.virtualFile.path, partFileName).writeText(partContent)
-                }
-                // sqlite DAO 写入逻辑保持不变
-                println("isSelected:${cbSqlite!!.isSelected}  $fileType")
-                if (cbSqlite!!.isSelected && !TextUtils.isEmpty(tvPrimaryKeyListener.getText())) {
-                    println("进入DartDataBaseGenerator")
-                    DartDataBaseGenerator(
-                        tvField!!.text,
-                        tvClassField!!.text,
-                        mDirectory,
-                        tvPrimaryKeyListener.getText(),
-                    ).startWrite()
-                }
-            } else {
-                // 非 Dart 维持原有单文件写
-                mainFile.writeText(json2Bean())
+                ).startWrite()
             }
             dispose()
         } catch (e: Exception) {
@@ -189,24 +156,21 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
         return cbSqlite!!.isSelected && !TextUtils.isEmpty(tvPrimaryKeyListener.getText());
     }
 
-    /**
-     *  将Json转成Bean对象
-     **/
-    private fun json2Bean(): String {
-        return GeneratorHelper.json2Bean(
-            fileType, tvField!!.text,
-            tvClassField!!.text,
-            tvExtends!!.text,
-            tvImplements!!.text,
-            isSqliteEnable(),
-            tvPrimaryKeyListener.getText(),
-            depType,
-            mDirectory,
-            rbClone!!.isSelected,
-            cbSplitGFile?.isSelected == true,
+    private fun buildRequest(): com.awesome.core.model.GenerateRequest {
+        val options = mutableMapOf<String, Any?>()
+        options[com.awesome.core.PluginProps.OPT_SPLIT_G] = cbSplitGFile?.isSelected == true
+        options[com.awesome.core.PluginProps.OPT_SQLITE] = isSqliteEnable()
+        options[com.awesome.core.PluginProps.OPT_PRIMARY_KEY] = tvPrimaryKeyListener.getText()
+        options[com.awesome.core.PluginProps.OPT_NEED_CLONE] = rbClone!!.isSelected
+        options[com.awesome.core.PluginProps.OPT_KT_DEP] = depType
+        return com.awesome.core.model.GenerateRequest(
+            json = tvField!!.text,
+            className = tvClassField!!.text,
+            extendsClass = tvExtends!!.text,
+            implementsClass = tvImplements!!.text,
+            options = options,
         )
     }
-
 
     /**
      * 直接生成预览的值
@@ -217,8 +181,8 @@ class JsonBeanDialog(val mDirectory: PsiDirectory) : JDialog() {
             tvClassField!!.text = "auto_root"
         }
         try {
-            val previewDialog = PreViewDialog(json2Bean())
-            previewDialog.showDialog()
+            val preview = GeneratorHelper.previewMain(fileType, buildRequest())
+            PreViewDialog(preview).showDialog()
         } catch (e: Exception) {
             tvError?.text = "JSON Error!!"
             println(e)
