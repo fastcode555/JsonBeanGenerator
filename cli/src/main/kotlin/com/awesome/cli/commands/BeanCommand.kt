@@ -52,6 +52,12 @@ abstract class BeanCommand : Callable<Int> {
             return 2
         }
 
+        val trimmed = json.trimStart()
+        if (!trimmed.startsWith('{') && !trimmed.startsWith('[')) {
+            System.err.println("error: invalid JSON: input does not start with '{' or '['")
+            return 1
+        }
+
         val mainFile = File(output)
         if (mainFile.exists() && !force) {
             System.err.println("error: output exists (use --force to overwrite): $output")

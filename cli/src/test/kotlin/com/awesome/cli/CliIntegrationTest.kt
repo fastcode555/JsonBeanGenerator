@@ -115,4 +115,12 @@ class CliIntegrationTest {
         content shouldContain "name?: string"
         content shouldContain "age?: number"
     }
+
+    @Test
+    fun `malformed JSON returns exit code 1`(@TempDir tmp: Path) {
+        val output = tmp.resolve("Foo.dart")
+        val code = exec("dart", "-j", "not json at all", "-o", output.toString())
+        code shouldBe 1
+        Files.exists(output) shouldBe false
+    }
 }
