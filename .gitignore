@@ -1,3 +1,6 @@
-/build
-/.gradle
+# Gradle build output (any module: root, core, plugin, cli)
+build/
+.gradle/
+
+# Local feature-branch worktree isolation dir
 /.worktrees/

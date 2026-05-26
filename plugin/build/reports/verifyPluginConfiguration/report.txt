@@ -1,4 +1,0 @@
-- The since-build='241.14494.240' is lower than the target IntelliJ Platform major version: '243'.
-- The IntelliJ Platform cache directory should be excluded from the version control system. Add the '.intellijPlatform' entry to the '.gitignore' file.
-- The Java configuration specifies sourceCompatibility='17' but IntelliJ Platform '2024.3.1' requires sourceCompatibility='21'.
-- The dependency on the Kotlin Standard Library (stdlib) is automatically added when using the Gradle Kotlin plugin and may conflict with the version provided with the IntelliJ Platform, see: https://jb.gg/intellij-platform-kotlin-stdlib
