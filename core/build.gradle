@@ -1,0 +1,37 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    api "com.alibaba.fastjson2:fastjson2:2.0.53"
+    api "com.google.guava:guava:33.3.1-jre"   // for CaseFormat (used by Naming.kt)
+    implementation "org.jetbrains.kotlin:kotlin-stdlib"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    testImplementation "io.kotest:kotest-assertions-core:5.9.0"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+kotlin {
+    jvmToolchain(17)
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.register('captureFixtures', JavaExec) {
+    group = 'verification'
+    description = 'Recapture expected.* golden files from current generator output.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'com.awesome.core.generators.CaptureFixturesKt'
+}

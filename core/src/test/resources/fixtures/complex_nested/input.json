@@ -1,0 +1,26 @@
+{
+  "user_id": 1001,
+  "user_name": "Barry",
+  "is_vip": true,
+  "balance": 99.5,
+  "tags": ["dart", "kotlin", "ts"],
+  "scores": [[90, 85], [88, 92]],
+  "empty_list": [],
+  "address": {
+    "city": "Shanghai",
+    "zip_code": "200000",
+    "geo": {
+      "lat": 31.23,
+      "lng": 121.47
+    }
+  },
+  "orders": [
+    {
+      "order_id": "A001",
+      "total": 199.99,
+      "items": [
+        {"sku": "X1", "qty": 2}
+      ]
+    }
+  ]
+}
